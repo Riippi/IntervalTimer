@@ -1,0 +1,79 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!--
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="example_checkbox"
+        android:summary="@string/pref_description_run_in_bg"
+        android:title="@string/pref_title_run_in_bg" />
+    -->
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="prevent_screensaver_checkbox"
+        android:title="Keep screen on"
+        android:summary="Keep the screen on during workout" />
+
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pause_on_incoming_call"
+        android:title="Incoming calls"
+        android:summary="Pause workout on incoming calls" />
+
+    <!--
+         NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it.
+    -->
+
+    <!--
+     A 'parent' preference, which enables/disables child preferences (below)
+     when checked/unchecked.
+-->
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="sound"
+        android:title="@string/pref_title_sound_alert" />
+
+    <!-- Allows the user to choose a ringtone in the 'notification' category. -->
+    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+    <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code.
+    <RingtonePreference
+        android:defaultValue="content://settings/system/notification_sound"
+        android:dependency="sound"
+        android:key="notifications_new_message_ringtone"
+        android:ringtoneType="notification"
+        android:title="@string/pref_title_ringtone" />-->
+
+
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code.-->
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/pref_sound_list_titles"
+        android:entryValues="@array/pref_sound_list_values"
+        android:key="sound_list"
+        android:dependency="sound"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_sound_tone" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="vibrate"
+        android:title="@string/pref_title_vibrate" />
+
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/pref_countdown_list_titles"
+        android:entryValues="@array/pref_countdown_list_values"
+        android:key="countdown"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_countdown" />
+
+
+</PreferenceScreen>

@@ -1,0 +1,50 @@
+<resources>
+
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+
+    <!-- General settings -->
+    <string name="pref_title_run_in_bg">Run under locked screen</string>
+    <string name="pref_description_run_in_bg">Allows the application to run in background</string>
+    <string name="pref_title_sound_tone">Sound tone</string>
+
+    <string-array name="pref_sound_list_titles">
+        <item>Bell</item>
+        <item>Beep</item>
+        <item>Beep high</item>
+        <item>Meditation Bell</item>
+    </string-array>
+    <string-array name="pref_sound_list_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string name="pref_title_sound_alert">Sound alert</string>
+    <string name="pref_ringtone_silent">Silent</string>
+    <string name="pref_title_vibrate">Vibrate</string>
+
+
+    <string name="pref_title_countdown">Countdown</string>
+
+    <string-array name="pref_countdown_list_titles">
+        <item>None</item>
+        <item>1 second</item>
+        <item>2 seconds</item>
+        <item>3 seconds</item>
+        <item>4 seconds</item>
+        <item>5 seconds</item>
+    </string-array>
+    <string-array name="pref_countdown_list_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+</resources>

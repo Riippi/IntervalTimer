@@ -1,0 +1,2 @@
+C:\AndroidStudioProjects\IntervalTimer\app\build\intermediates\classes\debug
+C:\AndroidStudioProjects\IntervalTimer\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-4af9df9082b8f26242611a73667954fd9b9f3a15.jar

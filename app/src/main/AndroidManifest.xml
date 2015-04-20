@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.leeko.intervaltimer"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/ThemeX" >
+
+        <activity
+            android:name="org.leeko.intervaltimer.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/ThemeX" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.leeko.intervaltimer.TimerActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="org.leeko.intervaltimer.MainActivity" 
+            android:theme="@style/ThemeX"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.leeko.intervaltimer.MainActivity" />
+        </activity>
+
+        <provider
+            android:name=".contentprovider.MyContentProvider"
+            android:authorities="org.leeko.intervaltimer.contentprovider" >
+        </provider>
+
+        <activity
+            android:name="org.leeko.intervaltimer.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="org.leeko.intervaltimer.MainActivity" 
+            android:theme="@style/ThemeX">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.leeko.intervaltimer.MainActivity" />
+        </activity>
+    </application>
+
+</manifest>

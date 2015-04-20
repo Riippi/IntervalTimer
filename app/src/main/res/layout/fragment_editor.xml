@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/background_dark"
+    >
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    style="@style/ThemeX"
+    >
+    <!-- <LinearLayout -->
+    <!-- <org.leeko.intervaltimer.EditorFragment
+    <Button
+        android:id="@+id/workoutTitle"
+        android:layout_width="256dp"
+        android:layout_height="wrap_content"
+        android:text="@string/workoutTitle" />
+
+    -->
+    <include
+        android:id="@+id/buttonWarmUp"
+        layout="@layout/custom_button"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="@string/buttonTextWarmUp"
+        android:layout_marginTop="12dp" />
+
+
+    <include
+        android:id="@+id/buttonRounds"
+        layout="@layout/custom_button"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="@string/buttonTextRounds"
+        android:layout_marginTop="5dp"
+        />
+
+
+    <include
+        android:id="@+id/buttonWork"
+        layout="@layout/custom_button"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="@string/buttonTextWork"
+        android:layout_marginTop="5dp"
+        />
+
+
+    <include
+        android:id="@+id/buttonRest"
+        layout="@layout/custom_button"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="@string/buttonTextRest"
+        android:layout_marginTop="5dp"
+        />
+
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        >
+
+        <TextView
+            android:id="@+id/manualTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/manual_title"
+            android:layout_marginLeft="20dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical|left"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+
+        <ToggleButton
+            android:id="@+id/manualRestButton"
+            android:layout_width="92dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textOff="OFF"
+            android:textOn="ON"
+            />
+
+
+
+        </RelativeLayout>
+
+    <TextView
+        android:id="@+id/totalText"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:text="Total: XX:XX"
+
+        android:layout_marginTop="10dp"
+        android:textColor="#ffa0a0a0"
+        android:gravity="left" />
+
+
+</LinearLayout><!--  </LinearLayout> -->
+
+</ScrollView>
+
+    <!-- </org.leeko.intervaltimer.EditorFragment> -->
