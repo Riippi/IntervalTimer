@@ -6,95 +6,103 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".TimerActivity"
-    >
+    tools:context=".TimerActivity">
 
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:weightSum="6"
-        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="10">
 
-
-        <RelativeLayout
-            android:id="@+id/layoutTop"
-            android:layout_width="fill_parent"
-            android:layout_height="280dp"
-            >
-
-            <View
-                android:id="@+id/timerTrafficLight"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/rounded_corner" />
-
-
-            <LinearLayout
-                android:orientation="vertical"
+            <RelativeLayout
+                android:id="@+id/layoutTop"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:weightSum="1">
+                android:layout_height="0px"
+                android:layout_weight="6">
 
-
-                <TextView
-                    android:id="@+id/roundText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:text="ROUND 0 / 0"
-                    android:textStyle="bold"
-                    android:textSize="26sp"
-                    android:textColor="@color/black" />
-
-                <TextView
-                    android:id="@+id/textState"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginLeft="6dp"
-                    android:layout_marginRight="6dp"
-                    android:text="WORK"
-                    android:textStyle="bold"
-                    android:textSize="40sp"
-                    android:textColor="@color/black"/>
-
-                <org.leeko.intervaltimer.AutoResizeTextView
-                    android:id="@+id/timeText"
+                <View
+                    android:id="@+id/timerTrafficLight"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="none"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:text="00:00"
-                    android:textColor="@color/black"
-                    android:textSize="400sp"
-                    android:textStyle="bold"
-                    android:singleLine="true"
-                    />
+                    android:layout_height="match_parent"
+                    android:background="@drawable/rounded_corner" />
+            </RelativeLayout>
+        </LinearLayout>
 
-            </LinearLayout>
+        <TextView
+            android:id="@+id/roundText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="ROUND 0 / 0"
+            android:textColor="@color/black"
+            android:textSize="26sp"
+            android:textStyle="bold" />
 
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/textState"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="60dp"
+            android:gravity="center"
+            android:text="WORK"
+            android:textColor="@color/black"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+
+        <org.leeko.intervaltimer.AutoResizeTextView
+            android:id="@+id/timeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="none"
+            android:gravity="center"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:layout_marginTop="100sp"
+            android:text="00:00"
+            android:textColor="@color/black"
+            android:textSize="400sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="2">
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0px"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+
+
+
+        </LinearLayout>
+        </LinearLayout>
+
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/layoutTop"
+            android:layout_above="@+id/layoutBottom"
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
-            tools:context=".TimerActivity"
-            android:layout_weight="2"
-            >
-
+            tools:context=".TimerActivity">
 
             <!-- TOTAL ELAPSED -->
             <TextView
@@ -146,22 +154,20 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/textTotalElapsed"
-                android:layout_marginTop="10dp"
-                />
+                android:layout_marginTop="10dp" />
 
 
         </RelativeLayout>
 
 
         <LinearLayout
-            android:orientation="vertical"
+            android:id="@+id/layoutBottom"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:layout_weight="1"
+            android:layout_alignParentBottom="true"
             android:layout_gravity="center_vertical"
-            >
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/pauseButton"
@@ -170,8 +176,8 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:text="PAUSE"
-                android:textSize="24sp"
-                />
+                android:textSize="24sp" />
         </LinearLayout>
-    </LinearLayout>
+
+    </RelativeLayout>
 </FrameLayout>
