@@ -19,18 +19,13 @@
             android:orientation="vertical"
             android:weightSum="10">
 
-            <RelativeLayout
-                android:id="@+id/layoutTop"
-                android:layout_width="fill_parent"
+            <View
+                android:id="@+id/timerTrafficLight"
+                android:layout_width="match_parent"
                 android:layout_height="0px"
-                android:layout_weight="6">
+                android:layout_weight="6"
+                android:background="@drawable/rounded_corner" />
 
-                <View
-                    android:id="@+id/timerTrafficLight"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/rounded_corner" />
-            </RelativeLayout>
         </LinearLayout>
 
         <TextView
@@ -64,34 +59,15 @@
             android:id="@+id/timeText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="100sp"
             android:ellipsize="none"
             android:gravity="center"
             android:maxLines="1"
             android:singleLine="true"
-            android:layout_marginTop="100sp"
             android:text="00:00"
             android:textColor="@color/black"
             android:textSize="400sp"
             android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="2">
-
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="0px"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-
-
-
-        </LinearLayout>
-        </LinearLayout>
 
 
         <RelativeLayout
