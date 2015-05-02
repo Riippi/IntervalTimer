@@ -10,39 +10,84 @@ import org.leeko.intervaltimer.database.WorkoutTable;
 import java.util.Hashtable;
 
 public class WorkoutModel {
-	
-	
 
-	private Hashtable<Integer, Workout> hash;
-	private static WorkoutModel singleton;
+
+    private Hashtable<Integer, Workout> hash;
+    private static WorkoutModel singleton;
 
     private WorkoutModel() {
         hash = new Hashtable<Integer, Workout>();
     }
-	
-	public static WorkoutModel getInstance() {
-		
-		if (singleton == null) {
-			singleton = new WorkoutModel();
-		}
-		return singleton;
-	}
-	
+
+    public static WorkoutModel getInstance() {
+
+        if (singleton == null) {
+            singleton = new WorkoutModel();
+        }
+        return singleton;
+    }
 
 
-	public Workout getWorkoutCached(int id) {
+    public Workout getWorkoutCached(int id) {
 
         // Actually no idea if this hash-caching has any use
         if (hash.get(id) == null) {
             hash.put(id, getWorkout(id));
         }
-			
-		return hash.get(id);
-	}
 
+        return hash.get(id);
+    }
 
 
     private Workout getWorkout(int id) {
+
+
+        String[] mSelectionArgs = {""};
+
+        // database rows start from 1, tab fragments start from 0
+        int upd = id + 1;
+
+        String mSearchString = upd + "";
+
+        // Constructs a selection clause that matches the word that the user entered.
+        String mSelectionClause = WorkoutTable.COLUMN_ID + " = ?";
+
+        // Moves the user's input string to the selection arguments.
+        mSelectionArgs[0] = mSearchString;
+
+
+        Workout workout = new Workout();
+        Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, mSelectionClause, mSelectionArgs, null);
+
+        if (cursor != null) {
+
+            cursor.moveToFirst();
+
+            workout.setId(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ID)));
+            workout.setName(cursor.getString(cursor.getColumnIndex(WorkoutTable.COLUMN_NAME)));
+            workout.setWarmupMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_MIN)));
+            workout.setWarmupSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_SEC)));
+            workout.setRoundAmount(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ROUNDS)));
+            workout.setWorkMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_MIN)));
+            workout.setWorkSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_SEC)));
+            workout.setRestMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_MIN)));
+            workout.setRestSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_SEC)));
+            workout.setManualInteger(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_MANUAL)));
+
+            cursor.close();
+        }
+
+        return workout;
+    }
+
+
+    /**
+     * Get workout object from database
+     *
+     * @param id
+     * @return
+     */
+    private Workout getWorkoutK(int id) {
 
         Workout workout = new Workout();
         Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, null);
@@ -50,9 +95,8 @@ public class WorkoutModel {
         if (cursor != null) {
 
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                // do what you need with the cursor here
 
-                // In database rows start from 1
+                // database rows start from 1
                 int rowId = id + 1;
 
                 if (cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ID)) == rowId) {
@@ -77,8 +121,6 @@ public class WorkoutModel {
 
             cursor.close();
         }
-
-
 
         return workout;
     }
@@ -108,7 +150,7 @@ public class WorkoutModel {
 
         Uri uri = null;
 
-        String[] projection = { WorkoutTable.COLUMN_ID  };
+        String[] projection = {WorkoutTable.COLUMN_ID};
 
         Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, projection, null, null, null);
 
