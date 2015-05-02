@@ -2,10 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="3dp"
+    android:paddingLeft="3dp"
+    android:paddingRight="3dp"
+    android:paddingTop="3dp"
     tools:context=".TimerActivity">
 
 
@@ -13,14 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="2">
+        android:weightSum="10">
 
 
         <RelativeLayout
             android:id="@+id/layoutTop"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="6">
 
             <View
                 android:id="@+id/timerTrafficLight"
@@ -29,46 +29,46 @@
                 android:background="@drawable/rounded_corner" />
 
 
-            <org.leeko.intervaltimer.AutoResizeTextView
+            <TextView
                 android:id="@+id/roundText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginLeft="23dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="22dp"
-                android:text="ROUND 0 / 0"
+                android:text="NEXT: ROUND 90 of 90"
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="@dimen/scale_roundof_font_ls"
                 android:textStyle="bold" />
 
-            <org.leeko.intervaltimer.AutoResizeTextView
+            <TextView
                 android:id="@+id/textState"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_alignTop="@+id/roundText"
-                android:layout_marginTop="30dp"
-                android:layout_marginLeft="30dp"
-                android:text="WORK"
+                android:layout_below="@+id/roundText"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:text="PAUSED"
                 android:textColor="@color/black"
-                android:textSize="40sp"
+                android:textSize="@dimen/scale_state_font_ls"
                 android:textStyle="bold" />
 
-            <org.leeko.intervaltimer.AutoResizeTextView
+            <TextView
                 android:id="@+id/timeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="0dp"
-                android:layout_marginRight="30dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="20dp"
                 android:gravity="right"
-                android:text="0:00"
+                android:text="00:00"
                 android:textColor="@color/black"
-                android:textSize="400sp"
-                android:textStyle="bold" />
+                android:textSize="@dimen/scale_font_ls"
+                android:textStyle="bold"
+                android:layout_centerVertical="true" />
 
         </RelativeLayout>
 
@@ -78,7 +78,7 @@
             android:layout_height="0dp"
             android:layout_gravity="bottom"
             android:layout_marginBottom="10dp"
-            android:layout_weight="1"
+            android:layout_weight="4"
             android:orientation="horizontal"
             android:gravity="center"
             android:weightSum="6"

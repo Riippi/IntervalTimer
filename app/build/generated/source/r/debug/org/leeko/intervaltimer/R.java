@@ -23,6 +23,12 @@ public final class R {
     public static final class dimen {
         public static final int activity_horizontal_margin=0x7f080000;
         public static final int activity_vertical_margin=0x7f080001;
+        public static final int scale_font=0x7f080002;
+        public static final int scale_font_ls=0x7f080003;
+        public static final int scale_roundof_font=0x7f080004;
+        public static final int scale_roundof_font_ls=0x7f080005;
+        public static final int scale_state_font=0x7f080006;
+        public static final int scale_state_font_ls=0x7f080007;
     }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
@@ -40,37 +46,38 @@ public final class R {
         public static final int traffic_light=0x7f02000c;
     }
     public static final class id {
-        public static final int MinutesPicker=0x7f0c0012;
-        public static final int RoundsPicker=0x7f0c0010;
-        public static final int SecondsPicker=0x7f0c0013;
-        public static final int action_settings=0x7f0c001e;
-        public static final int buttonRest=0x7f0c0017;
-        public static final int buttonRounds=0x7f0c0015;
+        public static final int MinutesPicker=0x7f0c0013;
+        public static final int RoundsPicker=0x7f0c0011;
+        public static final int SecondsPicker=0x7f0c0014;
+        public static final int action_settings=0x7f0c001f;
+        public static final int buttonRest=0x7f0c0018;
+        public static final int buttonRounds=0x7f0c0016;
         public static final int buttonStart=0x7f0c0001;
-        public static final int buttonWarmUp=0x7f0c0014;
-        public static final int buttonWork=0x7f0c0016;
-        public static final int dialog_txt_name=0x7f0c0011;
-        public static final int layoutTop=0x7f0c0002;
-        public static final int manualRestButton=0x7f0c0019;
-        public static final int manualTitle=0x7f0c0018;
+        public static final int buttonWarmUp=0x7f0c0015;
+        public static final int buttonWork=0x7f0c0017;
+        public static final int dialog_txt_name=0x7f0c0012;
+        public static final int layoutBottom=0x7f0c0006;
+        public static final int layoutTop=0x7f0c000d;
+        public static final int manualRestButton=0x7f0c001a;
+        public static final int manualTitle=0x7f0c0019;
         public static final int pauseButton=0x7f0c000c;
         public static final int progressBar=0x7f0c000b;
-        public static final int roundText=0x7f0c0004;
+        public static final int roundText=0x7f0c0003;
         public static final int sample_content_fragment=0x7f0c0000;
-        public static final int sliding_tabs=0x7f0c001b;
-        public static final int test_button=0x7f0c000d;
-        public static final int textState=0x7f0c0005;
+        public static final int sliding_tabs=0x7f0c001c;
+        public static final int test_button=0x7f0c000e;
+        public static final int textState=0x7f0c0004;
         public static final int textTotalElapsed=0x7f0c0008;
         public static final int textTotalElapsedTitle=0x7f0c0007;
         public static final int textTotalRemaining=0x7f0c000a;
         public static final int textTotalRemainingTitle=0x7f0c0009;
-        public static final int textViewXLeft=0x7f0c000e;
-        public static final int textViewXRight=0x7f0c000f;
-        public static final int timeText=0x7f0c0006;
-        public static final int timerTrafficLight=0x7f0c0003;
-        public static final int totalText=0x7f0c001a;
-        public static final int traffic_light=0x7f0c001d;
-        public static final int viewpager=0x7f0c001c;
+        public static final int textViewXLeft=0x7f0c000f;
+        public static final int textViewXRight=0x7f0c0010;
+        public static final int timeText=0x7f0c0005;
+        public static final int timerTrafficLight=0x7f0c0002;
+        public static final int totalText=0x7f0c001b;
+        public static final int traffic_light=0x7f0c001e;
+        public static final int viewpager=0x7f0c001d;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -81,6 +88,7 @@ public final class R {
         public static final int dialog_timepick=0x7f030005;
         public static final int fragment_editor=0x7f030006;
         public static final int fragment_sample=0x7f030007;
+        public static final int scaled_textview=0x7f030008;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;
@@ -108,27 +116,17 @@ public final class R {
         public static final int buttonTextWarmUp=0x7f090004;
         public static final int buttonTextWork=0x7f090005;
         public static final int cancel=0x7f090006;
-        public static final int dialog_fire_missiles=0x7f090007;
-        public static final int emptyVal=0x7f090008;
-        public static final int hello_world=0x7f090009;
-        public static final int manual_title=0x7f09000a;
-        public static final int pref_description_run_in_bg=0x7f09000b;
-        public static final int pref_ringtone_silent=0x7f09000c;
-        public static final int pref_title_countdown=0x7f09000d;
-        public static final int pref_title_run_in_bg=0x7f09000e;
-        public static final int pref_title_sound_alert=0x7f09000f;
-        public static final int pref_title_sound_tone=0x7f090010;
-        public static final int pref_title_vibrate=0x7f090011;
-        public static final int rest_time=0x7f090012;
-        public static final int rounds=0x7f090013;
-        public static final int set=0x7f090014;
-        public static final int start_button=0x7f090015;
-        public static final int title_activity_dialog=0x7f090016;
-        public static final int title_activity_settings=0x7f090017;
-        public static final int title_activity_timer=0x7f090018;
-        public static final int warm_up=0x7f090019;
-        public static final int work_time=0x7f09001a;
-        public static final int workoutTitle=0x7f09001b;
+        public static final int manual_title=0x7f090007;
+        public static final int pref_description_run_in_bg=0x7f090008;
+        public static final int pref_ringtone_silent=0x7f090009;
+        public static final int pref_title_countdown=0x7f09000a;
+        public static final int pref_title_run_in_bg=0x7f09000b;
+        public static final int pref_title_sound_alert=0x7f09000c;
+        public static final int pref_title_sound_tone=0x7f09000d;
+        public static final int pref_title_vibrate=0x7f09000e;
+        public static final int set=0x7f09000f;
+        public static final int start_button=0x7f090010;
+        public static final int title_activity_settings=0x7f090011;
     }
     public static final class style {
         /** 
