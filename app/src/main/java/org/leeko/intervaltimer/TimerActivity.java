@@ -1,6 +1,8 @@
 package org.leeko.intervaltimer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -52,7 +54,11 @@ public class TimerActivity extends Activity {
 
         instance = this;
 
-        getActionBar().hide();
+
+        if (getActionBar() != null) {
+            getActionBar().hide();
+        }
+
 
         Log.d("TIMER", " onCreate");
         initStuff();
@@ -75,7 +81,7 @@ public class TimerActivity extends Activity {
         remainingText = (TextView) findViewById(R.id.textTotalRemaining);
         elapsedText = (TextView) findViewById(R.id.textTotalElapsed);
 
-        trafficLight = (View) findViewById(R.id.timerTrafficLight);
+        trafficLight = findViewById(R.id.timerTrafficLight);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -250,6 +256,51 @@ public class TimerActivity extends Activity {
 
         switchState();
         updateView();
+    }
+
+
+
+
+    @Override
+    public void onBackPressed() {
+
+
+        // If workout is over exit without questions.
+        if (AppController.getInstance().getTimerState() == BaseCounter.OVER) {
+             goBack();
+            return;
+        }
+
+        AppController.getInstance().pauseTimer();
+        switchState();
+        updateView();
+
+        // Use the Builder class for convenient dialog construction
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Exit active workout?")
+                .setCancelable(false)
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // go back
+                 goBack();
+            }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        AppController.resumeTimer();
+                        switchState();
+                        updateView();
+                    }
+                });
+        // Create the AlertDialog
+        builder.create();
+        builder.show();
+    }
+
+
+    public void goBack() {
+        super.onBackPressed();
     }
 
 
