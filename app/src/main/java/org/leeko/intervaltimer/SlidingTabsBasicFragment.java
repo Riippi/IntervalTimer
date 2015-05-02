@@ -54,7 +54,6 @@ public class SlidingTabsBasicFragment extends Fragment {
     private ViewPager mViewPager;
 
 
-
     // Buttons
     CustomButton buttonRest;
     CustomButton buttonWU;
@@ -62,8 +61,6 @@ public class SlidingTabsBasicFragment extends Fragment {
     CustomButton buttonWork;
     ToggleButton manualRestButton;
     TextView totalText;
-
-
 
     /**
      * Inflates the {@link android.view.View} which will be displayed by this {@link android.support.v4.app.Fragment}, from the app's
@@ -244,7 +241,7 @@ public class SlidingTabsBasicFragment extends Fragment {
                     args.putInt("sec", WorkoutModel.getInstance().getWorkoutCached(position).getWarmupSec());
                     args.putInt("id", position);
                     newFragment.setArguments(args);
-                    newFragment.show(getActivity().getFragmentManager(), "missiles");
+                    newFragment.show(getActivity().getFragmentManager(), "tag");
 
                 }
             });
@@ -259,7 +256,7 @@ public class SlidingTabsBasicFragment extends Fragment {
                     args.putInt("rounds", WorkoutModel.getInstance().getWorkoutCached(position).getRoundAmount());
                     args.putInt("id", position);
                     newFragment.setArguments(args);
-                    newFragment.show(getActivity().getFragmentManager(), "missiles");
+                    newFragment.show(getActivity().getFragmentManager(), "tag");
                 }
             });
 
@@ -274,7 +271,7 @@ public class SlidingTabsBasicFragment extends Fragment {
                     args.putInt("sec", WorkoutModel.getInstance().getWorkoutCached(position).getWorkSec());
                     args.putInt("id", position);
                     newFragment.setArguments(args);
-                    newFragment.show(getActivity().getFragmentManager(), "missiles");
+                    newFragment.show(getActivity().getFragmentManager(), "tag");
                 }
 
             });
@@ -291,27 +288,27 @@ public class SlidingTabsBasicFragment extends Fragment {
                     args.putInt("sec", WorkoutModel.getInstance().getWorkoutCached(position).getRestSec());
                     args.putInt("id", position);
                     newFragment.setArguments(args);
-                    newFragment.show(getActivity().getFragmentManager(), "missiles");
+                    newFragment.show(getActivity().getFragmentManager(), "tag");
                 }
             });
 
 
 
             buttonWU.setValueText(WorkoutModel.getInstance().getWorkoutCached(position).getWarmupInString());
-            buttonWU.setTitleText("warm-up time");
+            buttonWU.setTitleText("Warm-up time");
 
             if (WorkoutModel.getInstance().getWorkoutCached(position).getRoundAmount() == 0) {
                 buttonRounds.setValueText("Unlimited");
             } else {
                 buttonRounds.setValueText("" + WorkoutModel.getInstance().getWorkoutCached(position).getRoundAmount());
             }
-            buttonRounds.setTitleText("rounds");
+            buttonRounds.setTitleText("Rounds");
 
             buttonWork.setValueText(WorkoutModel.getInstance().getWorkoutCached(position).getWorkInString());
-            buttonWork.setTitleText("work time");
+            buttonWork.setTitleText("Work time");
 
             buttonRest.setValueText(WorkoutModel.getInstance().getWorkoutCached(position).getRestInString());
-            buttonRest.setTitleText("rest time");
+            buttonRest.setTitleText("Rest time");
 
             if (WorkoutModel.getInstance().getWorkoutCached(position).getManual()) {
                 buttonRest.setAlpha(.5f);
@@ -346,7 +343,7 @@ public class SlidingTabsBasicFragment extends Fragment {
 
                         String total = WorkoutModel.getInstance().getWorkoutCached(position).getTotal();
                         TextView t = (TextView)gg.findViewWithTag("totalText"+position);
-                        t.setText("Total time: " + total);
+                        t.setText("Total duration: " + total);
 
                     }
                 }
@@ -354,7 +351,7 @@ public class SlidingTabsBasicFragment extends Fragment {
 
 
             String total = WorkoutModel.getInstance().getWorkoutCached(position).getTotal();
-            totalText.setText("Total time: " + total);
+            totalText.setText("Total duration: " + total);
 
             container.addView(view);
 
