@@ -7,19 +7,19 @@ public interface ICounter {
 	
 	
 	
-	public void startRounds(Workout aSet, ITickerInterface aListener);
+	void startRounds(Workout aSet, ITickerInterface aListener);
 	
-	public void stopTimer();
+	void stopTimer();
 
-	public void pauseTimer();
+	void pauseTimer();
 
-	public void resumeTimer();
+	void resumeTimer();
 
-    public int getState();
+    int getState();
 
-    public TimerStats getTime();
+    TimerStats getTime();
 
-    public boolean isPaused();
+    boolean isPaused();
 
 }
 	

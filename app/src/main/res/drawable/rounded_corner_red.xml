@@ -15,8 +15,6 @@ android:shape="rectangle">
 </stroke>
 
 
-    // FF1919
-
     <gradient
         android:angle="90"
         android:startColor="#B20000"

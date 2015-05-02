@@ -7,7 +7,7 @@ public class CounterFactory {
 
 	public static ICounter makeCounter(Workout workout) {
 
-		if (workout.getManual() == true)
+		if (workout.getManual())
 		{
 			if (workout.getRoundAmount() == 0)
 			{
