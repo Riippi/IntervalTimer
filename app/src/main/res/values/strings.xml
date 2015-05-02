@@ -3,23 +3,13 @@
 
     <string name="app_name">Interval Timer X</string>
     <string name="action_settings">Settings</string>
-    <string name="warm_up">Warm-up time</string>
-    <string name="rounds">Rounds</string>
-    <string name="work_time">Work time</string>
-    <string name="rest_time">Rest time</string>
     <string name="buttonTextWork">Edit work</string>
     <string name="buttonTextRest">Edit rest</string>
     <string name="buttonTextRounds">Edit rounds</string>
     <string name="buttonTextWarmUp">Edit WU</string>
-    <string name="workoutTitle">Workout title</string>
-    <string name="emptyVal">XX:XX</string>
-    <string name="dialog_fire_missiles">Fire missiles</string>
     <string name="manual_title">Manual rest</string>
     <string name="set">Set</string>
     <string name="cancel">Cancel</string>
     <string name="start_button">START</string>
-    <string name="title_activity_dialog">DialogActivity</string>
-    <string name="title_activity_timer">TimerActivity</string>
-    <string name="hello_world">Hello world!</string>
 
 </resources>
