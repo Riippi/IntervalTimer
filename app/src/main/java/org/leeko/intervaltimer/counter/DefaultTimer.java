@@ -6,7 +6,7 @@ package org.leeko.intervaltimer.counter;
  * @author Mikko
  *
  */
-public class DefaultCounter extends BaseCounter {
+public class DefaultTimer extends BaseTimer {
 
 
 	@Override

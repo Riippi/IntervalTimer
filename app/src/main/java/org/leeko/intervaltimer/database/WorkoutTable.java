@@ -3,19 +3,19 @@ package org.leeko.intervaltimer.database;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-public class RoundsetTable {
+public class WorkoutTable {
 
 	public static final String[] projection = { 
-		RoundsetTable.COLUMN_ID,
-		RoundsetTable.COLUMN_NAME,
-		RoundsetTable.COLUMN_WARM_UP_MIN,
-		RoundsetTable.COLUMN_WARM_UP_SEC,
-		RoundsetTable.COLUMN_ROUNDS,
-		RoundsetTable.COLUMN_WORK_MIN,
-		RoundsetTable.COLUMN_WORK_SEC,
-		RoundsetTable.COLUMN_REST_MIN,
-		RoundsetTable.COLUMN_REST_SEC,
-		RoundsetTable.COLUMN_MANUAL
+		WorkoutTable.COLUMN_ID,
+		WorkoutTable.COLUMN_NAME,
+		WorkoutTable.COLUMN_WARM_UP_MIN,
+		WorkoutTable.COLUMN_WARM_UP_SEC,
+		WorkoutTable.COLUMN_ROUNDS,
+		WorkoutTable.COLUMN_WORK_MIN,
+		WorkoutTable.COLUMN_WORK_SEC,
+		WorkoutTable.COLUMN_REST_MIN,
+		WorkoutTable.COLUMN_REST_SEC,
+		WorkoutTable.COLUMN_MANUAL
 	};
 
 	public static final String TABLE_WORKOUT = "workout";
@@ -237,7 +237,7 @@ public class RoundsetTable {
 
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
-		Log.w(RoundsetTable.class.getName(), "Upgrading database from version "
+		Log.w(WorkoutTable.class.getName(), "Upgrading database from version "
 				+ oldVersion + " to " + newVersion
 				+ ", which will destroy all old data");
 		database.execSQL("DROP TABLE IF EXISTS " + TABLE_WORKOUT);

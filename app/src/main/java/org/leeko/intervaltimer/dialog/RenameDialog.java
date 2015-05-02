@@ -21,12 +21,12 @@ public class RenameDialog extends DialogFragment {
 
 	String name;
 	EditText input;
-	int roundSetID;
+	int workoutID;
 
     public void setArguments(Bundle bundle) {
         super.setArguments(bundle);
         this.name = getArguments().getString("name");
-        this.roundSetID = getArguments().getInt("id");
+        this.workoutID = getArguments().getInt("id");
     }
 
 
@@ -57,7 +57,7 @@ public class RenameDialog extends DialogFragment {
 
 
 	protected void callBack() {
-		mListener.onTextDialogOk(input.getText().toString(), roundSetID);
+		mListener.onTextDialogOk(input.getText().toString(), workoutID);
 	}
 
 

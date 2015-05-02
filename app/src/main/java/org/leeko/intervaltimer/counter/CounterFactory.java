@@ -5,11 +5,11 @@ import org.leeko.intervaltimer.Workout;
 public class CounterFactory {
 
 
-	public static ICounter makeCounter(Workout rs) {
+	public static ICounter makeCounter(Workout workout) {
 
-		if (rs.getManual() == true)
+		if (workout.getManual() == true)
 		{
-			if (rs.getRoundAmount() == 0)
+			if (workout.getRoundAmount() == 0)
 			{
 				return new UnlimitedManual();
 			}
@@ -19,13 +19,13 @@ public class CounterFactory {
 			}
 	
 		}
-		else if (rs.getRoundAmount() == 0)
+		else if (workout.getRoundAmount() == 0)
 		{
 			return new UnlimitedNormal();
 		}
 		else
 		{
-			return new DefaultCounter();
+			return new DefaultTimer();
 		}
 	
 	}

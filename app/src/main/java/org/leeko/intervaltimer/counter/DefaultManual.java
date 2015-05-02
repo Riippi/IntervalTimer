@@ -1,6 +1,6 @@
 package org.leeko.intervaltimer.counter;
 
-public class DefaultManual extends BaseCounter
+public class DefaultManual extends BaseTimer
 {
 
 

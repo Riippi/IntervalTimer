@@ -1,6 +1,6 @@
 package org.leeko.intervaltimer.counter;
 
-public class UnlimitedNormal extends BaseCounter {
+public class UnlimitedNormal extends BaseTimer {
 
 
 	@Override

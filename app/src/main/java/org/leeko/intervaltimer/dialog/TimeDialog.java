@@ -20,7 +20,7 @@ public class TimeDialog  extends DialogFragment {
 	public static final int WORK_TIME = 2;
 	public static final int REST_TIME = 3;
 	
-	int roundSetID;
+	int workoutID;
 
 	String title;
 	int min;
@@ -34,7 +34,7 @@ public class TimeDialog  extends DialogFragment {
 
         this.min = getArguments().getInt("min");
         this.sec = getArguments().getInt("sec");
-        this.roundSetID = getArguments().getInt("id");
+        this.workoutID = getArguments().getInt("id");
 
     }
 
@@ -68,7 +68,7 @@ public class TimeDialog  extends DialogFragment {
 
 
 	protected void callBack() {
-		mListener.onDialogPositiveClick(DEFAULT, minutes.getValue(), seconds.getValue(), roundSetID);
+		mListener.onDialogPositiveClick(DEFAULT, minutes.getValue(), seconds.getValue(), workoutID);
 	}
 
 
@@ -149,7 +149,7 @@ public class TimeDialog  extends DialogFragment {
 		}
 
 		protected void callBack() {
-			mListener.onDialogPositiveClick(WARM_UP_TIME, minutes.getValue(), seconds.getValue(), roundSetID);
+			mListener.onDialogPositiveClick(WARM_UP_TIME, minutes.getValue(), seconds.getValue(), workoutID);
 		}
 	}
 
@@ -162,7 +162,7 @@ public class TimeDialog  extends DialogFragment {
 		}
 
 		protected void callBack() {
-			mListener.onDialogPositiveClick(REST_TIME, minutes.getValue(), seconds.getValue(), roundSetID);
+			mListener.onDialogPositiveClick(REST_TIME, minutes.getValue(), seconds.getValue(), workoutID);
 		}
 	}
 
@@ -175,7 +175,7 @@ public class TimeDialog  extends DialogFragment {
 		}
 
 		protected void callBack() {
-			mListener.onDialogPositiveClick(WORK_TIME, minutes.getValue(), seconds.getValue(), roundSetID);
+			mListener.onDialogPositiveClick(WORK_TIME, minutes.getValue(), seconds.getValue(), workoutID);
 		}
 	}
 }

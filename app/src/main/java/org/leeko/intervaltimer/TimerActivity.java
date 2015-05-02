@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.leeko.intervaltimer.counter.BaseCounter;
+import org.leeko.intervaltimer.counter.BaseTimer;
 
 public class TimerActivity extends Activity {
 
@@ -33,7 +33,7 @@ public class TimerActivity extends Activity {
     int currentRound;
     int nextRound;
 
-    int m_state = BaseCounter.WORK;  // TODO should be the initial state like warmup in some cases
+    int m_state = BaseTimer.WORK;  // TODO should be the initial state like warmup in some cases
     int m_beforePauseState = -1;
 
 
@@ -142,29 +142,29 @@ public class TimerActivity extends Activity {
         resetView();
 
         switch (m_state) {
-            case BaseCounter.WORK: {
+            case BaseTimer.WORK: {
                 stateText.setText("WORK");
                 trafficLight.setBackground(shape_green);
                 break;
             }
-            case BaseCounter.REST: {
+            case BaseTimer.REST: {
                 stateText.setText("REST");
                 trafficLight.setBackground(shape_red);
                 break;
             }
-            case BaseCounter.WARMUP: {
+            case BaseTimer.WARMUP: {
                 trafficLight.setBackground(shape_yellow);
                 stateText.setText("WARM-UP");
                 break;
             }
-            case BaseCounter.MANUAL_REST: {
+            case BaseTimer.MANUAL_REST: {
                 timeText.setVisibility(View.GONE);
                 trafficLight.setBackground(shape_red);
                 stateText.setText("START WHEN READY");
                 pauseButton.setText("START");
                 break;
             }
-            case BaseCounter.OVER: {
+            case BaseTimer.OVER: {
                 trafficLight.setBackground(shape_red);
                 timeText.setVisibility(View.GONE);
                 stateText.setText("WORKOUT OVER");
@@ -173,7 +173,7 @@ public class TimerActivity extends Activity {
             }
         }
 
-        if(AppController.getInstance().isTimerPaused() && m_state != BaseCounter.MANUAL_REST) {
+        if(AppController.getInstance().isTimerPaused() && m_state != BaseTimer.MANUAL_REST) {
             setPaused();
         }
 
@@ -221,7 +221,7 @@ public class TimerActivity extends Activity {
             remainingText.setText("-");
         }
 
-        if (m_state == BaseCounter.REST || m_state == BaseCounter.MANUAL_REST) {
+        if (m_state == BaseTimer.REST || m_state == BaseTimer.MANUAL_REST) {
             roundText.setText("NEXT: ROUND " + lastPart);
         } else {
             roundText.setText("ROUND " + lastPart);
@@ -241,10 +241,10 @@ public class TimerActivity extends Activity {
 
         int state = AppController.getInstance().getTimerState();
 
-        if (state == BaseCounter.OVER) {
+        if (state == BaseTimer.OVER) {
             AppController.getInstance().startTimer();
 
-        } else if (state == BaseCounter.MANUAL_REST) {
+        } else if (state == BaseTimer.MANUAL_REST) {
             AppController.resumeTimer();
 
         } else if (AppController.getInstance().isTimerPaused()) {
@@ -266,7 +266,7 @@ public class TimerActivity extends Activity {
 
 
         // If workout is over exit without questions.
-        if (AppController.getInstance().getTimerState() == BaseCounter.OVER) {
+        if (AppController.getInstance().getTimerState() == BaseTimer.OVER) {
              goBack();
             return;
         }

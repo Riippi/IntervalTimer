@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import org.leeko.intervaltimer.contentprovider.MyContentProvider;
-import org.leeko.intervaltimer.database.RoundsetTable;
+import org.leeko.intervaltimer.database.WorkoutTable;
 
 import java.util.Hashtable;
 
@@ -45,7 +45,7 @@ public class WorkoutModel {
     private Workout getWorkout(int id) {
 
         Workout workout = new Workout();
-        Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, RoundsetTable.projection, null, null, null);
+        Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, null);
 
         if (cursor != null) {
 
@@ -55,21 +55,21 @@ public class WorkoutModel {
                 // In database rows start from 1
                 int rowId = id + 1;
 
-                if (cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_ID)) == rowId) {
-                    workout.setId(cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_ID)));
-                    workout.setName(cursor.getString(cursor.getColumnIndex(RoundsetTable.COLUMN_NAME)));
-                    workout.setWarmupMin(cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_WARM_UP_MIN)));
-                    workout.setWarmupSec(cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_WARM_UP_SEC)));
+                if (cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ID)) == rowId) {
+                    workout.setId(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ID)));
+                    workout.setName(cursor.getString(cursor.getColumnIndex(WorkoutTable.COLUMN_NAME)));
+                    workout.setWarmupMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_MIN)));
+                    workout.setWarmupSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_SEC)));
 
-                    workout.setRoundAmount(cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_ROUNDS)));
+                    workout.setRoundAmount(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ROUNDS)));
 
-                    workout.setWorkMin(cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_WORK_MIN)));
-                    workout.setWorkSec(cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_WORK_SEC)));
+                    workout.setWorkMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_MIN)));
+                    workout.setWorkSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_SEC)));
 
-                    workout.setRestMin(cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_REST_MIN)));
-                    workout.setRestSec(cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_REST_SEC)));
+                    workout.setRestMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_MIN)));
+                    workout.setRestSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_SEC)));
 
-                    workout.setManualInteger(cursor.getInt(cursor.getColumnIndex(RoundsetTable.COLUMN_MANUAL)));
+                    workout.setManualInteger(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_MANUAL)));
 
                     break;
                 }
@@ -95,20 +95,20 @@ public class WorkoutModel {
         hash.put(id, rs);
 
         ContentValues values = new ContentValues();
-        values.put(RoundsetTable.COLUMN_NAME, rs.getName());
-        values.put(RoundsetTable.COLUMN_ROUNDS, rs.getRoundAmount());
-        values.put(RoundsetTable.COLUMN_WARM_UP_MIN, rs.getWarmupMin());
-        values.put(RoundsetTable.COLUMN_WARM_UP_SEC, rs.getWarmupSec());
-        values.put(RoundsetTable.COLUMN_WORK_MIN, rs.getWorkMin());
-        values.put(RoundsetTable.COLUMN_WORK_SEC, rs.getWorkSec());
-        values.put(RoundsetTable.COLUMN_REST_MIN, rs.getRestMin());
-        values.put(RoundsetTable.COLUMN_REST_SEC, rs.getRestSec());
-        values.put(RoundsetTable.COLUMN_MANUAL, rs.getManualInteger());
+        values.put(WorkoutTable.COLUMN_NAME, rs.getName());
+        values.put(WorkoutTable.COLUMN_ROUNDS, rs.getRoundAmount());
+        values.put(WorkoutTable.COLUMN_WARM_UP_MIN, rs.getWarmupMin());
+        values.put(WorkoutTable.COLUMN_WARM_UP_SEC, rs.getWarmupSec());
+        values.put(WorkoutTable.COLUMN_WORK_MIN, rs.getWorkMin());
+        values.put(WorkoutTable.COLUMN_WORK_SEC, rs.getWorkSec());
+        values.put(WorkoutTable.COLUMN_REST_MIN, rs.getRestMin());
+        values.put(WorkoutTable.COLUMN_REST_SEC, rs.getRestSec());
+        values.put(WorkoutTable.COLUMN_MANUAL, rs.getManualInteger());
 
 
         Uri uri = null;
 
-        String[] projection = { RoundsetTable.COLUMN_ID  };
+        String[] projection = { WorkoutTable.COLUMN_ID  };
 
         Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, projection, null, null, null);
 

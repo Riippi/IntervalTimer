@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-	  private static final String DATABASE_NAME = "todotable.db";
+	  private static final String DATABASE_NAME = "workouts.db";
 	  private static final int DATABASE_VERSION = 1;
 
 	  public DatabaseHelper(Context context) {
@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	  // Method is called during creation of the database
 	  @Override
 	  public void onCreate(SQLiteDatabase database) {
-	    RoundsetTable.onCreate(database);
+	    WorkoutTable.onCreate(database);
 	  }
 
 
@@ -24,7 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	  // e.g. if you increase the database version
 	  @Override
 	  public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-	    RoundsetTable.onUpgrade(database, oldVersion, newVersion);
+	    WorkoutTable.onUpgrade(database, oldVersion, newVersion);
 	  }
 
 }

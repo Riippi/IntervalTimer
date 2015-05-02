@@ -15,13 +15,13 @@ import org.leeko.intervaltimer.R;
 public class RoundsDialog  extends DialogFragment {
 
     NumberPicker numberPicker;
-    int value, roundSetID;
+    int value, workoutID;
 
 
     public void setArguments(Bundle bundle) {
         super.setArguments(bundle);
         this.value = getArguments().getInt("rounds");
-        this.roundSetID = getArguments().getInt("id");
+        this.workoutID = getArguments().getInt("id");
     }
 
 
@@ -29,7 +29,7 @@ public class RoundsDialog  extends DialogFragment {
 	 * implement this interface in order to receive event callbacks.
 	 * Each method passes the DialogFragment in case the host needs to query it. */
 	public interface NoticeDialogListener {
-		public void onRoundsDialogOk(int roundsAmount, int roundSetID);
+		public void onRoundsDialogOk(int roundsAmount, int workoutID);
 	}
 
 	// Use this instance of the interface to deliver action events
@@ -52,7 +52,7 @@ public class RoundsDialog  extends DialogFragment {
 
 
 	protected void callBack() {
-		mListener.onRoundsDialogOk(numberPicker.getValue(), roundSetID);
+		mListener.onRoundsDialogOk(numberPicker.getValue(), workoutID);
 	}
 
 

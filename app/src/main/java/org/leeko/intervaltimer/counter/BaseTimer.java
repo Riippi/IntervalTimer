@@ -6,7 +6,7 @@ import org.leeko.intervaltimer.TimerStats;
 import org.leeko.intervaltimer.Workout;
 
 
-public abstract class BaseCounter extends AsyncTask<Void, Void, Void> implements ICounter {
+public abstract class BaseTimer extends AsyncTask<Void, Void, Void> implements ICounter {
 
     // States
     public static final int WARMUP = 1;
@@ -109,7 +109,7 @@ public abstract class BaseCounter extends AsyncTask<Void, Void, Void> implements
 
     private void startTimer() {
 
-        // Does the roundset have a warmup period?
+        // Does the workout have a warmup period?
         if (iSet.getWarmupMin() + iSet.getWarmupSec() > 0) {
             minutes = iSet.getWarmupMin();
             seconds = iSet.getWarmupSec();

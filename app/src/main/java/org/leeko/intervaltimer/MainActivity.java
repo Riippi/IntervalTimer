@@ -158,7 +158,6 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         System.out.println(" WOAH!! " + minutes + " - " + seconds);
 
         Workout rs = WorkoutModel.getInstance().getWorkoutCached(id);
-        //Workout rs = getRoundSet(id);
 
         switch (type) {
             case TimeDialog.WARM_UP_TIME:
@@ -183,24 +182,19 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
 //		saveState();
         WorkoutModel.getInstance().saveWorkout(rs, id);
 
-        //saveRoundSet(rs, id);
-
         updateFragmentCurrentTab();
 
     }
 
 
     @Override
-    public void onRoundsDialogOk(int roundsAmount, int id) {
+    public void onRoundsDialogOk(int roundsAmount, int workoutID) {
 
-        Log.d(" SAVE ID", " ID: " + id);
+        Log.d(" SAVE ID", " ID: " + workoutID);
 
-        Workout rs = WorkoutModel.getInstance().getWorkoutCached(id);
-        //Workout rs = getRoundSet(id);
+        Workout rs = WorkoutModel.getInstance().getWorkoutCached(workoutID);
         rs.setRoundAmount(roundsAmount);
-        WorkoutModel.getInstance().saveWorkout(rs, id);
-        //saveRoundSet(rs, id);
-
+        WorkoutModel.getInstance().saveWorkout(rs, workoutID);
 
         updateFragmentCurrentTab();
     }
@@ -212,11 +206,8 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         Log.d("mikko", "textdialogsave");
 
         Workout rs = WorkoutModel.getInstance().getWorkoutCached(id);
-        //Workout rs = getRoundSet(id);
         rs.setName(text);
         WorkoutModel.getInstance().saveWorkout(rs, id);
-        //saveRoundSet(rs, id);
-
 
         if (fragment == null) {
             fragment = (SlidingTabsBasicFragment) getSupportFragmentManager().findFragmentByTag(fragmentTag);
@@ -225,7 +216,6 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         if (fragment != null) {
             fragment.setTabName(id, text);
         }
-
 
     }
 

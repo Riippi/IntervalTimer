@@ -9,7 +9,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import org.leeko.intervaltimer.counter.BaseCounter;
+import org.leeko.intervaltimer.counter.BaseTimer;
 import org.leeko.intervaltimer.counter.CounterFactory;
 import org.leeko.intervaltimer.counter.ICounter;
 import org.leeko.intervaltimer.counter.ITickerInterface;
@@ -63,19 +63,6 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
 
     public static void setTimer(int id) {
         workout = WorkoutModel.getInstance().getWorkoutCached(id);
-    }
-
-    public static Workout getCurrentRoundSet() {
-        return workout;
-    }
-
-
-    public static void setRunning(boolean isRunning) {
-        running = isRunning;
-    }
-
-    public static boolean isRunning() {
-        return running;
     }
 
 
@@ -171,22 +158,22 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
         //TimerActivity.getInstance().switchState();
 
         switch (aState) {
-            case BaseCounter.WORK: {
+            case BaseTimer.WORK: {
                 alert(getAlert1Id(), 1);
                 break;
             }
-            case BaseCounter.REST: {
+            case BaseTimer.REST: {
                 alert(getAlert2Id(), 2);
                 break;
             }
-            case BaseCounter.WARMUP: {
+            case BaseTimer.WARMUP: {
                 break;
             }
-            case BaseCounter.MANUAL_REST: {
+            case BaseTimer.MANUAL_REST: {
                 alert(getAlert2Id(), 2);
                 break;
             }
-            case BaseCounter.OVER: {
+            case BaseTimer.OVER: {
                 alert(getAlert4Id(), 4);
                 break;
             }
@@ -200,7 +187,7 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
             return counter.getState();
         }
 
-        return BaseCounter.WARMUP;
+        return BaseTimer.WARMUP;
 
     }
 
