@@ -29,9 +29,6 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
 
     private static boolean incomingCalls = true;
 
-    private static boolean running = false;
-    private TelephonyManager tManager;
-
     private MediaPlayer mediaPlayer;
 
 
@@ -44,7 +41,7 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
 
     private AppController() {
 
-        tManager = (TelephonyManager) MainActivity.getInstance().getSystemService(MainActivity.TELEPHONY_SERVICE);
+        TelephonyManager tManager = (TelephonyManager) MainActivity.getInstance().getSystemService(MainActivity.TELEPHONY_SERVICE);
         tManager.listen(this,
                 PhoneStateListener.LISTEN_CALL_STATE);
     }
