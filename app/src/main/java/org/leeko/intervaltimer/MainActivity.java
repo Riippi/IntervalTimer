@@ -53,13 +53,16 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         // Set up action bar.
         final ActionBar actionBar = getActionBar();
 
-        // Specify that the Home button should show an "Up" caret, indicating that touching the
-        // button will take the user one step up in the application's hierarchy.
-        actionBar.setDisplayHomeAsUpEnabled(false);
 
-        getActionBar().setIcon(
-                new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+        if (actionBar != null) {
+            // Specify that the Home button should show an "Up" caret, indicating that touching the
+            // button will take the user one step up in the application's hierarchy.
+            actionBar.setDisplayHomeAsUpEnabled(false);
 
+            actionBar.setIcon(
+                    new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+
+        }
 
         Button startButton = (Button) findViewById(R.id.buttonStart);
         startButton.setOnClickListener(new OnClickListener() {
@@ -97,7 +100,7 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
             SharedPreferences.Editor editor = settings.edit();
             editor.putInt(PREFS_TAB, tab);
             // Commit the edits!
-            editor.commit();
+            editor.apply();
         }
         super.onPause();
 

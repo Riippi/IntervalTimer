@@ -47,12 +47,16 @@ public class SettingsActivity extends PreferenceActivity {
 
 
         ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayShowTitleEnabled(true);
-        //actionBar.setTitle("Settings");
-        actionBar.setDisplayUseLogoEnabled(false);
 
+		if (actionBar != null) {
+
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			actionBar.setDisplayShowHomeEnabled(false);
+			actionBar.setDisplayShowTitleEnabled(true);
+			//actionBar.setTitle("Settings");
+			actionBar.setDisplayUseLogoEnabled(false);
+
+		}
     }
 
     @Override
