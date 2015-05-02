@@ -74,7 +74,11 @@ public class WorkoutModel {
                     break;
                 }
             }
+
+            cursor.close();
         }
+
+
 
         return workout;
     }
@@ -108,12 +112,12 @@ public class WorkoutModel {
 
         Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, projection, null, null, null);
 
-
         // In database row id:s start from 1
         int rowId = id + 1;
 
         if (cursor != null && cursor.moveToFirst()) {
             uri = Uri.parse(MyContentProvider.CONTENT_URI + "/" + rowId);
+            cursor.close();
         }
 
 
