@@ -1,12 +1,18 @@
 package org.leeko.intervaltimer;
 
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
+import org.leeko.intervaltimer.database.WorkoutTable;
+
 /*
  * Class that has all the info of a workout
  */
 public class Workout {
 
     private int id = 0;
+    private int tabId = 0;
     private String name = "workout";
     private int roundAmount = 3;
     private int workMin = 0;
@@ -16,69 +22,30 @@ public class Workout {
     private int warmupMin = 0;
     private int warmupSec = 0;
     private boolean manual = false;
-    // private int countdown = 0;
 
 
-//        public void import(Hashtable data)
-//        {
-//             data.TryGetValue("roundAmount", out roundAmount);
-//             data.TryGetValue("workMin", out workMin);
-//             data.TryGetValue("workSec", out workSec);
-//             data.TryGetValue("restMin", out restMin);
-//             data.TryGetValue("restSec", out restSec);
-//             data.TryGetValue("warmupMin", out warmupMin);
-//             data.TryGetValue("warmupSec", out warmupSec);
-//             data.TryGetValue("countdown", out countdown);
-//
-//             int temp = 0;
-//             data.TryGetValue("manual", out temp);
-//
-//             if (temp == 1)
-//             {
-//                 manual = true;
-//             }
-//             else
-//             {
-//                 manual = false;
-//             }
-//
-//
-//
-//        }
-//
-//
-//        public Hashtable export()
-//        {
-//            Dictionary<string, int> AuthorList = new Dictionary<string, int>();
-//
-//            AuthorList.Add("roundAmount", roundAmount);
-//            AuthorList.Add("workMin", workMin);
-//            AuthorList.Add("workSec", workSec);
-//            AuthorList.Add("restMin", restMin);
-//            AuthorList.Add("restSec", restSec);
-//            AuthorList.Add("warmupMin", warmupMin);
-//            AuthorList.Add("warmupSec", warmupSec);
-//            AuthorList.Add("countdown", countdown);
-//
-//            if (manual)
-//            {
-//                AuthorList.Add("manual", 1);
-//            }
-//            else
-//            {
-//                AuthorList.Add("manual", 0);
-//            }
-//            
-//
-//            return AuthorList;
-//        }
-
+    /**
+     * get database column id
+     * @return database column id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * set database column id
+     * @param aId database column id
+     */
     public void setId(int aId) {
         id = aId;
+    }
+
+    public int getTabId() {
+        return tabId;
+    }
+
+    public void setTabId(int tabId) {
+        this.tabId = tabId;
     }
 
     public String getName() {
@@ -86,7 +53,14 @@ public class Workout {
     }
 
     public void setName(String aName) {
+
+
         name = aName;
+
+        if (name == null) {
+            name = "null";
+        }
+
     }
 
     public int getRoundAmount() {
@@ -113,10 +87,6 @@ public class Workout {
         workSec = aSec;
     }
 
-      /* public void setCountdown(int aCountdown)
-        {
-            countdown = aCountdown;
-        }*/
 
     public int getRestMin() {
         return restMin;
@@ -162,13 +132,10 @@ public class Workout {
     }
 
 
- /*
-       public int getCountdown()
-        {
-            return countdown;
-        }
-*/
-
+    /**
+     *
+     * @return  manual setting as integer
+     */
     public int getManualInteger() {
         if (manual) {
             return 1;
@@ -253,6 +220,59 @@ public class Workout {
         return formed;
 
 
+    }
+
+
+    /**
+     * Imports workout data from database Cursor
+     * @param cursor
+     */
+    public void importFromCursor(Cursor cursor) {
+
+        setId(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ID)));
+        setTabId(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_TAB)));
+        setName(cursor.getString(cursor.getColumnIndex(WorkoutTable.COLUMN_NAME)));
+        setWarmupMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_MIN)));
+        setWarmupSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_SEC)));
+
+        setRoundAmount(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ROUNDS)));
+
+        setWorkMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_MIN)));
+        setWorkSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_SEC)));
+
+        setRestMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_MIN)));
+        setRestSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_SEC)));
+
+        setManualInteger(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_MANUAL)));
+
+    }
+
+
+    /**
+     * export workout data to ContentValues for database
+     * @return
+     */
+    public ContentValues getContentValues() {
+
+        ContentValues values = new ContentValues();
+        values.put(WorkoutTable.COLUMN_TAB, getTabId());
+        values.put(WorkoutTable.COLUMN_NAME, getName());
+        values.put(WorkoutTable.COLUMN_ROUNDS, getRoundAmount());
+        values.put(WorkoutTable.COLUMN_WARM_UP_MIN, getWarmupMin());
+        values.put(WorkoutTable.COLUMN_WARM_UP_SEC, getWarmupSec());
+        values.put(WorkoutTable.COLUMN_WORK_MIN, getWorkMin());
+        values.put(WorkoutTable.COLUMN_WORK_SEC, getWorkSec());
+        values.put(WorkoutTable.COLUMN_REST_MIN, getRestMin());
+        values.put(WorkoutTable.COLUMN_REST_SEC, getRestSec());
+        values.put(WorkoutTable.COLUMN_MANUAL, getManualInteger());
+
+        return values;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Name=" + name + " DBID=" + id + " TABID=" + tabId;
     }
 
 

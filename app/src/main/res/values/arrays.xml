@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="actions_array">
+        <item>Rename</item>
+        <item>Move left</item>
+        <item>Move right</item>
+        <item>Delete</item>
+    </string-array>
+
+    <string-array name="actions_array_leftie">
+        <item>Rename</item>
+        <item>Move right</item>
+        <item>Delete</item>
+    </string-array>
+
+    <string-array name="actions_array_righty">
+        <item>Rename</item>
+        <item>Move left</item>
+        <item>Delete</item>
+    </string-array>
+
+    <string-array name="actions_array_last_one">
+        <item>Rename</item>
+        <item>Delete</item>
+    </string-array>
+
+
+
+</resources>

@@ -9,10 +9,14 @@ package org.leeko.intervaltimer;
 
 public final class R {
     public static final class array {
-        public static final int pref_countdown_list_titles=0x7f060000;
-        public static final int pref_countdown_list_values=0x7f060001;
-        public static final int pref_sound_list_titles=0x7f060002;
-        public static final int pref_sound_list_values=0x7f060003;
+        public static final int actions_array=0x7f060000;
+        public static final int actions_array_last_one=0x7f060001;
+        public static final int actions_array_leftie=0x7f060002;
+        public static final int actions_array_righty=0x7f060003;
+        public static final int pref_countdown_list_titles=0x7f060004;
+        public static final int pref_countdown_list_values=0x7f060005;
+        public static final int pref_sound_list_titles=0x7f060006;
+        public static final int pref_sound_list_values=0x7f060007;
     }
     public static final class attr {
     }
@@ -49,6 +53,7 @@ public final class R {
         public static final int MinutesPicker=0x7f0c0013;
         public static final int RoundsPicker=0x7f0c0011;
         public static final int SecondsPicker=0x7f0c0014;
+        public static final int action_add_workout=0x7f0c0020;
         public static final int action_settings=0x7f0c001f;
         public static final int buttonRest=0x7f0c0018;
         public static final int buttonRounds=0x7f0c0016;
@@ -110,23 +115,25 @@ public final class R {
     }
     public static final class string {
         public static final int action_settings=0x7f090000;
-        public static final int app_name=0x7f090001;
-        public static final int buttonTextRest=0x7f090002;
-        public static final int buttonTextRounds=0x7f090003;
-        public static final int buttonTextWarmUp=0x7f090004;
-        public static final int buttonTextWork=0x7f090005;
-        public static final int cancel=0x7f090006;
-        public static final int manual_title=0x7f090007;
-        public static final int pref_description_run_in_bg=0x7f090008;
-        public static final int pref_ringtone_silent=0x7f090009;
-        public static final int pref_title_countdown=0x7f09000a;
-        public static final int pref_title_run_in_bg=0x7f09000b;
-        public static final int pref_title_sound_alert=0x7f09000c;
-        public static final int pref_title_sound_tone=0x7f09000d;
-        public static final int pref_title_vibrate=0x7f09000e;
-        public static final int set=0x7f09000f;
-        public static final int start_button=0x7f090010;
-        public static final int title_activity_settings=0x7f090011;
+        public static final int actions_dialog_title=0x7f090001;
+        public static final int app_name=0x7f090002;
+        public static final int buttonTextRest=0x7f090003;
+        public static final int buttonTextRounds=0x7f090004;
+        public static final int buttonTextWarmUp=0x7f090005;
+        public static final int buttonTextWork=0x7f090006;
+        public static final int cancel=0x7f090007;
+        public static final int manual_title=0x7f090008;
+        public static final int new_workout=0x7f090009;
+        public static final int pref_description_run_in_bg=0x7f09000a;
+        public static final int pref_ringtone_silent=0x7f09000b;
+        public static final int pref_title_countdown=0x7f09000c;
+        public static final int pref_title_run_in_bg=0x7f09000d;
+        public static final int pref_title_sound_alert=0x7f09000e;
+        public static final int pref_title_sound_tone=0x7f09000f;
+        public static final int pref_title_vibrate=0x7f090010;
+        public static final int set=0x7f090011;
+        public static final int start_button=0x7f090012;
+        public static final int title_activity_settings=0x7f090013;
     }
     public static final class style {
         /** 

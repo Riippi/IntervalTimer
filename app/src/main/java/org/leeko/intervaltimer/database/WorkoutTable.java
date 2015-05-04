@@ -7,6 +7,7 @@ public class WorkoutTable {
 
 	public static final String[] projection = { 
 		WorkoutTable.COLUMN_ID,
+		WorkoutTable.COLUMN_TAB,
 		WorkoutTable.COLUMN_NAME,
 		WorkoutTable.COLUMN_WARM_UP_MIN,
 		WorkoutTable.COLUMN_WARM_UP_SEC,
@@ -20,7 +21,7 @@ public class WorkoutTable {
 
 	public static final String TABLE_WORKOUT = "workout";
 	public static final String COLUMN_ID = "_id";
-
+	public static final String COLUMN_TAB = "tab_id";
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_WARM_UP_MIN = "warm_up_min";
 	public static final String COLUMN_WARM_UP_SEC = "warm_up_sec";
@@ -36,7 +37,8 @@ public class WorkoutTable {
 	private static final String DATABASE_CREATE = "create table " 
 			+ TABLE_WORKOUT
 			+ "(" 
-			+ COLUMN_ID + " integer primary key autoincrement, " 
+			+ COLUMN_ID + " integer primary key autoincrement, "
+			+ COLUMN_TAB + " integer not null, "
 			+ COLUMN_NAME + " text not null, " 
 			+ COLUMN_WARM_UP_MIN + " integer not null, " 
 			+ COLUMN_WARM_UP_SEC  + " integer not null, "
@@ -48,45 +50,26 @@ public class WorkoutTable {
 			+ COLUMN_MANUAL  + " integer not null" 
 			+ ");";
 
-	private static final String INSERT_INTERVALS = "INSERT INTO "
-			+ TABLE_WORKOUT
-			+ "(" 
-			//	      + COLUMN_ID + ", " 
-			+ COLUMN_NAME + ", " 
-			+ COLUMN_WARM_UP_MIN + ", " 
-			+ COLUMN_WARM_UP_SEC  + ", "
-			+ COLUMN_ROUNDS + ", " 
-			+ COLUMN_WORK_MIN  + ", " 
-			+ COLUMN_WORK_SEC + ", " 
-			+ COLUMN_REST_MIN  + ", " 
-			+ COLUMN_REST_SEC + ", " 
-			+ COLUMN_MANUAL  + "" 
-			+ ") VALUES ("
-			//		      + "3"
-			+ "'Intervals', "
-			+ "3, "
-			+ "0, "
-			+ "6, "
-			+ "1, "
-			+ "0, "
-			+ "3, "
-			+ "0, "
-			+ "0"
-			+ ");";
+	private static final String INSERT_FISRT_PART =
+			"INSERT INTO "
+					+ TABLE_WORKOUT
+					+ "("
+					+ COLUMN_TAB + ", "
+					+ COLUMN_NAME + ", "
+					+ COLUMN_WARM_UP_MIN + ", "
+					+ COLUMN_WARM_UP_SEC  + ", "
+					+ COLUMN_ROUNDS + ", "
+					+ COLUMN_WORK_MIN  + ", "
+					+ COLUMN_WORK_SEC + ", "
+					+ COLUMN_REST_MIN  + ", "
+					+ COLUMN_REST_SEC + ", "
+					+ COLUMN_MANUAL  + ""
+					+ ") VALUES ("
+			;
 
-	private static final String INSERT_TABATA = "INSERT INTO " 
-			+ TABLE_WORKOUT
-			+ "(" 
-			+ COLUMN_NAME + ", "
-			+ COLUMN_WARM_UP_MIN + ", " 
-			+ COLUMN_WARM_UP_SEC  + ", "
-			+ COLUMN_ROUNDS + ", " 
-			+ COLUMN_WORK_MIN  + ", " 
-			+ COLUMN_WORK_SEC + ", " 
-			+ COLUMN_REST_MIN  + ", " 
-			+ COLUMN_REST_SEC + ", " 
-			+ COLUMN_MANUAL  + "" 
-			+ ") VALUES ("
+
+	private static final String INSERT_TABATA = INSERT_FISRT_PART
+			+ "0, "
 			+ "'Tabata Protocol', "
 			+ "0, "
 			+ "10, "
@@ -98,19 +81,8 @@ public class WorkoutTable {
 			+ "0"
 			+ ");";
 
-	private static final String INSERT_LITTLE = "INSERT INTO " 
-			+ TABLE_WORKOUT
-			+ "(" 
-			+ COLUMN_NAME + ", "
-			+ COLUMN_WARM_UP_MIN + ", " 
-			+ COLUMN_WARM_UP_SEC  + ", "
-			+ COLUMN_ROUNDS + ", " 
-			+ COLUMN_WORK_MIN  + ", " 
-			+ COLUMN_WORK_SEC + ", " 
-			+ COLUMN_REST_MIN  + ", " 
-			+ COLUMN_REST_SEC + ", " 
-			+ COLUMN_MANUAL  + "" 
-			+ ") VALUES ("
+	private static final String INSERT_LITTLE = INSERT_FISRT_PART
+			+ "1, "
 			+ "'Little Method', "
 			+ "3, "
 			+ "0, "
@@ -122,19 +94,8 @@ public class WorkoutTable {
 			+ "0"
 			+ ");";
 
-	private static final String INSERT_B4x2 = "INSERT INTO " 
-			+ TABLE_WORKOUT
-			+ "(" 
-			+ COLUMN_NAME + ", "
-			+ COLUMN_WARM_UP_MIN + ", " 
-			+ COLUMN_WARM_UP_SEC  + ", "
-			+ COLUMN_ROUNDS + ", " 
-			+ COLUMN_WORK_MIN  + ", " 
-			+ COLUMN_WORK_SEC + ", " 
-			+ COLUMN_REST_MIN  + ", " 
-			+ COLUMN_REST_SEC + ", " 
-			+ COLUMN_MANUAL  + "" 
-			+ ") VALUES ("
+	private static final String INSERT_B4x2 = INSERT_FISRT_PART
+			+ "2, "
 			+ "'Boxing 4x2', "
 			+ "0, "
 			+ "0, "
@@ -146,19 +107,8 @@ public class WorkoutTable {
 			+ "0"
 			+ ");";
 
-	private static final String INSERT_MANUAL = "INSERT INTO " 
-			+ TABLE_WORKOUT
-			+ "(" 
-			+ COLUMN_NAME + ", "
-			+ COLUMN_WARM_UP_MIN + ", " 
-			+ COLUMN_WARM_UP_SEC  + ", "
-			+ COLUMN_ROUNDS + ", " 
-			+ COLUMN_WORK_MIN  + ", " 
-			+ COLUMN_WORK_SEC + ", " 
-			+ COLUMN_REST_MIN  + ", " 
-			+ COLUMN_REST_SEC + ", " 
-			+ COLUMN_MANUAL  + "" 
-			+ ") VALUES ("
+	private static final String INSERT_MANUAL = INSERT_FISRT_PART
+			+ "3, "
 			+ "'Manual Rest', "
 			+ "1, "
 			+ "0, "
@@ -169,20 +119,22 @@ public class WorkoutTable {
 			+ "30, "
 			+ "1"
 			+ ");";
+
+	private static final String INSERT_INTERVALS = INSERT_FISRT_PART
+			+ "4, "
+			+ "'Intervals', "
+			+ "3, "
+			+ "0, "
+			+ "6, "
+			+ "1, "
+			+ "0, "
+			+ "3, "
+			+ "0, "
+			+ "0"
+			+ ");";
 	
-	private static final String INSERT_MMA = "INSERT INTO " 
-			+ TABLE_WORKOUT
-			+ "(" 
-			+ COLUMN_NAME + ", "
-			+ COLUMN_WARM_UP_MIN + ", " 
-			+ COLUMN_WARM_UP_SEC  + ", "
-			+ COLUMN_ROUNDS + ", " 
-			+ COLUMN_WORK_MIN  + ", " 
-			+ COLUMN_WORK_SEC + ", " 
-			+ COLUMN_REST_MIN  + ", " 
-			+ COLUMN_REST_SEC + ", " 
-			+ COLUMN_MANUAL  + "" 
-			+ ") VALUES ("
+	private static final String INSERT_MMA = INSERT_FISRT_PART
+			+ "5, "
 			+ "'MMA 3x3', "
 			+ "0, "
 			+ "0, "

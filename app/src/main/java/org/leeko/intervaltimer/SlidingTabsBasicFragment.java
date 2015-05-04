@@ -105,7 +105,6 @@ public class SlidingTabsBasicFragment extends Fragment {
         int tab = settings.getInt(MainActivity.PREFS_TAB, 0);
         mViewPager.setCurrentItem(tab);
 
-
     }
     // END_INCLUDE (fragment_onviewcreated)
 
@@ -116,10 +115,20 @@ public class SlidingTabsBasicFragment extends Fragment {
 
     public void setCurrentTab(int i) {
 
-        if (i != 0) {
+        if (mViewPager != null) {
+
             mViewPager.setCurrentItem(i);
         }
     }
+
+    public void updateAll() {
+
+        // This makes the tabs to fefresh
+        mSlidingTabLayout.getViewPager().setAdapter(new SamplePagerAdapter());
+        mSlidingTabLayout.populateTabStrip();
+
+    }
+
 
     public void setTabName(int tabId, String name) {
         mSlidingTabLayout.populateTabStrip();
@@ -170,8 +179,6 @@ public class SlidingTabsBasicFragment extends Fragment {
         manualRestButton.setChecked(WorkoutModel.getInstance().getWorkoutCached(position).getManual());
 
 
-
-
     }
 
 
@@ -189,7 +196,7 @@ public class SlidingTabsBasicFragment extends Fragment {
          */
         @Override
         public int getCount() {
-            return 6;
+            return WorkoutModel.getInstance().getWorkoutAmount();
         }
 
         /**
@@ -326,11 +333,11 @@ public class SlidingTabsBasicFragment extends Fragment {
 
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Workout rs = WorkoutModel.getInstance().getWorkoutCached(position);
-                    rs.setManual(isChecked);
-                    WorkoutModel.getInstance().saveWorkout(rs, position);
+                    Workout workout = WorkoutModel.getInstance().getWorkoutCached(position);
+                    workout.setManual(isChecked);
+                    WorkoutModel.getInstance().saveWorkout(workout);
 
-                    CustomButton b = (CustomButton)gg.findViewWithTag("restbutton"+position);
+                    CustomButton b = (CustomButton) gg.findViewWithTag("restbutton" + position);
 
                     if (b != null) {
                         if (isChecked) {
@@ -342,7 +349,7 @@ public class SlidingTabsBasicFragment extends Fragment {
                         }
 
                         String total = WorkoutModel.getInstance().getWorkoutCached(position).getTotal();
-                        TextView t = (TextView)gg.findViewWithTag("totalText"+position);
+                        TextView t = (TextView) gg.findViewWithTag("totalText" + position);
                         t.setText("Total duration: " + total);
 
                     }

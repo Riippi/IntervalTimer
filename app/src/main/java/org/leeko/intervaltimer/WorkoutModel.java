@@ -1,22 +1,31 @@
 package org.leeko.intervaltimer;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.RemoteException;
+import android.util.Log;
 
 import org.leeko.intervaltimer.contentprovider.MyContentProvider;
 import org.leeko.intervaltimer.database.WorkoutTable;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 public class WorkoutModel {
 
 
-    private Hashtable<Integer, Workout> hash;
+    private Hashtable<Integer, Workout> hash; // Tab id  and workout
     private static WorkoutModel singleton;
 
     private WorkoutModel() {
-        hash = new Hashtable<Integer, Workout>();
+
+        hash = new Hashtable<Integer, Workout>();  // Tab id  and workout
+        loadAllWorkouts();
     }
 
     public static WorkoutModel getInstance() {
@@ -28,145 +37,307 @@ public class WorkoutModel {
     }
 
 
-    public Workout getWorkoutCached(int id) {
+    public Workout getWorkoutCached(int tabId) {
+
+
+        //Log.d("Load", "TAB ID: " + tabId);
 
         // Actually no idea if this hash-caching has any use
-        if (hash.get(id) == null) {
-            hash.put(id, getWorkout(id));
+        if (hash.get(tabId) == null) {
+
+            Workout w = getWorkoutByTabId(tabId);
+            hash.put(w.getTabId(), w);
         }
 
-        return hash.get(id);
+        return hash.get(tabId);
     }
 
 
-    private Workout getWorkout(int id) {
+    /**
+     * Save a workout object to the database and cache.
+     *
+     * @param workout
+     */
+    public void saveWorkout(Workout workout) {
+
+        // null check
+        if (workout == null) {
+            return;
+        }
 
 
-        String[] mSelectionArgs = {""};
+        ContentValues values = workout.getContentValues();
 
-        // database rows start from 1, tab fragments start from 0
-        int upd = id + 1;
+        Uri uri = null;
 
-        String mSearchString = upd + "";
+        // cache only if workout already has database id
+        if (workout.getId() > 0) {
+            hash.put(workout.getTabId(), workout);
+            uri = Uri.parse(MyContentProvider.CONTENT_URI + "/" + workout.getId());
+        }
 
-        // Constructs a selection clause that matches the word that the user entered.
-        String mSelectionClause = WorkoutTable.COLUMN_ID + " = ?";
+        if (uri == null) {
+            MainActivity.getInstance().getContentResolver().insert(MyContentProvider.CONTENT_URI, values);
 
-        // Moves the user's input string to the selection arguments.
-        mSelectionArgs[0] = mSearchString;
+            // reload all workouts. we get proper database id for this new workout
+            loadAllWorkouts();
+        } else {
+            MainActivity.getInstance().getContentResolver().update(uri, values, null, null);
+        }
+    }
 
+
+    /**
+     * Loads all workout objects from the database and puts them into hash cache
+     */
+    private void loadAllWorkouts() {
+
+
+        Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, null);
+
+        // Clear the cache
+        if (hash != null) {
+            hash.clear();
+        } else {
+            hash = new Hashtable<Integer, Workout>();  // Tab id  and workout
+        }
+
+        if (cursor != null) {
+
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+
+                Workout workout = new Workout();
+                workout.importFromCursor(cursor);
+                hash.put(workout.getTabId(), workout);
+
+                Log.d("Workoutmodel LOADED: ", workout.toString());
+            }
+
+            cursor.close();
+        }
+
+    }
+
+
+    /**
+     * @return amount of workouts in the cache (and database)
+     */
+    public int getWorkoutAmount() {
+
+        if (hash != null) {
+            return hash.size();
+        }
+
+        return 0;
+    }
+
+
+    /**
+     * Get workout object from the database
+     *
+     * @param tabId tab id of the workout
+     * @return workout
+     */
+    private Workout getWorkoutByTabId(int tabId) {
+
+
+        String mSelectionClause = WorkoutTable.COLUMN_TAB + " = ?";
+        String[] mSelectionArgs = {String.valueOf(tabId)};
 
         Workout workout = new Workout();
         Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, mSelectionClause, mSelectionArgs, null);
 
-        if (cursor != null) {
+        if (cursor != null && cursor.moveToFirst()) {
 
             cursor.moveToFirst();
+            workout.importFromCursor(cursor);
+        }
 
-            workout.setId(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ID)));
-            workout.setName(cursor.getString(cursor.getColumnIndex(WorkoutTable.COLUMN_NAME)));
-            workout.setWarmupMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_MIN)));
-            workout.setWarmupSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_SEC)));
-            workout.setRoundAmount(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ROUNDS)));
-            workout.setWorkMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_MIN)));
-            workout.setWorkSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_SEC)));
-            workout.setRestMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_MIN)));
-            workout.setRestSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_SEC)));
-            workout.setManualInteger(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_MANUAL)));
-
+        if (cursor != null) {
             cursor.close();
         }
+
 
         return workout;
     }
 
 
     /**
-     * Get workout object from database
+     * Deletes a workout from the database
      *
-     * @param id
-     * @return
+     * @param tabId
      */
-    private Workout getWorkoutK(int id) {
+    public void deleteWorkout(int tabId) {
+
+
+        // Selection clause for tab id
+        String mSelectionClause = WorkoutTable.COLUMN_TAB + " = ?";
+
+        // Arguments
+        String[] mSelectionArgs = {String.valueOf(tabId)};
+
+       // final int delete = MainActivity.getInstance().getContentResolver().delete(MyContentProvider.CONTENT_URI, mSelectionClause, mSelectionArgs);
+
+
+        // After deleting a workout we must change tab id:s of all workouts to the right so there won't be empty slot
+
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+
+        ops.add(
+                ContentProviderOperation.newDelete(MyContentProvider.CONTENT_URI)
+                        .withSelection(mSelectionClause, mSelectionArgs)
+                        .build());
+
+
+        Iterator it = hash.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+
+            int key = (Integer) pair.getKey();
+
+            Log.d("Workoutmodel update: ", "key= " + key + " iterating: " + hash.get(key).toString());
+
+            if (key > tabId) {
+
+                int newTabId = key - 1;
+                String orgWhere = WorkoutTable.COLUMN_ID + " = ? ";
+                int id = hash.get(key).getId();
+                String[] orgWhereParams = new String[]{String.valueOf(id)};
+
+                Log.d("Workoutmodel update: ", "new TAB: " + newTabId + " for: " + hash.get(key).toString());
+
+                ops.add(
+                        ContentProviderOperation.newUpdate(MyContentProvider.CONTENT_URI)
+                                .withSelection(orgWhere, orgWhereParams)
+                                .withValue(WorkoutTable.COLUMN_TAB, newTabId)
+                                .build());
+
+            }
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+        hash.clear();
+
+        try {
+            MainActivity.getInstance().getContentResolver().
+                    applyBatch(MyContentProvider.AUTHORITY, ops);
+        } catch (RemoteException e) {
+            // do s.th.
+            e.printStackTrace();
+        } catch (OperationApplicationException e) {
+            // do s.th.
+            e.printStackTrace();
+        }
+
+
+        loadAllWorkouts();
+
+
+        int nextTab = tabId - 1;
+
+        if (nextTab < 0) {
+            nextTab = 0;
+        }
+
+        MainActivity.getInstance().updateWholeTabView(nextTab);
+
+    }
+
+
+    /**
+     * Move a workout to "right". Increase it's tab id.
+     *
+     * @param tabId
+     */
+    public void moveRight(int tabId) {
+        Log.d("WorkoutModel", "MOVE RIGHT " + tabId);
+
+        switchPlaces(tabId + 1, tabId);
+        MainActivity.getInstance().updateWholeTabView(tabId + 1);
+
+    }
+
+    /**
+     * Move a workout to "left". Decrease it's tab id.
+     */
+    public void moveLeft(int tabId) {
+        Log.d("WorkoutModel", "MOVE LEFT " + tabId);
+
+        switchPlaces(tabId, tabId - 1);
+        MainActivity.getInstance().updateWholeTabView(tabId - 1);
+
+    }
+
+
+    /**
+     * Switch tab id:s of two workout objects in database. Switches their places in tab view.
+     *
+     * @param toLeft
+     * @param toRight
+     */
+    private void switchPlaces(int toLeft, int toRight) {
+
+
+        int idToRight = hash.get(toRight).getId();
+        int idToLeft = hash.get(toLeft).getId();
+
+        ArrayList<ContentProviderOperation> ops =
+                new ArrayList<ContentProviderOperation>();
+
+        // First move
+
+        String[] orgWhereParams = new String[]{String.valueOf(idToRight)};
+        String orgWhere = WorkoutTable.COLUMN_ID + " = ? ";
+
+        ops.add(ContentProviderOperation.newUpdate(MyContentProvider.CONTENT_URI)
+                .withSelection(orgWhere, orgWhereParams)
+                .withValue(WorkoutTable.COLUMN_TAB, toLeft)
+                .build());
+
+        // Second move
+
+        orgWhereParams = new String[]{String.valueOf(idToLeft)};
+        orgWhere = WorkoutTable.COLUMN_ID + " = ? ";
+
+        ops.add(ContentProviderOperation.newUpdate(MyContentProvider.CONTENT_URI)
+                .withSelection(orgWhere, orgWhereParams)
+                .withValue(WorkoutTable.COLUMN_TAB, toRight)
+                .build());
+
+
+        try {
+            MainActivity.getInstance().getContentResolver().
+                    applyBatch(MyContentProvider.AUTHORITY, ops);
+        } catch (RemoteException e) {
+            // do s.th.
+        } catch (OperationApplicationException e) {
+            // do s.th.
+        }
+
+        loadAllWorkouts();
+
+    }
+
+
+    /**
+     * Create new workout and add it
+     */
+    public void addWorkout() {
+
+        int newTabId = hash.size();
 
         Workout workout = new Workout();
-        Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, null);
+        workout.setTabId(newTabId);
+        workout.setName("new workout");
+        saveWorkout(workout);
 
-        if (cursor != null) {
+       // ContentValues values = workout.getContentValues();
+      //  MainActivity.getInstance().getContentResolver().insert(MyContentProvider.CONTENT_URI, values);
 
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+       // loadAllWorkouts();
+        MainActivity.getInstance().updateWholeTabView(newTabId);
 
-                // database rows start from 1
-                int rowId = id + 1;
-
-                if (cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ID)) == rowId) {
-                    workout.setId(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ID)));
-                    workout.setName(cursor.getString(cursor.getColumnIndex(WorkoutTable.COLUMN_NAME)));
-                    workout.setWarmupMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_MIN)));
-                    workout.setWarmupSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_SEC)));
-
-                    workout.setRoundAmount(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ROUNDS)));
-
-                    workout.setWorkMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_MIN)));
-                    workout.setWorkSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_SEC)));
-
-                    workout.setRestMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_MIN)));
-                    workout.setRestSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_SEC)));
-
-                    workout.setManualInteger(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_MANUAL)));
-
-                    break;
-                }
-            }
-
-            cursor.close();
-        }
-
-        return workout;
     }
 
 
-    public void saveWorkout(Workout rs, int id) {
-
-        // only save if
-        if (rs == null) {
-            return;
-        }
-
-        // cached
-        hash.put(id, rs);
-
-        ContentValues values = new ContentValues();
-        values.put(WorkoutTable.COLUMN_NAME, rs.getName());
-        values.put(WorkoutTable.COLUMN_ROUNDS, rs.getRoundAmount());
-        values.put(WorkoutTable.COLUMN_WARM_UP_MIN, rs.getWarmupMin());
-        values.put(WorkoutTable.COLUMN_WARM_UP_SEC, rs.getWarmupSec());
-        values.put(WorkoutTable.COLUMN_WORK_MIN, rs.getWorkMin());
-        values.put(WorkoutTable.COLUMN_WORK_SEC, rs.getWorkSec());
-        values.put(WorkoutTable.COLUMN_REST_MIN, rs.getRestMin());
-        values.put(WorkoutTable.COLUMN_REST_SEC, rs.getRestSec());
-        values.put(WorkoutTable.COLUMN_MANUAL, rs.getManualInteger());
-
-
-        Uri uri = null;
-
-        String[] projection = {WorkoutTable.COLUMN_ID};
-
-        Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, projection, null, null, null);
-
-        // In database row id:s start from 1
-        int rowId = id + 1;
-
-        if (cursor != null && cursor.moveToFirst()) {
-            uri = Uri.parse(MyContentProvider.CONTENT_URI + "/" + rowId);
-            cursor.close();
-        }
-
-
-        if (uri == null) {
-            MainActivity.getInstance().getContentResolver().insert(MyContentProvider.CONTENT_URI, values);
-        } else {
-            MainActivity.getInstance().getContentResolver().update(uri, values, null, null);
-        }
-    }
 }

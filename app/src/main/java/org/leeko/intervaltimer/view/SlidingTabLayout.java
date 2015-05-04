@@ -35,7 +35,7 @@ import android.widget.TextView;
 
 import org.leeko.intervaltimer.MainActivity;
 import org.leeko.intervaltimer.WorkoutModel;
-import org.leeko.intervaltimer.dialog.RenameDialog;
+import org.leeko.intervaltimer.dialog.ActionsDialog;
 
 /**
  * To be used with ViewPager to provide a tab indicator component which give constant feedback as to
@@ -322,6 +322,26 @@ public class SlidingTabLayout extends HorizontalScrollView {
     private class TabClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+
+
+
+            // on long click in current view, open rename workout dialog
+            int id = 0;
+
+            for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+                if (v == mTabStrip.getChildAt(i)) {
+                    id = i;
+
+                    if (id == mViewPager.getCurrentItem()) {
+                        showActionsDialog(id);
+                        return;
+                    }
+                    break;
+                }
+            }
+
+
+
             for (int i = 0; i < mTabStrip.getChildCount(); i++) {
                 if (v == mTabStrip.getChildAt(i)) {
                     mViewPager.setCurrentItem(i);
@@ -338,7 +358,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
         public boolean onLongClick(View v) {
 
             // on long click in current view, open rename workout dialog
-
             int id = 0;
 
             for (int i = 0; i < mTabStrip.getChildCount(); i++) {
@@ -352,15 +371,56 @@ public class SlidingTabLayout extends HorizontalScrollView {
                 }
             }
 
-            DialogFragment newFragment = new RenameDialog();
-            Bundle args = new Bundle();
-            args.putString("name", WorkoutModel.getInstance().getWorkoutCached(id).getName());
-            args.putInt("id", id);
-            newFragment.setArguments(args);
-            newFragment.show(MainActivity.getInstance().getFragmentManager(), "rename");
+
+            showActionsDialog(id);
+
 
             return true;
         }
+    }
+
+
+
+    private void showActionsDialog(int id) {
+
+        boolean first = false;
+        boolean last = false;
+        boolean oneWorkout = false;
+
+
+        if (mTabStrip.getChildCount() == 1 ) {
+            oneWorkout = true;
+        }
+
+        if (id == 0) {
+            first = true;
+        }
+
+        if (id == mTabStrip.getChildCount() - 1) {
+            last = true;
+        }
+
+
+
+        DialogFragment dialogFragment = new ActionsDialog();
+        Bundle args = new Bundle();
+        args.putString("name", WorkoutModel.getInstance().getWorkoutCached(id).getName());
+        args.putInt("id", id);
+
+        args.putBoolean("first", first);
+        args.putBoolean("last", last);
+        args.putBoolean("oneWorkout", oneWorkout);
+
+        dialogFragment.setArguments(args);
+        dialogFragment.show(MainActivity.getInstance().getFragmentManager(), "actions");
+
+    }
+
+
+
+    public ViewPager getViewPager() {
+        return mViewPager;
+
     }
 
 }

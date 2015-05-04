@@ -25,7 +25,7 @@ public class MyContentProvider extends ContentProvider {
     private static final int WORKOUTS = 10;
     private static final int WORKOUT_ID = 20;
 
-    private static final String AUTHORITY = "org.leeko.intervaltimer.contentprovider";
+    public static final String AUTHORITY = "org.leeko.intervaltimer.contentprovider";
 
     private static final String BASE_PATH = "workouts";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
@@ -187,6 +187,7 @@ public class MyContentProvider extends ContentProvider {
     private void checkColumns(String[] projection) {
         String[] available = {
                 WorkoutTable.COLUMN_ID,
+                WorkoutTable.COLUMN_TAB,
                 WorkoutTable.COLUMN_NAME,
                 WorkoutTable.COLUMN_WARM_UP_MIN,
                 WorkoutTable.COLUMN_WARM_UP_SEC,

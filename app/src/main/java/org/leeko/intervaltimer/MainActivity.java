@@ -2,6 +2,8 @@ package org.leeko.intervaltimer;
 
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
@@ -84,6 +86,25 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
             case R.id.action_settings:
                 showSettings();
                 return true;
+            case R.id.action_add_workout:
+
+                if (WorkoutModel.getInstance().getWorkoutAmount() > 9) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                    alertDialog.setTitle("Can't add workout");
+                    alertDialog.setMessage("Maximum limit of workouts reached");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
+
+                    return true;
+                }
+
+                WorkoutModel.getInstance().addWorkout();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -107,7 +128,30 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
     }
 
 
+    /**
+     * Set up the timer and switch to timer view
+     */
     private void showTimer() {
+
+
+        // No workouts? Show alert instead of starting something
+        if (WorkoutModel.getInstance().getWorkoutAmount() == 0) {
+
+            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+            alertDialog.setTitle("Can't start timer");
+            alertDialog.setMessage("Add new workout first");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+
+            return;
+        }
+
+
 
         if (fragment == null) {
             fragment = (SlidingTabsBasicFragment) getSupportFragmentManager().findFragmentByTag(fragmentTag);
@@ -180,7 +224,7 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         }
 
 //		saveState();
-        WorkoutModel.getInstance().saveWorkout(rs, id);
+        WorkoutModel.getInstance().saveWorkout(rs);
 
         updateFragmentCurrentTab();
 
@@ -188,26 +232,26 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
 
 
     @Override
-    public void onRoundsDialogOk(int roundsAmount, int workoutID) {
+    public void onRoundsDialogOk(int roundsAmount, int workoutTabId) {
 
-        Log.d(" SAVE ID", " ID: " + workoutID);
+        Log.d(" SAVE ID", " ID: " + workoutTabId);
 
-        Workout rs = WorkoutModel.getInstance().getWorkoutCached(workoutID);
+        Workout rs = WorkoutModel.getInstance().getWorkoutCached(workoutTabId);
         rs.setRoundAmount(roundsAmount);
-        WorkoutModel.getInstance().saveWorkout(rs, workoutID);
+        WorkoutModel.getInstance().saveWorkout(rs);
 
         updateFragmentCurrentTab();
     }
 
     @Override
     public void onTextDialogOk(String text, int id) {
-        // TODO Auto-generated method stub
+
 
         Log.d("mikko", "textdialogsave");
 
         Workout rs = WorkoutModel.getInstance().getWorkoutCached(id);
         rs.setName(text);
-        WorkoutModel.getInstance().saveWorkout(rs, id);
+        WorkoutModel.getInstance().saveWorkout(rs);
 
         if (fragment == null) {
             fragment = (SlidingTabsBasicFragment) getSupportFragmentManager().findFragmentByTag(fragmentTag);
@@ -230,6 +274,24 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         if (fragment != null) {
             fragment.updateCurrentTab();
         }
+    }
+
+
+    /**
+     * Update the whole tab view
+     * @param tabId tab id where to focus after refresh
+     */
+    public void updateWholeTabView(int tabId) {
+
+        if (fragment == null) {
+            fragment = (SlidingTabsBasicFragment) getSupportFragmentManager().findFragmentByTag(fragmentTag);
+        }
+
+        if (fragment != null) {
+            fragment.updateAll();
+            fragment.setCurrentTab(tabId);
+        }
+
     }
 
 
