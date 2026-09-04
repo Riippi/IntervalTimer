@@ -1,4 +1,0 @@
-C:\AndroidStudioProjects\IntervalTimer\app\build\intermediates\classes\debug
-C:\AndroidStudioProjects\IntervalTimer\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-25f741cb70249ab6dd2dfbec3742429434a027cf.jar
-C:\AndroidStudioProjects\IntervalTimer\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-e24dc026d2fab5524f4b16b9e1446727893f0e91.jar
-C:\AndroidStudioProjects\IntervalTimer\app\build\intermediates\pre-dexed\debug\classes-c08b24960553771cff6d6a99a42177f7a9abf02a.jar

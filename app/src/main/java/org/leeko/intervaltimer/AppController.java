@@ -1,13 +1,18 @@
 package org.leeko.intervaltimer;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 
 import org.leeko.intervaltimer.counter.BaseTimer;
 import org.leeko.intervaltimer.counter.CounterFactory;
@@ -40,10 +45,7 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
 
 
     private AppController() {
-
-        TelephonyManager tManager = (TelephonyManager) MainActivity.getInstance().getSystemService(MainActivity.TELEPHONY_SERVICE);
-        tManager.listen(this,
-                PhoneStateListener.LISTEN_CALL_STATE);
+        doRegisterPhoneStateListener();
     }
 
 
@@ -55,6 +57,32 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
 
         return singleton;
 
+    }
+
+    /**
+     * READ_PHONE_STATE is a runtime permission on API 23+; the pause-on-incoming-call
+     * feature is simply skipped until it's granted. Call again (e.g. after the user
+     * grants the permission) to register the listener retroactively.
+     */
+    public static void registerPhoneStateListener() {
+        if (singleton == null) {
+            singleton = new AppController();
+            return;
+        }
+        singleton.doRegisterPhoneStateListener();
+    }
+
+    private void doRegisterPhoneStateListener() {
+        Context context = MainActivity.getInstance();
+        if (context == null) {
+            return;
+        }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        TelephonyManager tManager = (TelephonyManager) context.getSystemService(MainActivity.TELEPHONY_SERVICE);
+        tManager.listen(this, PhoneStateListener.LISTEN_CALL_STATE);
     }
 
 
