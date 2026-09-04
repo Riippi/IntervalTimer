@@ -9,3 +9,8 @@
 .externalNativeBuild/
 .cxx/
 local.properties
+
+# Signing (never commit these — this repo is public)
+*.jks
+*.keystore
+keystore.properties
