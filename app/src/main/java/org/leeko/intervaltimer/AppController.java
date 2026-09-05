@@ -1,25 +1,19 @@
 package org.leeko.intervaltimer;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
-
-import androidx.core.content.ContextCompat;
 
 import org.leeko.intervaltimer.counter.BaseTimer;
 import org.leeko.intervaltimer.counter.CounterFactory;
 import org.leeko.intervaltimer.counter.ICounter;
 import org.leeko.intervaltimer.counter.ITickerInterface;
 
-public class AppController extends PhoneStateListener implements ITickerInterface {
+public class AppController implements ITickerInterface {
 
 
     private static Workout workout;
@@ -36,6 +30,28 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
 
     private MediaPlayer mediaPlayer;
 
+    // needed for logging
+    private static final String TAG = "AppController";
+
+    // Pausing on incoming calls used to be done with a PhoneStateListener, which needs
+    // the restricted READ_PHONE_STATE permission (Play Store rejects apps requesting it
+    // without an approved use case). Audio focus achieves the same practical result: the
+    // ringtone for an incoming call takes audio focus away from us, which we treat the
+    // same way as an interruption, with no special permission needed.
+    @SuppressWarnings("deprecation")
+    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange -> {
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS
+                || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            Log.i(TAG, "Audio focus lost, pausing timer");
+            killMediaPlayer();
+            pauseTimer();
+            TimerActivity.getInstance().switchState();
+            TimerActivity.getInstance().updateView();
+        }
+    };
+
+    private boolean holdingAudioFocus = false;
+
 
     static boolean blockScrensaver = false;
 
@@ -45,7 +61,6 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
 
 
     private AppController() {
-        doRegisterPhoneStateListener();
     }
 
 
@@ -59,30 +74,32 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
 
     }
 
-    /**
-     * READ_PHONE_STATE is a runtime permission on API 23+; the pause-on-incoming-call
-     * feature is simply skipped until it's granted. Call again (e.g. after the user
-     * grants the permission) to register the listener retroactively.
-     */
-    public static void registerPhoneStateListener() {
-        if (singleton == null) {
-            singleton = new AppController();
+    @SuppressWarnings("deprecation")
+    private void requestAudioFocus() {
+        if (holdingAudioFocus) {
             return;
         }
-        singleton.doRegisterPhoneStateListener();
+        AudioManager audioManager = (AudioManager) TimerActivity.getInstance()
+                .getSystemService(Activity.AUDIO_SERVICE);
+        if (audioManager == null) {
+            return;
+        }
+        int result = audioManager.requestAudioFocus(audioFocusChangeListener,
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        holdingAudioFocus = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
 
-    private void doRegisterPhoneStateListener() {
-        Context context = MainActivity.getInstance();
-        if (context == null) {
+    @SuppressWarnings("deprecation")
+    private void abandonAudioFocus() {
+        if (!holdingAudioFocus) {
             return;
         }
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
+        AudioManager audioManager = (AudioManager) TimerActivity.getInstance()
+                .getSystemService(Activity.AUDIO_SERVICE);
+        if (audioManager != null) {
+            audioManager.abandonAudioFocus(audioFocusChangeListener);
         }
-        TelephonyManager tManager = (TelephonyManager) context.getSystemService(MainActivity.TELEPHONY_SERVICE);
-        tManager.listen(this, PhoneStateListener.LISTEN_CALL_STATE);
+        holdingAudioFocus = false;
     }
 
 
@@ -111,6 +128,11 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
         blockScrensaver = pm.getBoolean("prevent_screensaver_checkbox", true);
 
         incomingCalls = pm.getBoolean("pause_on_incoming_call", true);
+        if (incomingCalls) {
+            requestAudioFocus();
+        } else {
+            abandonAudioFocus();
+        }
 
         String temp = pm.getString("sound_list", "0");
         try {
@@ -147,6 +169,7 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
             counter.stopTimer();
         }
 
+        abandonAudioFocus();
         killMediaPlayer();
         killVibra();
     }
@@ -360,44 +383,6 @@ public class AppController extends PhoneStateListener implements ITickerInterfac
         }
     }
 
-
-    private boolean isPhoneCalling = false;
-
-    // needed for logging
-    String TAG = "PhoneCallListener";
-
-    @Override
-    public void onCallStateChanged(int state, String incomingNumber) {
-
-        if (!incomingCalls) {
-            return;
-        }
-
-        if (TelephonyManager.CALL_STATE_RINGING == state) {
-            // phone ringing
-            Log.i(TAG, "RINGING, number: " + incomingNumber);
-
-            killMediaPlayer();
-            pauseTimer();
-            TimerActivity.getInstance().switchState();
-            TimerActivity.getInstance().updateView();
-        }
-
-            /*
-            if (TelephonyManager.CALL_STATE_OFFHOOK == state) {
-                // active
-                Log.i(TAG, "OFFHOOK");
-                isPhoneCalling = true;
-            }
-
-            if (TelephonyManager.CALL_STATE_IDLE == state) {
-                // run when class initial and phone call ended,
-                // need detect flag from CALL_STATE_OFFHOOK
-                Log.i(TAG, "IDLE");
-            }
-            */
-
-    }
 
 }
 

@@ -1,17 +1,13 @@
 package org.leeko.intervaltimer;
 
 
-import android.Manifest;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import android.util.Log;
@@ -31,7 +27,6 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
 
     public static final String PREFS_NAME = "intervaltimerX";
     public static final String PREFS_TAB = "TAB";
-    private static final int REQUEST_READ_PHONE_STATE = 0x9001;
     private static MainActivity singleton;
     private SlidingTabsBasicFragment fragment;
     private String fragmentTag = "frTAG";
@@ -47,12 +42,6 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         singleton = this;
 
         AppController.getInstance().stopTimer();
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
-        }
 
         setContentView(R.layout.activity_main);
 
@@ -177,14 +166,6 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
 
     }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_READ_PHONE_STATE) {
-            AppController.registerPhoneStateListener();
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
