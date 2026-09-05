@@ -75,5 +75,13 @@
         android:positiveButtonText="@null"
         android:title="@string/pref_title_countdown" />
 
+    <Preference
+        android:key="privacy_policy"
+        android:title="Privacy policy"
+        android:summary="Interval Timer X does not collect any data">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://moriest.fi/IntervalTimer/" />
+    </Preference>
 
 </PreferenceScreen>
