@@ -1,12 +1,14 @@
 package org.leeko.intervaltimer.counter;
 
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 
 import org.leeko.intervaltimer.TimerStats;
 import org.leeko.intervaltimer.Workout;
 
 
-public abstract class BaseTimer extends AsyncTask<Void, Void, Void> implements ICounter {
+public abstract class BaseTimer implements ICounter {
 
     // States
     public static final int WARMUP = 1;
@@ -20,9 +22,6 @@ public abstract class BaseTimer extends AsyncTask<Void, Void, Void> implements I
     public boolean warmupIsOn;
     public int seconds;
 
-    //runs without a timer by reposting this handler at the end of the runnable
-    //Handler timerHandler;
-    //Runnable timer;
     public int minutes;
     public int currentRound;
     public int elapsedSeconds;
@@ -37,19 +36,33 @@ public abstract class BaseTimer extends AsyncTask<Void, Void, Void> implements I
 
     boolean timerOn = false;
 
+    // Ticks once per second on the main thread. Scheduled against a fixed
+    // elapsedRealtime() anchor rather than just posting "1000ms from now"
+    // each time, so per-tick overhead can't accumulate into drift over a
+    // long workout - each tick corrects for however late it actually ran.
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private long nextTickAt;
 
-    @Override
-    protected Void doInBackground(Void... params) {
+    private final Runnable tickRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!timerOn) {
+                return;
+            }
 
-        // timerHandler = new Handler();
-        // creating timer instance
-        doStartTimer();
-        // starting the timer
-//		timer.Start();
-        publishProgress();
+            if (!paused) {
+                tick();
+                nextTickAt += 1000;
+            } else {
+                // Keep the anchor at "now" while paused, so resuming doesn't
+                // fire a burst of catch-up ticks for time spent paused.
+                nextTickAt = SystemClock.elapsedRealtime() + 1000;
+            }
 
-        return null;
-    }
+            long delay = Math.max(0, nextTickAt - SystemClock.elapsedRealtime());
+            handler.postDelayed(this, delay);
+        }
+    };
 
 
     public void startRounds(Workout aSet, ITickerInterface aListener) {
@@ -57,45 +70,47 @@ public abstract class BaseTimer extends AsyncTask<Void, Void, Void> implements I
         iSet = aSet;
         paused = false;
 
-        execute();
-    }
-
-
-    private void doStartTimer() {
-
         timerOn = true;
         startTimer();
-        onTimerTick();
+        tick();
 
-        while (timerOn) {
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // Do nothing
-            }
-            onTimerTick();
-        }
+        nextTickAt = SystemClock.elapsedRealtime() + 1000;
+        handler.postDelayed(tickRunnable, 1000);
     }
 
 
-    private void onTimerTick() {
-        if (!paused) {
-            publishProgress();
+    private void tick() {
+
+        // The Heart
+        if (seconds <= 0 && minutes <= 0) {
+            changeTimerState();
         }
+        if (seconds < 0) {
+            minutes--;
+            seconds = 59;
+        }
+
+        if (timerStats == null) {
+            timerStats = new TimerStats();
+        }
+
+        timerStats.setValues(minutes, seconds, currentRound, iSet.getRoundAmount(), getRemainingSeconds(), getElapsedSeconds(), getTotalSeconds());
+        listener.notifyTick();
+
+        if (listener.getCountdown() > 0) {
+            if (minutes == 0 && seconds <= listener.getCountdown() && seconds >= 1) {
+                //setState(COUNTDOWN);
+                listener.notifyCountDownBeep();
+            }
+        }
+
+        seconds--;
+        elapsedSeconds++;
     }
 
     public void stopTimer() {
-        // TODO
         timerOn = false;
-        //timerHandler.removeCallbacks(timer);
-        cancel(true);
-    }
-
-    public void restartTimer() {
-        // TODO
-        startTimer();
-        doStartTimer();
+        handler.removeCallbacks(tickRunnable);
     }
 
     public void pauseTimer() {
@@ -128,41 +143,6 @@ public abstract class BaseTimer extends AsyncTask<Void, Void, Void> implements I
     }
 
 
-    private void FFtick() {
-        publishProgress();
-    }
-
-    @Override
-    protected void onProgressUpdate(Void... value) {
-        super.onProgressUpdate(value);
-        // The Heart
-        if (seconds <= 0 && minutes <= 0) {
-            changeTimerState();
-        }
-        if (seconds < 0) {
-            minutes--;
-            seconds = 59;
-        }
-
-        if (timerStats == null) {
-            timerStats = new TimerStats();
-        }
-
-        timerStats.setValues(minutes, seconds, currentRound, iSet.getRoundAmount(), getRemainingSeconds(), getElapsedSeconds(), getTotalSeconds());
-        listener.notifyTick();
-
-        if (listener.getCountdown() > 0) {
-            if (minutes == 0 && seconds <= listener.getCountdown() && seconds >= 1) {
-                //setState(COUNTDOWN);
-                listener.notifyCountDownBeep();
-            }
-        }
-
-        seconds--;
-        elapsedSeconds++;
-    }
-
-
     // return time elapsed of the workout in seconds
     int getElapsedSeconds() {
         return elapsedSeconds;
@@ -183,7 +163,6 @@ public abstract class BaseTimer extends AsyncTask<Void, Void, Void> implements I
 
     // For subclasses to handle
     public abstract void changeTimerState();
-
 
     // For view
     public int getState() {

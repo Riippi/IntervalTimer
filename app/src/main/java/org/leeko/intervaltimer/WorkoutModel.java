@@ -88,9 +88,6 @@ public class WorkoutModel {
      */
     private void loadAllWorkouts() {
 
-
-        Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, null);
-
         // Clear the cache
         if (hash != null) {
             hash.clear();
@@ -98,18 +95,17 @@ public class WorkoutModel {
             hash = new HashMap<Integer, Workout>();  // Tab id  and workout
         }
 
-        if (cursor != null) {
+        try (Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, null)) {
 
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            if (cursor != null) {
+                for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 
-                Workout workout = new Workout();
-                workout.importFromCursor(cursor);
-                hash.put(workout.getTabId(), workout);
+                    Workout workout = new Workout();
+                    workout.importFromCursor(cursor);
+                    hash.put(workout.getTabId(), workout);
+                }
             }
-
-            cursor.close();
         }
-
     }
 
 
@@ -139,18 +135,13 @@ public class WorkoutModel {
         String[] mSelectionArgs = {String.valueOf(tabId)};
 
         Workout workout = new Workout();
-        Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, mSelectionClause, mSelectionArgs, null);
 
-        if (cursor != null && cursor.moveToFirst()) {
+        try (Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, mSelectionClause, mSelectionArgs, null)) {
 
-            cursor.moveToFirst();
-            workout.importFromCursor(cursor);
+            if (cursor != null && cursor.moveToFirst()) {
+                workout.importFromCursor(cursor);
+            }
         }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-
 
         return workout;
     }
