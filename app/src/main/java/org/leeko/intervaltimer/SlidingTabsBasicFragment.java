@@ -178,6 +178,8 @@ public class SlidingTabsBasicFragment extends Fragment {
 
         manualRestButton.setChecked(WorkoutModel.getInstance().getWorkoutCached(position).getManual());
 
+        String total = WorkoutModel.getInstance().getWorkoutCached(position).getTotal();
+        totalText.setText("Total duration: " + total);
 
     }
 
