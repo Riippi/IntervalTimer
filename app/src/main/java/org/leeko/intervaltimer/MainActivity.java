@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import android.view.Menu;
@@ -29,6 +32,15 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
     private static MainActivity singleton;
     private SlidingTabsBasicFragment fragment;
     private String fragmentTag = "frTAG";
+
+    // Registered eagerly (required by the Activity Result API - must happen before
+    // the activity reaches STARTED, not lazily when the user taps something) rather
+    // than the old startActivityForResult()/onActivityResult(requestCode) pattern.
+    private final ActivityResultLauncher<Intent> timerActivityLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                // TimerActivity has closed so stop the timer
+                AppController.getInstance().stopTimer();
+            });
 
     // Returns the application instance
     public static MainActivity getInstance() {
@@ -63,7 +75,7 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
             actionBar.setDisplayHomeAsUpEnabled(false);
 
             actionBar.setIcon(
-                    new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+                    new ColorDrawable(ContextCompat.getColor(this, android.R.color.transparent)));
 
         }
 
@@ -161,21 +173,9 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         if (fragment != null) {
             int currentId = fragment.getCurrentTab();
             AppController.setTimer(currentId);
-            startActivityForResult(new Intent(this, TimerActivity.class), 0xe110);
+            timerActivityLauncher.launch(new Intent(this, TimerActivity.class));
         }
 
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // code for activity closed
-        if (requestCode == 0xe110) {
-            // TimerActivity has been closed so stop the timer
-            AppController.getInstance().stopTimer();
-        }
     }
 
 

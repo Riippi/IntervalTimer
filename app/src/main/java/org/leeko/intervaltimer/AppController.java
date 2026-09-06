@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -350,15 +352,34 @@ public class AppController implements ITickerInterface {
         }
 
         if (count == 1) {
-            v.vibrate(400);
+            vibrateCompat(400);
         } else if (count == 2) {
-            long[] pattern = {0, 300, 200, 300};
-            v.vibrate(pattern, -1);
+            vibrateCompat(new long[]{0, 300, 200, 300}, -1);
         } else if (count == 4) {
-            long[] pattern = {0, 300, 200, 300, 200, 300, 200, 300};
-            v.vibrate(pattern, -1);
+            vibrateCompat(new long[]{0, 300, 200, 300, 200, 300, 200, 300}, -1);
         } else { // countdown beep
-            v.vibrate(130);
+            vibrateCompat(130);
+        }
+    }
+
+    // Vibrator.vibrate(long) / vibrate(long[], int) are deprecated since API 26 in
+    // favor of VibrationEffect, but VibrationEffect itself doesn't exist before API 26 -
+    // so both paths are kept, gated on the running device's API level.
+    @SuppressWarnings("deprecation")
+    private void vibrateCompat(long milliseconds) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(milliseconds, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            v.vibrate(milliseconds);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void vibrateCompat(long[] pattern, int repeat) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createWaveform(pattern, repeat));
+        } else {
+            v.vibrate(pattern, repeat);
         }
     }
 
