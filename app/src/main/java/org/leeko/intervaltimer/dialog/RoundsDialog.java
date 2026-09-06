@@ -72,7 +72,7 @@ public class RoundsDialog  extends DialogFragment {
 		// Pass null as the parent view because its going in the dialog layout
 		builder.setView(view)
 
-		.setTitle("Rounds")
+		.setTitle(R.string.rounds_title)
 
 		// Add action buttons
 		.setPositiveButton(R.string.set, new DialogInterface.OnClickListener() {

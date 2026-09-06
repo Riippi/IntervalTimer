@@ -164,7 +164,7 @@ public class SlidingTabsBasicFragment extends Fragment {
         buttonWU.setValueText(WorkoutModel.getInstance().getWorkoutCached(position).getWarmupInString());
 
         if (WorkoutModel.getInstance().getWorkoutCached(position).getRoundAmount() == 0) {
-            buttonRounds.setValueText("Unlimited");
+            buttonRounds.setValueText(getString(R.string.rounds_unlimited));
         } else {
             buttonRounds.setValueText("" + WorkoutModel.getInstance().getWorkoutCached(position).getRoundAmount());
         }
@@ -179,7 +179,7 @@ public class SlidingTabsBasicFragment extends Fragment {
         manualRestButton.setChecked(WorkoutModel.getInstance().getWorkoutCached(position).getManual());
 
         String total = WorkoutModel.getInstance().getWorkoutCached(position).getTotal();
-        totalText.setText("Total duration: " + total);
+        totalText.setText(getString(R.string.total_duration, total));
 
     }
 
@@ -304,20 +304,20 @@ public class SlidingTabsBasicFragment extends Fragment {
 
 
             buttonWU.setValueText(WorkoutModel.getInstance().getWorkoutCached(position).getWarmupInString());
-            buttonWU.setTitleText("Warm-up time");
+            buttonWU.setTitleText(getString(R.string.warmup_time_title));
 
             if (WorkoutModel.getInstance().getWorkoutCached(position).getRoundAmount() == 0) {
-                buttonRounds.setValueText("Unlimited");
+                buttonRounds.setValueText(getString(R.string.rounds_unlimited));
             } else {
                 buttonRounds.setValueText("" + WorkoutModel.getInstance().getWorkoutCached(position).getRoundAmount());
             }
-            buttonRounds.setTitleText("Rounds");
+            buttonRounds.setTitleText(getString(R.string.rounds_title));
 
             buttonWork.setValueText(WorkoutModel.getInstance().getWorkoutCached(position).getWorkInString());
-            buttonWork.setTitleText("Work time");
+            buttonWork.setTitleText(getString(R.string.work_time_title));
 
             buttonRest.setValueText(WorkoutModel.getInstance().getWorkoutCached(position).getRestInString());
-            buttonRest.setTitleText("Rest time");
+            buttonRest.setTitleText(getString(R.string.rest_time_title));
 
             if (WorkoutModel.getInstance().getWorkoutCached(position).getManual()) {
                 buttonRest.setAlpha(.5f);
@@ -352,7 +352,7 @@ public class SlidingTabsBasicFragment extends Fragment {
 
                         String total = WorkoutModel.getInstance().getWorkoutCached(position).getTotal();
                         TextView t = (TextView) gg.findViewWithTag("totalText" + position);
-                        t.setText("Total duration: " + total);
+                        t.setText(getString(R.string.total_duration, total));
 
                     }
                 }
@@ -360,7 +360,7 @@ public class SlidingTabsBasicFragment extends Fragment {
 
 
             String total = WorkoutModel.getInstance().getWorkoutCached(position).getTotal();
-            totalText.setText("Total duration: " + total);
+            totalText.setText(getString(R.string.total_duration, total));
 
             container.addView(view);
 

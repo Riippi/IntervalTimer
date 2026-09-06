@@ -22,7 +22,7 @@ public class TimeDialog  extends DialogFragment {
 	
 	int workoutID;
 
-	String title;
+	int titleResId;
 	int min;
 	int sec;
 
@@ -88,7 +88,7 @@ public class TimeDialog  extends DialogFragment {
 		// Pass null as the parent view because its going in the dialog layout
 		builder.setView(view)
 
-		.setTitle(title)
+		.setTitle(titleResId)
 
 		// Add action buttons
 		.setPositiveButton(R.string.set, new DialogInterface.OnClickListener() {
@@ -145,7 +145,7 @@ public class TimeDialog  extends DialogFragment {
 
 		public WarmUpTimeDialog() {
 			super();
-			title = "Warm-up time";
+			titleResId = R.string.warmup_time_title;
 		}
 
 		protected void callBack() {
@@ -158,7 +158,7 @@ public class TimeDialog  extends DialogFragment {
 
 		public RestTimeDialog() {
             super();
-            title = "Rest time";
+            titleResId = R.string.rest_time_title;
 		}
 
 		protected void callBack() {
@@ -171,7 +171,7 @@ public class TimeDialog  extends DialogFragment {
 
 		public WorkTimeDialog() {
             super();
-            title = "Work time";
+            titleResId = R.string.work_time_title;
 		}
 
 		protected void callBack() {

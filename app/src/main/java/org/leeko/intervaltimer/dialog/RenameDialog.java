@@ -77,7 +77,7 @@ public class RenameDialog extends DialogFragment {
 		// Pass null as the parent view because its going in the dialog layout
 		builder.setView(view)
 
-		.setTitle("Name")
+		.setTitle(R.string.rename_dialog_title)
 
 		// Add action buttons
 		.setPositiveButton(R.string.set, new DialogInterface.OnClickListener() {

@@ -131,39 +131,38 @@ public class TimerActivity extends Activity {
     public void switchState() {
 
         m_state = AppController.getInstance().getTimerState();
-        stateText.setText("kk");
         timeText.setVisibility(View.VISIBLE);
 
         resetView();
 
         switch (m_state) {
             case BaseTimer.WORK: {
-                stateText.setText("WORK");
+                stateText.setText(R.string.state_work);
                 trafficLight.setBackground(shape_green);
                 break;
             }
             case BaseTimer.REST: {
-                stateText.setText("REST");
+                stateText.setText(R.string.state_rest);
                 trafficLight.setBackground(shape_red);
                 break;
             }
             case BaseTimer.WARMUP: {
                 trafficLight.setBackground(shape_yellow);
-                stateText.setText("WARM-UP");
+                stateText.setText(R.string.state_warmup);
                 break;
             }
             case BaseTimer.MANUAL_REST: {
                 timeText.setVisibility(View.GONE);
                 trafficLight.setBackground(shape_red);
-                stateText.setText("START WHEN READY");
-                pauseButton.setText("START");
+                stateText.setText(R.string.state_start_when_ready);
+                pauseButton.setText(R.string.start_button);
                 break;
             }
             case BaseTimer.OVER: {
                 trafficLight.setBackground(shape_red);
                 timeText.setVisibility(View.GONE);
-                stateText.setText("WORKOUT OVER");
-                pauseButton.setText("RESTART");
+                stateText.setText(R.string.state_workout_over);
+                pauseButton.setText(R.string.button_restart);
                 break;
             }
         }
@@ -176,8 +175,8 @@ public class TimerActivity extends Activity {
 
 
     private void setPaused() {
-        pauseButton.setText("RESUME");
-        stateText.setText("PAUSED");
+        pauseButton.setText(R.string.button_resume);
+        stateText.setText(R.string.state_paused);
         trafficLight.setBackground(shape_yellow);
     }
 
@@ -209,17 +208,17 @@ public class TimerActivity extends Activity {
         currentRound = aRound;
         nextRound = aRound + 1;
 
-        String lastPart = aRound + " of " + timest.roundsAmount;
+        String lastPart = getString(R.string.round_of_rounds, aRound, timest.roundsAmount);
 
         if (timest.roundsAmount == 0) {
-            lastPart = aRound + "";
-            remainingText.setText("-");
+            lastPart = String.valueOf(aRound);
+            remainingText.setText(R.string.remaining_unlimited);
         }
 
         if (m_state == BaseTimer.REST || m_state == BaseTimer.MANUAL_REST) {
-            roundText.setText("NEXT: ROUND " + lastPart);
+            roundText.setText(getString(R.string.round_progress_next, lastPart));
         } else {
-            roundText.setText("ROUND " + lastPart);
+            roundText.setText(getString(R.string.round_progress, lastPart));
         }
 
         progressBar.setMax(timest.total);
@@ -229,7 +228,7 @@ public class TimerActivity extends Activity {
 
 
     private void resetView() {
-        pauseButton.setText("PAUSE");
+        pauseButton.setText(R.string.button_pause);
     }
 
     private void buttonAction() {
@@ -272,9 +271,9 @@ public class TimerActivity extends Activity {
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Exit active workout?")
+        builder.setMessage(R.string.exit_workout_confirm)
                 .setCancelable(false)
-        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // go back
                  goBack();

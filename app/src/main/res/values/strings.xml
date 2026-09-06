@@ -16,4 +16,36 @@
 
     <string name="actions_dialog_title">Actions</string>
 
+    <!-- Workout editor -->
+    <string name="warmup_time_title">Warm-up time</string>
+    <string name="work_time_title">Work time</string>
+    <string name="rest_time_title">Rest time</string>
+    <string name="rounds_title">Rounds</string>
+    <string name="rounds_unlimited">Unlimited</string>
+    <string name="total_duration">Total duration: %1$s</string>
+    <string name="rename_dialog_title">Name</string>
+
+    <!-- Alerts -->
+    <string name="cant_add_workout_title">Can\'t add workout</string>
+    <string name="max_workouts_reached">Maximum limit of workouts reached</string>
+    <string name="cant_start_timer_title">Can\'t start timer</string>
+    <string name="add_workout_first">Add new workout first</string>
+
+    <!-- Timer screen -->
+    <string name="state_work">WORK</string>
+    <string name="state_rest">REST</string>
+    <string name="state_warmup">WARM-UP</string>
+    <string name="state_start_when_ready">START WHEN READY</string>
+    <string name="state_workout_over">WORKOUT OVER</string>
+    <string name="state_paused">PAUSED</string>
+    <string name="button_restart">RESTART</string>
+    <string name="button_resume">RESUME</string>
+    <string name="button_pause">PAUSE</string>
+    <string name="round_progress">ROUND %1$s</string>
+    <string name="round_progress_next">NEXT: ROUND %1$s</string>
+    <string name="round_of_rounds">%1$d of %2$d</string>
+    <string name="remaining_unlimited">-</string>
+    <string name="exit_workout_confirm">Exit active workout?</string>
+    <string name="yes">Yes</string>
+
 </resources>

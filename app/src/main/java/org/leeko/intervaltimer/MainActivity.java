@@ -103,9 +103,9 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
 
             if (WorkoutModel.getInstance().getWorkoutAmount() > 9) {
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Can't add workout");
-                alertDialog.setMessage("Maximum limit of workouts reached");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                alertDialog.setTitle(getString(R.string.cant_add_workout_title));
+                alertDialog.setMessage(getString(R.string.max_workouts_reached));
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(android.R.string.ok),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -151,9 +151,9 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         if (WorkoutModel.getInstance().getWorkoutAmount() == 0) {
 
             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            alertDialog.setTitle("Can't start timer");
-            alertDialog.setMessage("Add new workout first");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+            alertDialog.setTitle(getString(R.string.cant_start_timer_title));
+            alertDialog.setMessage(getString(R.string.add_workout_first));
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();

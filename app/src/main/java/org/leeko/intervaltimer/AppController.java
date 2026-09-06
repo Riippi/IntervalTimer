@@ -1,14 +1,17 @@
 package org.leeko.intervaltimer;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.SparseIntArray;
 
 import org.leeko.intervaltimer.counter.BaseTimer;
 import org.leeko.intervaltimer.counter.CounterFactory;
@@ -30,7 +33,21 @@ public class AppController implements ITickerInterface {
 
     private static boolean incomingCalls = true;
 
-    private MediaPlayer mediaPlayer;
+    // All alert sounds are short beeps/chimes, so a SoundPool (sounds pre-decoded
+    // and kept in memory, played with low latency) is a better fit than MediaPlayer
+    // (which decodes from scratch on every playSound() call - overkill for this, and
+    // MediaPlayer.create() failures are also silent, unlike SoundPool's load callback).
+    private static final int[] SOUND_RES_IDS = {
+            R.raw.countdown,
+            R.raw.b1, R.raw.b2, R.raw.b4,
+            R.raw.beep1, R.raw.beep2, R.raw.beep4,
+            R.raw.beep_high1, R.raw.beep_high2, R.raw.beep_high4,
+            R.raw.zen1, R.raw.zen2, R.raw.zen4,
+    };
+
+    private SoundPool soundPool;
+    private final SparseIntArray soundIds = new SparseIntArray();
+    private int activeStreamId = 0;
 
     // needed for logging
     private static final String TAG = "AppController";
@@ -45,7 +62,7 @@ public class AppController implements ITickerInterface {
         if (focusChange == AudioManager.AUDIOFOCUS_LOSS
                 || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
             Log.i(TAG, "Audio focus lost, pausing timer");
-            killMediaPlayer();
+            stopSound();
             pauseTimer();
             TimerActivity.getInstance().switchState();
             TimerActivity.getInstance().updateView();
@@ -123,6 +140,10 @@ public class AppController implements ITickerInterface {
 
 
     public void startTimer() {
+        // Kick off SoundPool loading as early as possible so the (async) decode has
+        // the whole warm-up/first interval to finish before the first alert() call.
+        ensureSoundPoolLoaded(TimerActivity.getInstance());
+
         SharedPreferences pm = PreferenceManager.getDefaultSharedPreferences(TimerActivity.getInstance());
         vibra = pm.getBoolean("vibrate", true);
         sound = pm.getBoolean("sound", true);
@@ -172,13 +193,13 @@ public class AppController implements ITickerInterface {
         }
 
         abandonAudioFocus();
-        killMediaPlayer();
+        stopSound();
         killVibra();
     }
 
     public void pauseTimer() {
         counter.pauseTimer();
-        killMediaPlayer();
+        stopSound();
         killVibra();
     }
 
@@ -334,11 +355,40 @@ public class AppController implements ITickerInterface {
     }
 
 
+    private void ensureSoundPoolLoaded(Context context) {
+        if (soundPool != null) {
+            return;
+        }
+
+        AudioAttributes attributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(4)
+                .setAudioAttributes(attributes)
+                .build();
+
+        for (int resId : SOUND_RES_IDS) {
+            soundIds.put(resId, soundPool.load(context, resId, 1));
+        }
+    }
+
     private void playSound(int resId) {
 
-        killMediaPlayer();
-        mediaPlayer = MediaPlayer.create(TimerActivity.getInstance().getBaseContext(), resId);
-        mediaPlayer.start(); // no need to call prepare(); create() does that for you
+        stopSound();
+
+        if (soundPool == null) {
+            return;
+        }
+
+        int soundId = soundIds.get(resId, 0);
+        if (soundId == 0) {
+            return;
+        }
+
+        activeStreamId = soundPool.play(soundId, 1f, 1f, 1, 0, 1f);
     }
 
 
@@ -392,15 +442,12 @@ public class AppController implements ITickerInterface {
     }
 
 
-    private void killMediaPlayer() {
-        if (mediaPlayer != null) {
-            try {
-                mediaPlayer.stop();
-            } catch (Error e) {
-                // Nothing
-            }
-            mediaPlayer.release();
-            mediaPlayer = null;
+    // Stop whatever alert sound is currently playing (for example when exiting
+    // the timer view, or when a new alert needs to cut off the previous one).
+    private void stopSound() {
+        if (soundPool != null && activeStreamId != 0) {
+            soundPool.stop(activeStreamId);
+            activeStreamId = 0;
         }
     }
 
