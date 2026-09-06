@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.leeko.intervaltimer.database.DatabaseHelper;
 import org.leeko.intervaltimer.database.WorkoutTable;
@@ -94,10 +93,6 @@ public class MyContentProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
-
-        Log.d("mikko", " INSERT:  " + uri);
-
-
         int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = database.getWritableDatabase();
         int rowsDeleted = 0;
@@ -146,9 +141,6 @@ public class MyContentProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-
-
-        Log.d("mikko", " UPDATE:  " + uri);
 
         int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = database.getWritableDatabase();

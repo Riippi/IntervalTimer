@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -61,7 +60,6 @@ public class TimerActivity extends Activity {
         }
 
 
-        Log.d("TIMER", " onCreate");
         initStuff();
         // Start the timer
         AppController.getInstance().startTimer();
@@ -103,8 +101,6 @@ public class TimerActivity extends Activity {
 
         timeText = (TextView) findViewById(R.id.timeText);
 
-        Log.d("TIMER", " OWN INIT");
-
         switchState();
         updateView();
 
@@ -114,8 +110,6 @@ public class TimerActivity extends Activity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-
-        Log.d("TIMER", " Layout changed");
 
         setContentView(R.layout.activity_timer);
 

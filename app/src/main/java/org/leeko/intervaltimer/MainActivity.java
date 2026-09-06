@@ -10,7 +10,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -200,9 +199,6 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
 
     @Override
     public void onDialogPositiveClick(int type, int minutes, int seconds, int id) {
-        // TODO Auto-generated method stub
-        System.out.println(" WOAH!! " + minutes + " - " + seconds);
-
         Workout rs = WorkoutModel.getInstance().getWorkoutCached(id);
 
         switch (type) {
@@ -236,8 +232,6 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
     @Override
     public void onRoundsDialogOk(int roundsAmount, int workoutTabId) {
 
-        Log.d(" SAVE ID", " ID: " + workoutTabId);
-
         Workout rs = WorkoutModel.getInstance().getWorkoutCached(workoutTabId);
         rs.setRoundAmount(roundsAmount);
         WorkoutModel.getInstance().saveWorkout(rs);
@@ -247,9 +241,6 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
 
     @Override
     public void onTextDialogOk(String text, int id) {
-
-
-        Log.d("mikko", "textdialogsave");
 
         Workout rs = WorkoutModel.getInstance().getWorkoutCached(id);
         rs.setName(text);

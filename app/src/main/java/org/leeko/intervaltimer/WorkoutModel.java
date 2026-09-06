@@ -6,25 +6,24 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.util.Log;
 
 import org.leeko.intervaltimer.contentprovider.MyContentProvider;
 import org.leeko.intervaltimer.database.WorkoutTable;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class WorkoutModel {
 
 
-    private Hashtable<Integer, Workout> hash; // Tab id  and workout
+    private HashMap<Integer, Workout> hash; // Tab id  and workout
     private static WorkoutModel singleton;
 
     private WorkoutModel() {
 
-        hash = new Hashtable<Integer, Workout>();  // Tab id  and workout
+        hash = new HashMap<Integer, Workout>();  // Tab id  and workout
         loadAllWorkouts();
     }
 
@@ -38,9 +37,6 @@ public class WorkoutModel {
 
 
     public Workout getWorkoutCached(int tabId) {
-
-
-        //Log.d("Load", "TAB ID: " + tabId);
 
         // Actually no idea if this hash-caching has any use
         if (hash.get(tabId) == null) {
@@ -99,7 +95,7 @@ public class WorkoutModel {
         if (hash != null) {
             hash.clear();
         } else {
-            hash = new Hashtable<Integer, Workout>();  // Tab id  and workout
+            hash = new HashMap<Integer, Workout>();  // Tab id  and workout
         }
 
         if (cursor != null) {
@@ -109,8 +105,6 @@ public class WorkoutModel {
                 Workout workout = new Workout();
                 workout.importFromCursor(cursor);
                 hash.put(workout.getTabId(), workout);
-
-                Log.d("Workoutmodel LOADED: ", workout.toString());
             }
 
             cursor.close();
@@ -195,16 +189,12 @@ public class WorkoutModel {
 
             int key = (Integer) pair.getKey();
 
-            Log.d("Workoutmodel update: ", "key= " + key + " iterating: " + hash.get(key).toString());
-
             if (key > tabId) {
 
                 int newTabId = key - 1;
                 String orgWhere = WorkoutTable.COLUMN_ID + " = ? ";
                 int id = hash.get(key).getId();
                 String[] orgWhereParams = new String[]{String.valueOf(id)};
-
-                Log.d("Workoutmodel update: ", "new TAB: " + newTabId + " for: " + hash.get(key).toString());
 
                 ops.add(
                         ContentProviderOperation.newUpdate(MyContentProvider.CONTENT_URI)
@@ -250,8 +240,6 @@ public class WorkoutModel {
      * @param tabId
      */
     public void moveRight(int tabId) {
-        Log.d("WorkoutModel", "MOVE RIGHT " + tabId);
-
         switchPlaces(tabId + 1, tabId);
         MainActivity.getInstance().updateWholeTabView(tabId + 1);
 
@@ -261,8 +249,6 @@ public class WorkoutModel {
      * Move a workout to "left". Decrease it's tab id.
      */
     public void moveLeft(int tabId) {
-        Log.d("WorkoutModel", "MOVE LEFT " + tabId);
-
         switchPlaces(tabId, tabId - 1);
         MainActivity.getInstance().updateWholeTabView(tabId - 1);
 

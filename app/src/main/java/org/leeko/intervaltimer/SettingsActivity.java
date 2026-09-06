@@ -8,7 +8,6 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import androidx.core.app.NavUtils;
-import android.util.Log;
 import android.view.MenuItem;
 
 /**
@@ -62,8 +61,6 @@ public class SettingsActivity extends PreferenceActivity {
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-
-        Log.d("SAATANA!!" , fragmentName);
 
         if (MyPreferenceFragment.class.getName().equals(fragmentName)) {
             return true;

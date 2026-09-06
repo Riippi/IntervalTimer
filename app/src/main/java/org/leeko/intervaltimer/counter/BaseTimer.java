@@ -151,9 +151,6 @@ public abstract class BaseTimer extends AsyncTask<Void, Void, Void> implements I
         timerStats.setValues(minutes, seconds, currentRound, iSet.getRoundAmount(), getRemainingSeconds(), getElapsedSeconds(), getTotalSeconds());
         listener.notifyTick();
 
-        logShit();
-
-
         if (listener.getCountdown() > 0) {
             if (minutes == 0 && seconds <= listener.getCountdown() && seconds >= 1) {
                 //setState(COUNTDOWN);
@@ -187,40 +184,6 @@ public abstract class BaseTimer extends AsyncTask<Void, Void, Void> implements I
     // For subclasses to handle
     public abstract void changeTimerState();
 
-
-    void logShit() {
-
-        String dd = "";
-        String number = "";
-
-
-        if (restIsOn) {
-            dd = dd + "rest ";
-        } else {
-            dd += "work ";
-        }
-
-        number += currentRound;
-        dd += number;
-
-        dd += " - ";
-
-
-        number = "" + minutes;
-
-        dd += number;
-        dd += ":";
-        number = "" + seconds;
-
-
-        if (number.length() < 2) {
-            dd += "0";
-        }
-
-        dd += number;
-
-        System.out.println(dd);
-    }
 
     // For view
     public int getState() {

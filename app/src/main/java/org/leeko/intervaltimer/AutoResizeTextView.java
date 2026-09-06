@@ -21,7 +21,6 @@ import android.text.Layout.Alignment;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.widget.TextView;
 
@@ -191,8 +190,6 @@ public class AutoResizeTextView extends TextView {
             int widthLimit = (right - left) - getCompoundPaddingLeft() - getCompoundPaddingRight();
             int heightLimit = (bottom - top) - getCompoundPaddingBottom() - getCompoundPaddingTop();
             resizeText(widthLimit, heightLimit);
-
-              Log.d("TEXT", widthLimit + " - " + heightLimit + " | " + left + " " + top + " " + right + " " + bottom + " PARENT bottom: " + getBottom() );
         }
         super.onLayout(changed, left, top, right, bottom);
     }
