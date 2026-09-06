@@ -44,6 +44,7 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         AppController.getInstance().stopTimer();
 
         setContentView(R.layout.activity_main);
+        EdgeToEdgeHelper.applySystemBarPadding(this);
 
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

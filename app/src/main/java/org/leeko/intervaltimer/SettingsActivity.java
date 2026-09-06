@@ -43,6 +43,7 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(final Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.applySystemBarPadding(this);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
 
 

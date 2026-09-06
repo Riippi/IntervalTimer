@@ -51,6 +51,7 @@ public class TimerActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
+        EdgeToEdgeHelper.applySystemBarPadding(this);
 
         instance = this;
 
