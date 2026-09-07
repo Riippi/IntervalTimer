@@ -1,6 +1,8 @@
 package org.leeko.intervaltimer;
 
 import android.app.ActionBar;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -104,6 +106,7 @@ public class SettingsActivity extends PreferenceActivity {
 
             bindPreferenceSummaryToValue(findPreference("sound_list"));
             bindPreferenceSummaryToValue(findPreference("countdown"));
+            bindVersionSummary(findPreference("app_version"));
         }
 
 
@@ -176,6 +179,25 @@ public class SettingsActivity extends PreferenceActivity {
 				PreferenceManager.getDefaultSharedPreferences(
 						preference.getContext()).getString(preference.getKey(),
 						""));
+	}
+
+	/**
+	 * Sets a preference's summary to the app's version name (for example "2.2"),
+	 * so the running version is visible without going through Play Store or the
+	 * system App info screen - handy when reporting a bug.
+	 */
+	private static void bindVersionSummary(Preference preference) {
+		if (preference == null) {
+			return;
+		}
+
+		try {
+			PackageInfo info = preference.getContext().getPackageManager()
+					.getPackageInfo(preference.getContext().getPackageName(), 0);
+			preference.setSummary(info.versionName);
+		} catch (PackageManager.NameNotFoundException e) {
+			// Can't happen for our own package, but leave the default summary if it does.
+		}
 	}
 
 	/**

@@ -84,4 +84,9 @@
             android:data="https://moriest.fi/IntervalTimer/" />
     </Preference>
 
+    <Preference
+        android:key="app_version"
+        android:title="Version"
+        android:selectable="false" />
+
 </PreferenceScreen>
