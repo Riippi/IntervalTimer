@@ -88,13 +88,16 @@ public class RoundsDialog  extends DialogFragment {
 		});      
 
 
-		// Create the array of numbers that will populate the numberpicker
+		// Create the array of numbers that will populate the numberpicker.
+		// 0 rounds means "unlimited" (see AppController/BaseTimer), so show that
+		// as text instead of a confusing "0".
 		final String[] nums = new String[100];
 		for(int i=0; i<nums.length; i++) {
 			nums[i] = Integer.toString(i);
 
 		}
-		//        
+		nums[0] = getString(R.string.rounds_unlimited);
+		//
 		numberPicker = (NumberPicker) view.findViewById(R.id.RoundsPicker);        
 		numberPicker.setMaxValue(99);
 		numberPicker.setMinValue(0);
