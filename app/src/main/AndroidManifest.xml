@@ -4,6 +4,11 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!-- Declaring this as required tells Google Play to hide the app from devices
+         without a touchscreen (e.g. some Android TV boxes) - the UI only works by
+         tapping buttons, there's no d-pad/remote navigation support. -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
