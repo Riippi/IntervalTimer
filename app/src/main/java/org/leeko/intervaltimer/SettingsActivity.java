@@ -107,6 +107,15 @@ public class SettingsActivity extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("sound_list"));
             bindPreferenceSummaryToValue(findPreference("countdown"));
             bindVersionSummary(findPreference("app_version"));
+
+            // Android ignores orientation locks on large screens, so don't offer a
+            // switch that would do nothing there.
+            if (Utils.isLargeScreen(getActivity())) {
+                Preference lockPortrait = findPreference(Utils.PREF_LOCK_PORTRAIT);
+                if (lockPortrait != null) {
+                    getPreferenceScreen().removePreference(lockPortrait);
+                }
+            }
         }
 
 

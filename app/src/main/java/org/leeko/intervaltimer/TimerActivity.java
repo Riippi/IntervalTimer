@@ -3,9 +3,11 @@ package org.leeko.intervaltimer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -49,6 +51,15 @@ public class TimerActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Optional setting: keep the timer upright even if the phone is rotated.
+        // Requested before inflating so the portrait layout is the one that loads.
+        if (!Utils.isLargeScreen(this)
+                && PreferenceManager.getDefaultSharedPreferences(this)
+                        .getBoolean(Utils.PREF_LOCK_PORTRAIT, false)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
         setContentView(R.layout.activity_timer);
         EdgeToEdgeHelper.applySystemBarPadding(this);
 

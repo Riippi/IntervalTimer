@@ -75,6 +75,13 @@
         android:positiveButtonText="@null"
         android:title="@string/pref_title_countdown" />
 
+    <!-- Hidden on large screens by SettingsActivity (Android ignores the lock there). -->
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="lock_portrait"
+        android:title="@string/pref_title_lock_portrait"
+        android:summary="@string/pref_summary_lock_portrait" />
+
     <Preference
         android:key="privacy_policy"
         android:title="Privacy policy"

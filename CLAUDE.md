@@ -23,6 +23,9 @@ The Android SDK is the Homebrew cask install (`/opt/homebrew/Caskroom/android-co
 - Switching between debug-signed and release-signed builds on the same device fails with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`. `adb uninstall org.leeko.intervaltimer` first.
 - The app logs almost nothing on purpose (all `Log.d` calls were removed). Verify behavior from screenshots and `logcat | grep FATAL`, not from app log lines.
 - Phone-call pausing can be tested with `adb emu gsm call <number>`.
+- Rotation: `adb shell settings put system accelerometer_rotation 0` then `user_rotation 1` (landscape) / `0` (portrait). The system may reset `user_rotation` to 0 after an app forces an orientation, so re-apply it before checking other screens. Put `accelerometer_rotation` back to 1 afterward.
+- Large-screen behavior without a tablet AVD: `adb shell wm density 240` makes the phone AVD report sw720dp. Undo with `adb shell wm density reset`.
+- Foreground `sleep` is blocked in the harness, so wait with `adb shell 'sleep N'` instead.
 
 ## Release rules
 
@@ -41,7 +44,7 @@ The Android SDK is the Homebrew cask install (`/opt/homebrew/Caskroom/android-co
 
 - `MainActivity`: workout editor. A `ViewPager` + `SlidingTabLayout` with one tab per saved workout (max 10), hosted in `SlidingTabsBasicFragment`. Dialogs in `dialog/` (`TimeDialog`, `RoundsDialog`, `RenameDialog`, `ActionsDialog`) use `NumberPicker` wheels. Rounds value `0` means **unlimited**.
 - `TimerActivity`: the running-workout screen. Launched from `MainActivity` through an `ActivityResultLauncher`.
-- `SettingsActivity`: legacy `PreferenceActivity` + `PreferenceFragment`, screen defined in `res/xml/pref_general.xml`.
+- `SettingsActivity`: legacy `PreferenceActivity` + `PreferenceFragment`, screen defined in `res/xml/pref_general.xml`. The "Lock timer to portrait" checkbox (`Utils.PREF_LOCK_PORTRAIT`, default off) only affects `TimerActivity`. It is hidden on screens >= 600dp (`Utils.isLargeScreen()`), because Android 16 ignores orientation locks there for apps targeting API 36.
 - `AppController` (singleton): owns the active counter, alert sounds (`SoundPool`, preloaded by `ensureSoundPoolLoaded()` at `startTimer()`), vibration (`vibrateCompat()`, `VibrationEffect` on API 26+), and audio focus. Losing audio focus pauses the workout. This replaced `READ_PHONE_STATE`, which Play restricts, so do not reintroduce that permission.
 - `counter/`: `CounterFactory` picks a `BaseTimer` subclass from (manual rest?) x (unlimited rounds?): `DefaultTimer`, `DefaultManual`, `UnlimitedNormal`, `UnlimitedManual`. `BaseTimer` ticks once per second on the main-thread `Handler`, scheduled against a fixed `SystemClock.elapsedRealtime()` anchor so it cannot drift.
 - `WorkoutModel` + `contentprovider/MyContentProvider` + `database/`: SQLite persistence behind a `ContentProvider`, with an in-memory `HashMap` cache keyed by tab id. Default workouts are seeded when the database is first created.

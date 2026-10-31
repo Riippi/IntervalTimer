@@ -30,6 +30,9 @@
 
     <string name="pref_title_countdown">Countdown</string>
 
+    <string name="pref_title_lock_portrait">Lock timer to portrait</string>
+    <string name="pref_summary_lock_portrait">Keep the timer view upright when the phone is rotated</string>
+
     <string-array name="pref_countdown_list_titles">
         <item>None</item>
         <item>1 second</item>
