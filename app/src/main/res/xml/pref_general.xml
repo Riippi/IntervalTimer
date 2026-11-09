@@ -1,67 +1,41 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The settings. The keys (and so everyone's saved values) are the same as before the redesign;
+     AppController and TimerActivity read them from the default shared preferences. -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="example_checkbox"
-        android:summary="@string/pref_description_run_in_bg"
-        android:title="@string/pref_title_run_in_bg" />
-    -->
-
-    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
-
-
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
+        android:widgetLayout="@layout/preference_widget_switch"
         android:defaultValue="true"
         android:key="prevent_screensaver_checkbox"
-        android:title="Keep screen on"
-        android:summary="Keep the screen on during workout" />
+        android:summary="@string/pref_summary_keep_screen_on"
+        android:title="@string/pref_title_keep_screen_on" />
 
-
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
+        android:widgetLayout="@layout/preference_widget_switch"
         android:defaultValue="true"
         android:key="pause_on_incoming_call"
-        android:title="Incoming calls"
-        android:summary="Pause workout on incoming calls" />
+        android:summary="@string/pref_summary_pause_on_call"
+        android:title="@string/pref_title_pause_on_call" />
 
-    <!--
-         NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it.
-    -->
-
-    <!--
-     A 'parent' preference, which enables/disables child preferences (below)
-     when checked/unchecked.
--->
-    <CheckBoxPreference
+    <!-- The parent of the sound tone below: that one is only enabled while this is on. -->
+    <SwitchPreferenceCompat
+        android:widgetLayout="@layout/preference_widget_switch"
         android:defaultValue="true"
         android:key="sound"
         android:title="@string/pref_title_sound_alert" />
 
-    <!-- Allows the user to choose a ringtone in the 'notification' category. -->
-    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
-    <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code.
-    <RingtonePreference
-        android:defaultValue="content://settings/system/notification_sound"
-        android:dependency="sound"
-        android:key="notifications_new_message_ringtone"
-        android:ringtoneType="notification"
-        android:title="@string/pref_title_ringtone" />-->
-
-
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code.-->
     <ListPreference
         android:defaultValue="0"
+        android:dependency="sound"
         android:entries="@array/pref_sound_list_titles"
         android:entryValues="@array/pref_sound_list_values"
         android:key="sound_list"
-        android:dependency="sound"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="@string/pref_title_sound_tone" />
+        android:title="@string/pref_title_sound_tone"
+        app:useSimpleSummaryProvider="true" />
 
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
+        android:widgetLayout="@layout/preference_widget_switch"
         android:defaultValue="true"
         android:key="vibrate"
         android:title="@string/pref_title_vibrate" />
@@ -71,21 +45,21 @@
         android:entries="@array/pref_countdown_list_titles"
         android:entryValues="@array/pref_countdown_list_values"
         android:key="countdown"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="@string/pref_title_countdown" />
+        android:title="@string/pref_title_countdown"
+        app:useSimpleSummaryProvider="true" />
 
     <!-- Hidden on large screens by SettingsActivity (Android ignores the lock there). -->
-    <CheckBoxPreference
+    <SwitchPreferenceCompat
+        android:widgetLayout="@layout/preference_widget_switch"
         android:defaultValue="false"
         android:key="lock_portrait"
-        android:title="@string/pref_title_lock_portrait"
-        android:summary="@string/pref_summary_lock_portrait" />
+        android:summary="@string/pref_summary_lock_portrait"
+        android:title="@string/pref_title_lock_portrait" />
 
     <Preference
         android:key="privacy_policy"
-        android:title="Privacy policy"
-        android:summary="Interval Timer X does not collect any data">
+        android:summary="@string/pref_summary_privacy"
+        android:title="@string/pref_title_privacy">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://moriest.fi/IntervalTimer/" />
@@ -93,7 +67,6 @@
 
     <Preference
         android:key="app_version"
-        android:title="Version"
-        android:selectable="false" />
-
+        android:selectable="false"
+        android:title="@string/pref_title_version" />
 </PreferenceScreen>

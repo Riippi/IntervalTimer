@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Material 3, dark only (see design/redesign/DESIGN_HANDOFF.md). Used by the main
-         screen and its dialogs. The running timer has ThemeTimer, Settings still ThemeX. -->
+         screen, Settings and the dialogs. The running timer uses ThemeTimer (a small variation). -->
     <style name="Theme.IntervalTimer" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/phase_work</item>
         <item name="colorOnPrimary">@color/on_phase</item>
@@ -23,6 +23,15 @@
         <!-- Fonts for Material components (dialogs, buttons) come from the text styles
              below. A theme-wide android:fontFamily is NOT used: it overrides the fonts that
              individual views set in their layouts. -->
+        <!-- Dialogs opened by the settings (androidx.preference uses AppCompat's dialog theme) -->
+        <item name="alertDialogTheme">@style/ThemeOverlay.IntervalTimer.AlertDialog</item>
+
+        <!-- Settings screen (androidx.preference) -->
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:textColorSecondary">@color/on_surface_variant</item>
+        <item name="android:textAppearanceListItem">@style/TextAppearance.IntervalTimer.ListItem</item>
+        <item name="android:textAppearanceListItemSecondary">@style/TextAppearance.IntervalTimer.ListItemSecondary</item>
+
         <!-- Bottom sheet (workout menu) and the Undo snackbar -->
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.IntervalTimer.BottomSheet</item>
         <item name="colorSurfaceInverse">@color/snackbar_background</item>
@@ -37,6 +46,18 @@
         <item name="textAppearanceBodyMedium">@style/TextAppearance.IntervalTimer.Body</item>
     </style>
 
+    <style name="ThemeOverlay.IntervalTimer.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/AlertDialog.IntervalTimer</item>
+        <item name="colorControlActivated">@color/phase_work</item>
+        <item name="android:colorBackgroundFloating">@color/surface_high</item>
+        <item name="android:windowBackground">@drawable/bg_dialog</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
+    <style name="AlertDialog.IntervalTimer" parent="MaterialAlertDialog.Material3">
+        <item name="android:background">@drawable/bg_dialog</item>
+    </style>
+
     <style name="ThemeOverlay.IntervalTimer.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.IntervalTimer.BottomSheet</item>
         <item name="android:backgroundDimAmount">0.62</item>
@@ -44,6 +65,20 @@
 
     <style name="Widget.IntervalTimer.BottomSheet" parent="Widget.Material3.BottomSheet">
         <item name="backgroundTint">@color/surface_high</item>
+    </style>
+
+    <style name="TextAppearance.IntervalTimer.ListItem" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/pref_text_primary</item>
+    </style>
+
+    <style name="TextAppearance.IntervalTimer.ListItemSecondary" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/pref_text_secondary</item>
     </style>
 
     <style name="TextAppearance.IntervalTimer.Heading" parent="TextAppearance.Material3.HeadlineSmall">

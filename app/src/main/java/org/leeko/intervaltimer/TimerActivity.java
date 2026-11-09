@@ -3,7 +3,6 @@ package org.leeko.intervaltimer;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -24,6 +23,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.leeko.intervaltimer.counter.BaseTimer;
 import org.leeko.intervaltimer.view.FitTextView;
@@ -434,7 +435,7 @@ public class TimerActivity extends Activity {
         app.pauseTimer();
         render();
 
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setMessage(R.string.exit_workout_confirm)
                 .setCancelable(false)
                 .setPositiveButton(R.string.yes, new android.content.DialogInterface.OnClickListener() {

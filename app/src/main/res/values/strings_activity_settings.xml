@@ -6,8 +6,6 @@
 
 
     <!-- General settings -->
-    <string name="pref_title_run_in_bg">Run under locked screen</string>
-    <string name="pref_description_run_in_bg">Allows the application to run in background</string>
     <string name="pref_title_sound_tone">Sound tone</string>
 
     <string-array name="pref_sound_list_titles">
@@ -24,7 +22,6 @@
     </string-array>
 
     <string name="pref_title_sound_alert">Sound alert</string>
-    <string name="pref_ringtone_silent">Silent</string>
     <string name="pref_title_vibrate">Vibrate</string>
 
 
@@ -50,4 +47,12 @@
         <item>5</item>
     </string-array>
 
+
+    <string name="pref_title_keep_screen_on">Keep screen on</string>
+    <string name="pref_summary_keep_screen_on">Keep the screen on during workout</string>
+    <string name="pref_title_pause_on_call">Incoming calls</string>
+    <string name="pref_summary_pause_on_call">Pause workout on incoming calls</string>
+    <string name="pref_title_privacy">Privacy policy</string>
+    <string name="pref_summary_privacy">Interval Timer X does not collect any data</string>
+    <string name="pref_title_version">Version</string>
 </resources>
