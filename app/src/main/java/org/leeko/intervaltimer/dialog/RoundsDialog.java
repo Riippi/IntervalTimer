@@ -71,6 +71,7 @@ public class RoundsDialog extends DialogFragment {
         numberPicker.setWrapSelectorWheel(false);
         numberPicker.setDisplayedValues(nums);
         numberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        PickerText.enlarge(numberPicker);
 
         return new MaterialAlertDialogBuilder(requireContext())
                 .setView(view)

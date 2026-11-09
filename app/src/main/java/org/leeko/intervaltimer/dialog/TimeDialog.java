@@ -85,6 +85,7 @@ public class TimeDialog extends DialogFragment {
         minutes.setWrapSelectorWheel(false);
         minutes.setDisplayedValues(nums);
         minutes.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        PickerText.enlarge(minutes);
 
         seconds = (NumberPicker) view.findViewById(R.id.SecondsPicker);
         seconds.setMaxValue(59);
@@ -93,6 +94,7 @@ public class TimeDialog extends DialogFragment {
         seconds.setWrapSelectorWheel(false);
         seconds.setDisplayedValues(nums);
         seconds.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        PickerText.enlarge(seconds);
 
         return new MaterialAlertDialogBuilder(requireContext())
                 .setView(view)

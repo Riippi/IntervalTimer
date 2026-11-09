@@ -176,8 +176,8 @@
 
         <ImageView
             android:id="@+id/pauseIcon"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_pause" />
 
