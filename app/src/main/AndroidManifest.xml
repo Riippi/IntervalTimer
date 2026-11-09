@@ -40,6 +40,13 @@
                 android:value="org.leeko.intervaltimer.MainActivity" />
         </activity>
 
+        <activity
+            android:name="org.leeko.intervaltimer.ManageActivity"
+            android:label="@string/manage_title"
+            android:parentActivityName="org.leeko.intervaltimer.MainActivity"
+            android:theme="@style/Theme.IntervalTimer"
+            android:exported="false" />
+
         <provider
             android:name=".contentprovider.MyContentProvider"
             android:authorities="org.leeko.intervaltimer.contentprovider"

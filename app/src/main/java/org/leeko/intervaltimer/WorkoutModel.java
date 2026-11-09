@@ -21,6 +21,10 @@ public class WorkoutModel {
     private HashMap<Integer, Workout> hash; // Tab id  and workout
     private static WorkoutModel singleton;
 
+    // Counts every change to the saved workouts, so a screen that was covered by another
+    // one (Main behind Manage) can tell when it has to redraw.
+    private int revision = 0;
+
     private WorkoutModel() {
 
         hash = new HashMap<Integer, Workout>();  // Tab id  and workout
@@ -35,6 +39,20 @@ public class WorkoutModel {
         return singleton;
     }
 
+
+    public int getRevision() {
+        return revision;
+    }
+
+    /** @return tab id of the workout with this database id, or -1 */
+    public int findTabIdByWorkoutId(int workoutId) {
+        for (Map.Entry<Integer, Workout> entry : hash.entrySet()) {
+            if (entry.getValue().getId() == workoutId) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
 
     public Workout getWorkoutCached(int tabId) {
 
@@ -60,6 +78,8 @@ public class WorkoutModel {
         if (workout == null) {
             return;
         }
+
+        revision++;
 
 
         ContentValues values = workout.getContentValues();
@@ -87,6 +107,8 @@ public class WorkoutModel {
      * Loads all workout objects from the database and puts them into hash cache
      */
     private void loadAllWorkouts() {
+
+        revision++;
 
         // Clear the cache
         if (hash != null) {
@@ -219,6 +241,47 @@ public class WorkoutModel {
 
     }
 
+
+    /**
+     * Moves a workout from one place to another (drag and drop on the manage screen): the
+     * ones in between shift by one. Does not touch the screens, the caller redraws.
+     */
+    public void moveWorkout(int from, int to) {
+        if (from == to || from < 0 || to < 0) {
+            return;
+        }
+
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+        for (Map.Entry<Integer, Workout> entry : hash.entrySet()) {
+            int tab = entry.getKey();
+            int newTab = tab;
+            if (tab == from) {
+                newTab = to;
+            } else if (from < to && tab > from && tab <= to) {
+                newTab = tab - 1;
+            } else if (from > to && tab >= to && tab < from) {
+                newTab = tab + 1;
+            }
+            if (newTab != tab) {
+                ops.add(ContentProviderOperation.newUpdate(MyContentProvider.CONTENT_URI)
+                        .withSelection(WorkoutTable.COLUMN_ID + " = ? ",
+                                new String[]{String.valueOf(entry.getValue().getId())})
+                        .withValue(WorkoutTable.COLUMN_TAB, newTab)
+                        .build());
+            }
+        }
+
+        try {
+            MainActivity.getInstance().getContentResolver().
+                    applyBatch(MyContentProvider.AUTHORITY, ops);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (OperationApplicationException e) {
+            e.printStackTrace();
+        }
+
+        loadAllWorkouts();
+    }
 
     /**
      * Puts a workout at the given place, moving the workouts from there on one place to the

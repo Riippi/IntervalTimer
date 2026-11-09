@@ -16,7 +16,6 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import org.leeko.intervaltimer.dialog.RoundsDialog;
 import org.leeko.intervaltimer.dialog.TimeDialog;
@@ -27,12 +26,11 @@ import org.leeko.intervaltimer.dialog.WorkoutMenuSheet;
  * workout's settings, and the Start button.
  */
 public class MainActivity extends AppCompatActivity implements TimeDialog.NoticeDialogListener,
-        RoundsDialog.NoticeDialogListener {
+        RoundsDialog.NoticeDialogListener, WorkoutMenuSheet.Host {
 
     public static final String PREFS_NAME = "intervaltimerX";
     public static final String PREFS_TAB = "TAB";
     private static final int MAX_WORKOUTS = 10;
-    private static final int UNDO_DURATION_MS = 6000;
     private static final int CHIP_NAME_LENGTH = 28;   // long enough that "X" and "X copy" stay apart
 
     private static MainActivity singleton;
@@ -41,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements TimeDialog.Notice
     private HorizontalScrollView chipsScroll;
     private LinearLayout chipsRow;
     private WorkoutPagerAdapter adapter;
+    private int seenRevision;   // WorkoutModel.getRevision() the screen was last drawn for
 
     // Registered eagerly (required by the Activity Result API: before the activity reaches
     // STARTED, not lazily when the user taps something).
@@ -48,6 +47,15 @@ public class MainActivity extends AppCompatActivity implements TimeDialog.Notice
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 // TimerActivity has closed so stop the timer
                 AppController.getInstance().stopTimer();
+            });
+
+    // The manage screen tells which workout to show when it closes.
+    private final ActivityResultLauncher<Intent> manageLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                Intent data = result.getData();
+                int workoutId = data != null ? data.getIntExtra(ManageActivity.EXTRA_SELECTED_ID, -1) : -1;
+                int tab = workoutId >= 0 ? WorkoutModel.getInstance().findTabIdByWorkoutId(workoutId) : -1;
+                updateWholeTabView(tab >= 0 ? tab : pager.getCurrentItem());
             });
 
     // Returns the application instance
@@ -109,6 +117,15 @@ public class MainActivity extends AppCompatActivity implements TimeDialog.Notice
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // Something changed the workouts while this screen was covered (the manage screen).
+        if (WorkoutModel.getInstance().getRevision() != seenRevision) {
+            updateWholeTabView(pager.getCurrentItem());
+        }
+    }
+
+    @Override
     protected void onPause() {
         SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, 0).edit();
         editor.putInt(PREFS_TAB, pager.getCurrentItem());
@@ -150,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements TimeDialog.Notice
     // ----- Chips -----
 
     private void buildChips() {
+        seenRevision = WorkoutModel.getInstance().getRevision();
         chipsRow.removeAllViews();
         LayoutInflater inflater = getLayoutInflater();
         int count = WorkoutModel.getInstance().getWorkoutAmount();
@@ -263,10 +281,11 @@ public class MainActivity extends AppCompatActivity implements TimeDialog.Notice
 
     /** The menu button on the workout card: opens the workout menu sheet. */
     void showWorkoutMenu(int position) {
-        WorkoutMenuSheet.newInstance(position).show(getSupportFragmentManager(), "menu");
+        WorkoutMenuSheet.newInstance(position, true).show(getSupportFragmentManager(), "menu");
     }
 
     /** Duplicate: the copy goes in right after the original and is selected. */
+    @Override
     public void duplicateWorkout(int position) {
         if (WorkoutModel.getInstance().getWorkoutAmount() >= MAX_WORKOUTS) {
             return;
@@ -275,26 +294,27 @@ public class MainActivity extends AppCompatActivity implements TimeDialog.Notice
     }
 
     /** Delete without asking; a snackbar offers Undo for a few seconds. */
-    public void deleteWorkoutWithUndo(final int position) {
-        if (WorkoutModel.getInstance().getWorkoutAmount() <= 1) {
-            return;
-        }
-        final Workout removed = WorkoutModel.getInstance().getWorkoutCached(position).copy();
-        WorkoutModel.getInstance().deleteWorkout(position);
+    @Override
+    public void deleteWorkoutWithUndo(int position) {
+        UndoDelete.delete(this, position, R.id.startButton, null);
+    }
 
-        Snackbar.make(findViewById(android.R.id.content),
-                        getString(R.string.workout_deleted, removed.getName()), UNDO_DURATION_MS)
-                .setAnchorView(R.id.startButton)
-                .setAction(R.string.undo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        WorkoutModel.getInstance().insertWorkoutAt(removed, position);
-                    }
-                })
-                .show();
+    /** The sheet moved a workout; the model already redrew this screen. */
+    @Override
+    public void onWorkoutsChanged() {
+    }
+
+    /** "Reorder & manage all" in the menu sheet. */
+    @Override
+    public void openManageScreen() {
+        Intent intent = new Intent(this, ManageActivity.class);
+        intent.putExtra(ManageActivity.EXTRA_SELECTED_ID,
+                WorkoutModel.getInstance().getWorkoutCached(pager.getCurrentItem()).getId());
+        manageLauncher.launch(intent);
     }
 
     /** Called by the menu sheet after the new name was typed in. */
+    @Override
     public void renameWorkout(int position, String name) {
         Workout workout = WorkoutModel.getInstance().getWorkoutCached(position);
         workout.setName(name);

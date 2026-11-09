@@ -32,6 +32,9 @@
     <color name="switch_outline">#5A6068</color>
     <color name="destructive">#FF8080</color>
     <color name="sheet_divider">#2C3035</color>
+    <color name="button_outline">#4A4F56</color>
+    <color name="drag_surface">#2A2E33</color>
+    <color name="swipe_delete_background">#3A1F1F</color>
     <color name="sheet_handle">#4A4F56</color>
     <color name="snackbar_action">#A33F00</color>
     <color name="snackbar_background">#ECEDEE</color>

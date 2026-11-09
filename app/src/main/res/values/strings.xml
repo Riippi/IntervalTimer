@@ -99,4 +99,17 @@
     <string name="meta_rest">%1$s rest</string>
     <string name="meta_rest_manual">rest on tap</string>
 
+    <!-- Manage screen -->
+    <string name="manage_title">Workouts</string>
+    <string name="manage_caption">Drag to reorder. This order is the swipe order on the main screen. Swipe a row left to delete, you can undo.</string>
+    <string name="manage_new_workout">New workout</string>
+    <string name="sheet_manage">Reorder &amp; manage all</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_reorder">Reorder %1$s</string>
+    <string name="cd_options_for">Options for %1$s</string>
+    <string name="manage_summary">%1$d × %2$s work · %3$s</string>
+    <string name="manage_summary_unlimited">Unlimited · %1$s work · %2$s</string>
+    <string name="total_unlimited_symbol">∞</string>
+    <string name="cd_total_unlimited">Unlimited</string>
+
 </resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The row that is being dragged on the manage screen: raised and lighter. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/drag_surface" />
+    <corners android:radius="18dp" />
+</shape>

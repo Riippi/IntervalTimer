@@ -22,7 +22,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import org.leeko.intervaltimer.MainActivity;
 import org.leeko.intervaltimer.PhasePlan;
 import org.leeko.intervaltimer.R;
 import org.leeko.intervaltimer.Utils;
@@ -36,7 +35,26 @@ import org.leeko.intervaltimer.WorkoutModel;
  */
 public class WorkoutMenuSheet extends BottomSheetDialogFragment {
 
+    /**
+     * What the screen that opened the sheet has to do. Both the main screen and the manage
+     * screen host this sheet.
+     */
+    public interface Host {
+        void duplicateWorkout(int position);
+
+        void deleteWorkoutWithUndo(int position);
+
+        void renameWorkout(int position, String name);
+
+        /** The sheet moved a workout; redraw. */
+        void onWorkoutsChanged();
+
+        /** The "Reorder &amp; manage all" row was tapped. */
+        void openManageScreen();
+    }
+
     private static final String ARG_POSITION = "position";
+    private static final String ARG_SHOW_MANAGE = "showManage";
     private static final int MAX_WORKOUTS = 10;
     private static final float DISABLED_ALPHA = 0.35f;
 
@@ -52,11 +70,14 @@ public class WorkoutMenuSheet extends BottomSheetDialogFragment {
     private View moveLeftRow;
     private View moveRightRow;
     private View deleteRow;
+    private View manageRow;
 
-    public static WorkoutMenuSheet newInstance(int position) {
+    /** @param showManage false on the manage screen itself, where the row would go nowhere */
+    public static WorkoutMenuSheet newInstance(int position, boolean showManage) {
         WorkoutMenuSheet sheet = new WorkoutMenuSheet();
         Bundle args = new Bundle();
         args.putInt(ARG_POSITION, position);
+        args.putBoolean(ARG_SHOW_MANAGE, showManage);
         sheet.setArguments(args);
         return sheet;
     }
@@ -109,7 +130,7 @@ public class WorkoutMenuSheet extends BottomSheetDialogFragment {
                     @Override
                     public void onClick(View v) {
                         dismiss();
-                        activity().duplicateWorkout(position);
+                        host().duplicateWorkout(position);
                     }
                 });
         moveLeftRow = setUpRow(view.findViewById(R.id.actionMoveLeft), R.drawable.ic_arrow_back, R.string.sheet_move_left,
@@ -119,6 +140,7 @@ public class WorkoutMenuSheet extends BottomSheetDialogFragment {
                         WorkoutModel.getInstance().moveLeft(position);
                         position--;
                         bind();
+                        host().onWorkoutsChanged();
                     }
                 });
         moveRightRow = setUpRow(view.findViewById(R.id.actionMoveRight), R.drawable.ic_arrow_forward, R.string.sheet_move_right,
@@ -128,6 +150,7 @@ public class WorkoutMenuSheet extends BottomSheetDialogFragment {
                         WorkoutModel.getInstance().moveRight(position);
                         position++;
                         bind();
+                        host().onWorkoutsChanged();
                     }
                 });
         deleteRow = setUpRow(view.findViewById(R.id.actionDelete), R.drawable.ic_delete, R.string.sheet_delete,
@@ -135,9 +158,21 @@ public class WorkoutMenuSheet extends BottomSheetDialogFragment {
                     @Override
                     public void onClick(View v) {
                         dismiss();
-                        activity().deleteWorkoutWithUndo(position);
+                        host().deleteWorkoutWithUndo(position);
                     }
                 });
+        manageRow = setUpRow(view.findViewById(R.id.actionManage), R.drawable.ic_list, R.string.sheet_manage,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss();
+                        host().openManageScreen();
+                    }
+                });
+        manageRow.findViewById(R.id.sheetChevron).setVisibility(View.VISIBLE);
+        manageRow.setVisibility(requireArguments().getBoolean(ARG_SHOW_MANAGE, true) ? View.VISIBLE : View.GONE);
+        setRowEnabled(manageRow, true);
+
         ((ImageView) deleteRow.findViewById(R.id.sheetIcon)).setColorFilter(
                 ContextCompat.getColor(requireContext(), R.color.destructive));
         ((TextView) deleteRow.findViewById(R.id.sheetLabel)).setTextColor(
@@ -193,8 +228,8 @@ public class WorkoutMenuSheet extends BottomSheetDialogFragment {
         row.setOnClickListener(enabled ? (View.OnClickListener) row.getTag() : null);
     }
 
-    private MainActivity activity() {
-        return (MainActivity) requireActivity();
+    private Host host() {
+        return (Host) requireActivity();
     }
 
     /** Fills the header and the enabled state of the actions from the saved workout. */
@@ -265,7 +300,7 @@ public class WorkoutMenuSheet extends BottomSheetDialogFragment {
     private void saveName() {
         String name = renameInput.getText().toString().trim();
         if (!name.isEmpty()) {
-            activity().renameWorkout(position, name);
+            host().renameWorkout(position, name);
         }
         bind();
         stopRename();

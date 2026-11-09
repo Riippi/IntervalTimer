@@ -94,6 +94,10 @@
                     android:layout_weight="1" />
             </LinearLayout>
 
+            <include
+                android:id="@+id/actionManage"
+                layout="@layout/row_sheet_action" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

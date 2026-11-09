@@ -31,4 +31,13 @@
         android:maxLines="1"
         android:textColor="@color/on_surface"
         android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/sheetChevron"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_chevron_right"
+        android:visibility="gone"
+        app:tint="@color/on_surface_muted" />
 </LinearLayout>
