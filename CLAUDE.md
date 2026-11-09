@@ -33,6 +33,8 @@ The Android SDK is the Homebrew cask install (`/opt/homebrew/Caskroom/android-co
 
 ## Release rules
 
+- The release build is shrunk with R8 (`minifyEnabled` and `shrinkResources` in `app/build.gradle`): release APK about 4.3 MB, bundle about 3.9 MB, versus 7.1 / 6.2 MB unshrunk. `proguard-rules.txt` has no custom rules and none were needed. **Before uploading, run the release build (`assembleRelease`, install `app-release.apk`) through every screen**, because R8 problems only show up there. The release app is not debuggable, so `run-as` (the sqlite trick above) only works on the debug build. `app/build/outputs/mapping/release/mapping.txt` decodes crash traces; Play Console gets it automatically from the bundle.
+
 - Every upload to Play Console needs a **new `versionCode`** in `app/build.gradle`. Play rejects a re-upload of a versionCode that was already used, even on a different track. Bump `versionName` alongside it.
 - Signing config reads `keystore.properties` (gitignored, along with `*.jks` / `*.keystore`). If the file is absent the project still builds, unsigned. **Never read, print, echo or commit its contents or the keystore.** Passwords and passphrases are the user's: they run `keytool` / `ssh-keygen` themselves in their own terminal.
 - Play Console and account-level settings are done by the user in the browser. Claude cannot reach them.

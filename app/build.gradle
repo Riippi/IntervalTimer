@@ -34,7 +34,10 @@ android {
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
             }
-            minifyEnabled false
+            // R8 shrinks the code and removes unused resources. The libraries (Material,
+            // AndroidX) bring their own keep rules; proguard-rules.txt is for ours.
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
