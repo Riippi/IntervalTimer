@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workout setup</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5CC8FF}a:hover{color:#8FDAFF}
+.chips::-webkit-scrollbar{display:none}
+button{-webkit-tap-highlight-color:transparent}
+button:disabled{opacity:.35;cursor:default}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #0E0F11; color: #ECEDEE; font-family: Inter, system-ui, sans-serif; box-sizing: border-box">
+
+  <header style="height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 20px">
+    <h1 style="margin: 0; font: 600 20px/1 'Space Grotesk', sans-serif; letter-spacing: -0.01em">Interval Timer</h1>
+    <div style="display: flex; gap: 4px">
+      <button aria-label="New workout" style="width: 48px; height: 48px; border-radius: 24px; border: none; background: transparent; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+      </button>
+      <button aria-label="Settings" style="width: 48px; height: 48px; border-radius: 24px; border: none; background: transparent; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>
+      </button>
+    </div>
+  </header>
+
+  <nav aria-label="Workouts" class="chips" style="display: flex; gap: 8px; padding: 2px 20px 12px; overflow-x: auto; scrollbar-width: none">
+    <sc-for list="{{chips}}" as="chip" hint-placeholder-count="5">
+      <button aria-pressed="{{chip.pressed}}" onClick="{{chip.pick}}" style="{{chip.style}}">{{chip.label}}</button>
+    </sc-for>
+  </nav>
+
+  <section onPointerDown="{{onDown}}" onPointerUp="{{onUp}}" style="touch-action: pan-y; display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 0">
+
+    <div style="background: #17191C; border-radius: 24px; padding: 20px">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px">
+        <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+          <span style="font-size: 13px; color: #8E949C">{{position}}</span>
+          <h2 style="margin: 0; font: 600 24px/1.15 'Space Grotesk', sans-serif; letter-spacing: -0.01em">{{name}}</h2>
+        </div>
+        <button aria-label="Workout options" onClick="{{openSheet}}" style="flex: none; width: 44px; height: 44px; border-radius: 22px; border: none; background: #23262A; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="12" cy="19" r="1.8"></circle></svg>
+        </button>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 10px; margin-top: 14px">
+        <span style="font: 600 56px/1 'Space Grotesk', sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -0.02em">{{total}}</span>
+        <span style="font-size: 15px; color: #A1A7AE">{{totalSuffix}}</span>
+      </div>
+      <div role="img" aria-label="Workout timeline" style="display: flex; gap: 2px; height: 10px; margin-top: 18px; overflow: hidden">
+        <sc-for list="{{segs}}" as="seg" hint-placeholder-count="16">
+          <span style="{{seg.style}}"></span>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 16px; margin-top: 12px; font-size: 13px; color: #A1A7AE">
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #FFD60A"></span>Warm-up</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #2BE04F"></span>Work</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #FF3B30"></span>Rest</span>
+      </div>
+    </div>
+
+    <div style="background: #17191C; border-radius: 24px">
+      <sc-for list="{{rows}}" as="row" hint-placeholder-count="4">
+        <div style="{{row.rowStyle}}">
+          <span style="{{row.dotStyle}}"></span>
+          <span style="flex: 1; font-size: 16px; font-weight: 500">{{row.label}}</span>
+          <div style="display: flex; align-items: center; gap: 2px">
+            <button aria-label="Decrease {{row.label}}" disabled="{{row.decDis}}" onClick="{{row.dec}}" style="width: 44px; height: 44px; border-radius: 22px; border: none; background: #23262A; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 12h12"></path></svg>
+            </button>
+            <span style="min-width: 68px; text-align: center; font: 600 22px/1 'Space Grotesk', sans-serif; font-variant-numeric: tabular-nums">{{row.value}}</span>
+            <button aria-label="Increase {{row.label}}" disabled="{{row.incDis}}" onClick="{{row.inc}}" style="width: 44px; height: 44px; border-radius: 22px; border: none; background: #23262A; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 6v12M6 12h12"></path></svg>
+            </button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="background: #17191C; border-radius: 24px; display: flex; align-items: center; gap: 16px; padding: 14px 16px 14px 20px">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 16px; font-weight: 500">Manual rest</span>
+        <span style="font-size: 13px; color: #A1A7AE">Wait for a tap before each round</span>
+      </div>
+      <button role="switch" aria-checked="{{manualOn}}" aria-label="Manual rest" onClick="{{toggleManual}}" style="{{trackStyle}}">
+        <span style="{{knobStyle}}"></span>
+      </button>
+    </div>
+  </section>
+
+  <sc-if value="{{snackOn}}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="position: absolute; left: 16px; right: 16px; bottom: 100px; z-index: 5; background: #ECEDEE; color: #111315; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 4px 16px; font-size: 15px">
+      <span>Deleted “{{snackName}}”</span>
+      <button onClick="{{undo}}" style="height: 44px; padding: 0 14px; border: none; background: transparent; color: #A33F00; font: 600 15px Inter, sans-serif; cursor: pointer">Undo</button>
+    </div>
+  </sc-if>
+
+  <button style="position: absolute; left: 16px; right: 16px; bottom: 20px; height: 64px; border-radius: 32px; border: none; background: #2BE04F; color: #0A0A0A; display: flex; align-items: center; justify-content: center; gap: 10px; font: 700 20px/1 'Space Grotesk', sans-serif; letter-spacing: 0.02em; cursor: pointer">
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"></path></svg>
+    Start
+  </button>
+
+  <sc-if value="{{open}}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; z-index: 10">
+      <button aria-label="Close menu" onClick="{{close}}" style="position: absolute; inset: 0; width: 100%; height: 100%; border: none; background: rgba(0, 0, 0, 0.62); cursor: pointer"></button>
+      <div role="dialog" aria-label="Workout options" style="position: absolute; left: 0; right: 0; bottom: 0; background: #1E2125; border-radius: 28px 28px 0 0; padding: 10px 0 20px">
+        <div style="width: 36px; height: 4px; border-radius: 2px; background: #4A4F56; margin: 0 auto 14px"></div>
+
+        <sc-if value="{{notRenaming}}" hint-placeholder-val="{{ true }}">
+          <div style="padding: 4px 24px 14px; border-bottom: 1px solid #2C3035">
+            <div style="font: 600 20px/1.2 'Space Grotesk', sans-serif">{{name}}</div>
+            <div style="font-size: 14px; color: #A1A7AE; margin-top: 4px">{{sheetMeta}}</div>
+          </div>
+          <div style="display: flex; flex-direction: column; padding-top: 8px">
+            <button onClick="{{startRename}}" style="height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 24px; border: none; background: transparent; color: #ECEDEE; font: 400 16px Inter, sans-serif; text-align: left; cursor: pointer">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path></svg>
+              Rename
+            </button>
+            <button onClick="{{dup}}" style="height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 24px; border: none; background: transparent; color: #ECEDEE; font: 400 16px Inter, sans-serif; text-align: left; cursor: pointer">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a2 2 0 0 1 2-2h9"></path></svg>
+              Duplicate
+            </button>
+            <div style="display: flex">
+              <button disabled="{{leftDis}}" onClick="{{moveL}}" style="flex: 1; height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 24px; border: none; background: transparent; color: #ECEDEE; font: 400 16px Inter, sans-serif; text-align: left; cursor: pointer">
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>
+                Move left
+              </button>
+              <button disabled="{{rightDis}}" onClick="{{moveR}}" style="flex: 1; height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 24px; border: none; background: transparent; color: #ECEDEE; font: 400 16px Inter, sans-serif; text-align: left; cursor: pointer">
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                Move right
+              </button>
+            </div>
+            <a href="Manage.dc.html" style="height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 24px; color: #ECEDEE; text-decoration: none; font: 400 16px Inter, sans-serif">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>
+              <span style="flex: 1">Reorder &amp; manage all</span>
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8E949C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+            </a>
+            <div style="height: 1px; background: #2C3035; margin: 6px 0"></div>
+            <button disabled="{{delDis}}" onClick="{{del}}" style="height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 24px; border: none; background: transparent; color: #FF8080; font: 400 16px Inter, sans-serif; text-align: left; cursor: pointer">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
+              Delete workout
+            </button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{renaming}}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 4px 24px 8px; display: flex; flex-direction: column; gap: 10px">
+            <label for="wname" style="font-size: 14px; color: #A1A7AE">Workout name</label>
+            <input id="wname" value="{{draft}}" onChange="{{onDraft}}" style="height: 56px; box-sizing: border-box; border-radius: 14px; border: 2px solid #2BE04F; background: #17191C; color: #ECEDEE; padding: 0 16px; font: 500 18px Inter, sans-serif; outline: none">
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px">
+              <button onClick="{{cancelRename}}" style="height: 48px; padding: 0 20px; border-radius: 24px; border: none; background: transparent; color: #ECEDEE; font: 600 15px Inter, sans-serif; cursor: pointer">Cancel</button>
+              <button onClick="{{saveName}}" style="height: 48px; padding: 0 24px; border-radius: 24px; border: none; background: #2BE04F; color: #0A0A0A; font: 600 15px Inter, sans-serif; cursor: pointer">Save</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"sheetOpen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(...a) {
+    super(...a);
+    this.state = {
+      sel: 0, sheet: null, renaming: false, draft: '', snack: null,
+      workouts: [
+        { name: 'Tabata protocol', short: 'Tabata', warm: 10, rounds: 8, work: 20, rest: 10, manual: false },
+        { name: 'Little method', short: 'Little method', warm: 60, rounds: 8, work: 60, rest: 75, manual: false },
+        { name: 'Boxing 4×2', short: 'Boxing 4×2', warm: 0, rounds: 4, work: 120, rest: 60, manual: false },
+        { name: 'Manual rest', short: 'Manual rest', warm: 10, rounds: 5, work: 45, rest: 30, manual: true },
+        { name: 'Intervals', short: 'Intervals', warm: 30, rounds: 6, work: 90, rest: 30, manual: false }
+      ]
+    };
+  }
+  componentWillUnmount() { clearTimeout(this.t); }
+  fmt(s) { const m = Math.floor(s / 60); const r = s % 60; return m + ':' + String(r).padStart(2, '0'); }
+  setW(fn, extra) {
+    const s = this.state;
+    this.setState(Object.assign({ workouts: s.workouts.map((x, i) => (i === s.sel ? fn(x) : x)) }, extra || {}));
+  }
+  step(key, dir) {
+    return () => this.setW((x) => {
+      const v = x[key];
+      const o = Object.assign({}, x);
+      if (key === 'rounds') { o.rounds = Math.max(1, Math.min(99, v + dir)); return o; }
+      const d = dir > 0 ? (v < 60 ? 5 : 15) : (v <= 60 ? 5 : 15);
+      o[key] = Math.max(key === 'work' ? 5 : 0, Math.min(3600, v + dir * d));
+      return o;
+    });
+  }
+  swap(dir) {
+    const s = this.state;
+    const j = s.sel + dir;
+    if (j < 0 || j >= s.workouts.length) return;
+    const l = s.workouts.slice();
+    const t = l[s.sel]; l[s.sel] = l[j]; l[j] = t;
+    this.setState({ workouts: l, sel: j });
+  }
+  renderVals() {
+    const s = this.state;
+    const ws = s.workouts;
+    const sel = Math.max(0, Math.min(s.sel, ws.length - 1));
+    const w = ws[sel];
+    const open = s.sheet === null ? !!this.props.sheetOpen : s.sheet;
+    const C = { warm: '#FFD60A', work: '#2BE04F', rest: '#FF3B30' };
+    const total = w.warm + w.rounds * w.work + (w.manual ? 0 : (w.rounds - 1) * w.rest);
+
+    const segs = [];
+    const seg = (sec, c) => segs.push({ style: 'flex: ' + sec + ' 1 0px; min-width: 3px; height: 100%; border-radius: 3px; background: ' + c });
+    if (w.warm > 0) seg(w.warm, C.warm);
+    for (let r = 0; r < w.rounds; r++) {
+      seg(w.work, C.work);
+      if (r < w.rounds - 1) {
+        if (w.manual) segs.push({ style: 'flex: 0 0 4px; height: 100%; border-radius: 2px; background: #FF3B30; opacity: 0.5' });
+        else if (w.rest > 0) seg(w.rest, C.rest);
+      }
+    }
+
+    const row = (key, label, value, dot, decDis, incDis, dim, last) => ({
+      label, value, decDis, incDis,
+      dotStyle: 'width: 10px; height: 10px; border-radius: 5px; flex: none; box-sizing: border-box; background: ' + dot,
+      dec: this.step(key, -1), inc: this.step(key, 1),
+      rowStyle: 'display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 12px 0 20px; ' + (last ? '' : 'border-bottom: 1px solid #24272B; ') + (dim ? 'opacity: 0.45;' : '')
+    });
+    const rows = [
+      row('warm', 'Warm-up', this.fmt(w.warm), C.warm, w.warm <= 0, false, false, false),
+      row('rounds', 'Rounds', String(w.rounds), 'transparent; border: 2px solid #A1A7AE', w.rounds <= 1, w.rounds >= 99, false, false),
+      row('work', 'Work', this.fmt(w.work), C.work, w.work <= 5, false, false, false),
+      row('rest', 'Rest', w.manual ? 'Tap' : this.fmt(w.rest), C.rest, w.manual || w.rest <= 0, w.manual, w.manual, true)
+    ];
+
+    const chips = ws.map((x, i) => ({
+      label: x.short, pressed: i === sel,
+      pick: () => this.setState({ sel: i }),
+      style: 'flex: none; height: 44px; padding: 0 18px; border-radius: 22px; font: 500 15px/1 Inter, sans-serif; white-space: nowrap; cursor: pointer; ' +
+        (i === sel ? 'background: #ECEDEE; color: #111315; border: 1px solid #ECEDEE;' : 'background: transparent; color: #C9CDD2; border: 1px solid #34383E;')
+    }));
+
+    const summary = w.rounds + ' rounds · ' + this.fmt(w.work) + ' work · ' + (w.manual ? 'rest on tap' : this.fmt(w.rest) + ' rest');
+
+    return {
+      chips, segs, rows, open,
+      name: w.name,
+      position: 'Workout ' + (sel + 1) + ' of ' + ws.length + '  ·  swipe to switch',
+      total: this.fmt(total),
+      totalSuffix: w.manual ? 'total + manual rests' : 'total',
+      sheetMeta: summary + ' · ' + this.fmt(total),
+      manualOn: w.manual,
+      trackStyle: 'flex: none; width: 52px; height: 32px; border-radius: 16px; padding: 0; position: relative; cursor: pointer; border: 2px solid ' + (w.manual ? '#2BE04F' : '#5A6068') + '; background: ' + (w.manual ? '#2BE04F' : '#26292D'),
+      knobStyle: 'position: absolute; top: 50%; transform: translateY(-50%); border-radius: 50%; ' + (w.manual ? 'right: 4px; width: 22px; height: 22px; background: #0A0A0A;' : 'left: 6px; width: 16px; height: 16px; background: #A1A7AE;'),
+      toggleManual: () => this.setW((x) => Object.assign({}, x, { manual: !x.manual })),
+      onDown: (e) => { this.x0 = e.clientX; },
+      onUp: (e) => {
+        if (this.x0 == null) return;
+        const dx = e.clientX - this.x0; this.x0 = null;
+        if (Math.abs(dx) < 60) return;
+        const st = this.state;
+        this.setState({ sel: Math.max(0, Math.min(st.workouts.length - 1, st.sel + (dx < 0 ? 1 : -1))) });
+      },
+      openSheet: () => this.setState({ sheet: true, renaming: false }),
+      close: () => this.setState({ sheet: false, renaming: false }),
+      notRenaming: !s.renaming,
+      renaming: s.renaming,
+      draft: s.draft,
+      onDraft: (e) => this.setState({ draft: e.target.value }),
+      startRename: () => this.setState({ renaming: true, draft: w.name }),
+      cancelRename: () => this.setState({ renaming: false }),
+      saveName: () => {
+        const nm = (this.state.draft || '').trim();
+        if (!nm) { this.setState({ renaming: false }); return; }
+        this.setW((x) => Object.assign({}, x, { name: nm, short: nm.length > 16 ? nm.slice(0, 15) + '…' : nm }), { renaming: false });
+      },
+      dup: () => {
+        const st = this.state;
+        const l = st.workouts.slice();
+        const c = Object.assign({}, l[st.sel], { name: l[st.sel].name + ' copy', short: l[st.sel].short + ' copy' });
+        l.splice(st.sel + 1, 0, c);
+        this.setState({ workouts: l, sel: st.sel + 1, sheet: false });
+      },
+      moveL: () => this.swap(-1),
+      moveR: () => this.swap(1),
+      leftDis: sel === 0,
+      rightDis: sel === ws.length - 1,
+      delDis: ws.length <= 1,
+      del: () => {
+        const st = this.state;
+        if (st.workouts.length <= 1) return;
+        const l = st.workouts.slice();
+        const removed = l.splice(st.sel, 1)[0];
+        this.setState({ workouts: l, sel: Math.min(st.sel, l.length - 1), sheet: false, snack: { w: removed, i: st.sel } });
+        clearTimeout(this.t);
+        this.t = setTimeout(() => this.setState({ snack: null }), 6000);
+      },
+      snackOn: !!s.snack,
+      snackName: s.snack ? s.snack.w.name : '',
+      undo: () => {
+        const st = this.state;
+        if (!st.snack) return;
+        const l = st.workouts.slice();
+        l.splice(st.snack.i, 0, st.snack.w);
+        clearTimeout(this.t);
+        this.setState({ workouts: l, sel: st.snack.i, snack: null });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

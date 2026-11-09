@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workout list home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#ECEDEE}a:hover{color:#FFFFFF}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #0E0F11; color: #ECEDEE; font-family: Inter, system-ui, sans-serif; box-sizing: border-box">
+
+  <header style="height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 20px">
+    <span style="font: 600 16px/1 'Space Grotesk', sans-serif; color: #A1A7AE">Interval Timer</span>
+    <button aria-label="Settings" style="width: 48px; height: 48px; border-radius: 24px; border: none; background: transparent; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>
+    </button>
+  </header>
+
+  <h1 style="margin: 4px 20px 16px; font: 600 32px/1.1 'Space Grotesk', sans-serif; letter-spacing: -0.02em">Workouts</h1>
+
+  <div style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px">
+
+    <div style="background: #17191C; border-radius: 22px; display: flex; align-items: center; gap: 12px; padding: 16px 14px 16px 20px; border: 1px solid #2BE04F">
+      <a href="Main.dc.html" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: #ECEDEE">
+        <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #2BE04F">Last used</span>
+        <span style="font-size: 18px; font-weight: 600">Tabata protocol</span>
+        <span style="font-size: 14px; color: #A1A7AE">8 rounds · 0:20 / 0:10 · 3:50</span>
+      </a>
+      <button aria-label="Start Tabata protocol" style="flex: none; width: 56px; height: 56px; border-radius: 28px; border: none; background: #2BE04F; color: #0A0A0A; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"></path></svg>
+      </button>
+    </div>
+
+    <div style="background: #17191C; border-radius: 22px; display: flex; align-items: center; gap: 12px; padding: 16px 14px 16px 20px">
+      <a href="Main.dc.html" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: #ECEDEE">
+        <span style="font-size: 18px; font-weight: 600">Little method</span>
+        <span style="font-size: 14px; color: #A1A7AE">8 rounds · 1:00 / 1:15 · 17:45</span>
+      </a>
+      <button aria-label="Start Little method" style="flex: none; width: 56px; height: 56px; border-radius: 28px; border: none; background: #23262A; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"></path></svg>
+      </button>
+    </div>
+
+    <div style="background: #17191C; border-radius: 22px; display: flex; align-items: center; gap: 12px; padding: 16px 14px 16px 20px">
+      <a href="Main.dc.html" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: #ECEDEE">
+        <span style="font-size: 18px; font-weight: 600">Boxing 4×2</span>
+        <span style="font-size: 14px; color: #A1A7AE">4 rounds · 2:00 / 1:00 · 11:00</span>
+      </a>
+      <button aria-label="Start Boxing 4×2" style="flex: none; width: 56px; height: 56px; border-radius: 28px; border: none; background: #23262A; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"></path></svg>
+      </button>
+    </div>
+
+    <div style="background: #17191C; border-radius: 22px; display: flex; align-items: center; gap: 12px; padding: 16px 14px 16px 20px">
+      <a href="Main.dc.html" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: #ECEDEE">
+        <span style="font-size: 18px; font-weight: 600">Manual rest</span>
+        <span style="font-size: 14px; color: #A1A7AE">5 rounds · 0:45 / tap · 3:55+</span>
+      </a>
+      <button aria-label="Start Manual rest" style="flex: none; width: 56px; height: 56px; border-radius: 28px; border: none; background: #23262A; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"></path></svg>
+      </button>
+    </div>
+
+    <div style="background: #17191C; border-radius: 22px; display: flex; align-items: center; gap: 12px; padding: 16px 14px 16px 20px">
+      <a href="Main.dc.html" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: #ECEDEE">
+        <span style="font-size: 18px; font-weight: 600">Intervals</span>
+        <span style="font-size: 14px; color: #A1A7AE">6 rounds · 1:30 / 0:30 · 12:00</span>
+      </a>
+      <button aria-label="Start Intervals" style="flex: none; width: 56px; height: 56px; border-radius: 28px; border: none; background: #23262A; color: #ECEDEE; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <button style="position: absolute; right: 16px; bottom: 24px; height: 56px; padding: 0 22px 0 18px; border-radius: 18px; border: none; background: #ECEDEE; color: #111315; display: flex; align-items: center; gap: 10px; font: 600 16px Inter, sans-serif; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); cursor: pointer">
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+    New workout
+  </button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
