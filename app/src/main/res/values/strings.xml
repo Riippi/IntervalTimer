@@ -63,7 +63,7 @@
     <string name="cd_workout_progress_percent">Workout progress, %1$d percent</string>
 
     <!-- Main screen -->
-    <string name="main_title">Interval Timer</string>
+    <string name="main_title">Interval Timer X</string>
     <string name="workout_position">Workout %1$d of %2$d · swipe to switch</string>
     <string name="setting_warmup">Warm-up</string>
     <string name="setting_rounds">Rounds</string>
