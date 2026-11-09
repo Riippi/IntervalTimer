@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Big black pill button (Pause / Resume / Restart) on a phase color. -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#33FFFFFF">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/on_phase" />
+            <corners android:radius="100dp" />
+        </shape>
+    </item>
+</ripple>

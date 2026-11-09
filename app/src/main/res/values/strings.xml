@@ -35,17 +35,38 @@
     <string name="state_work">WORK</string>
     <string name="state_rest">REST</string>
     <string name="state_warmup">WARM-UP</string>
-    <string name="state_start_when_ready">START WHEN READY</string>
-    <string name="state_workout_over">WORKOUT OVER</string>
+    <string name="state_done">DONE</string>
     <string name="state_paused">PAUSED</string>
+    <string name="ready_prompt">READY?</string>
     <string name="button_restart">RESTART</string>
     <string name="button_resume">RESUME</string>
     <string name="button_pause">PAUSE</string>
-    <string name="round_progress">ROUND %1$s</string>
-    <string name="round_progress_next">NEXT: ROUND %1$s</string>
-    <string name="round_of_rounds">%1$d of %2$d</string>
+    <string name="round_of">Round %1$d of %2$d</string>
+    <string name="round_unlimited">Round %1$d</string>
+    <string name="next_round_of">Next: round %1$d of %2$d</string>
+    <string name="next_round_unlimited">Next: round %1$d</string>
+    <string name="get_ready">Get ready</string>
+    <plurals name="get_ready_rounds">
+        <item quantity="one">Get ready · %1$d round</item>
+        <item quantity="other">Get ready · %1$d rounds</item>
+    </plurals>
+    <plurals name="rounds_complete">
+        <item quantity="one">%1$d round complete</item>
+        <item quantity="other">%1$d rounds complete</item>
+    </plurals>
+    <string name="next_work">Next: Work %1$s</string>
+    <string name="next_rest">Next: Rest %1$s</string>
+    <string name="next_rest_manual">Next: Rest (manual)</string>
+    <string name="rest_tap_to_continue">Tap START when you are ready</string>
+    <string name="last_one">Last one, finish strong</string>
+    <string name="great_work">Great work</string>
+    <string name="label_elapsed">ELAPSED</string>
+    <string name="label_remaining">REMAINING</string>
     <string name="remaining_unlimited">-</string>
     <string name="exit_workout_confirm">Exit active workout?</string>
     <string name="yes">Yes</string>
+    <string name="cd_end_workout">End workout</string>
+    <string name="cd_workout_progress">Workout progress</string>
+    <string name="cd_workout_progress_percent">Workout progress, %1$d percent</string>
 
 </resources>

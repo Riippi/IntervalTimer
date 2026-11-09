@@ -1,48 +1,71 @@
 package org.leeko.intervaltimer;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.leeko.intervaltimer.counter.BaseTimer;
+import org.leeko.intervaltimer.view.FitTextView;
+import org.leeko.intervaltimer.view.SegmentedProgressView;
 
+/**
+ * The running-workout screen. The whole window takes the color of the current phase
+ * (yellow warm-up, green work, red rest, light grey when done) and the digits are as
+ * big as the screen allows. The counters in counter/ keep time; AppController calls
+ * {@link #switchState()} when the phase changes and {@link #updateView()} every second,
+ * and both just redraw from the counter's current state.
+ */
 public class TimerActivity extends Activity {
 
-    //	TextView timerTextView;
-    TextView timeText;
-    TextView stateText;
+    private static final long COLOR_ANIMATION_MS = 350;
+    private static final float PAUSED_DIGITS_ALPHA = 0.45f;
 
-    TextView roundText;
-    TextView elapsedText;
-    TextView remainingText;
+    private TextView workoutName;
+    private TextView phaseLabel;
+    private TextView roundText;
+    private FitTextView digits;
+    private TextView nextText;
+    private TextView pausedPill;
+    private TextView elapsedText;     // portrait only
+    private TextView remainingText;
+    private TextView pauseLabel;
+    private ImageView pauseIcon;
+    private View pauseButton;
+    private SegmentedProgressView progressBar;
 
-    View trafficLight;
-    ProgressBar progressBar;
+    private PhasePlan plan;
+    private boolean rendered;
+    private int targetColor;
+    private int displayedColor;
+    private ValueAnimator colorAnimator;
+    private int lastProgressPercent = -1;
 
-    Button pauseButton;
-
-    int currentRound;
-    int nextRound;
-
-    int m_state = BaseTimer.WORK;  // TODO should be the initial state like warmup in some cases
-    int m_beforePauseState = -1;
-
-
-    Drawable shape_yellow;
-    Drawable shape_red;
-    Drawable shape_green;
+    // OnBackInvokedCallback on Android 13+, kept as Object so older devices never load the class.
+    private Object backCallback;
 
     private static TimerActivity instance;
+
     public static TimerActivity getInstance() {
         return instance;
     }
@@ -65,16 +88,18 @@ public class TimerActivity extends Activity {
 
         instance = this;
 
+        // The phase colors are all light, so the status and navigation bar icons stay dark.
+        WindowInsetsControllerCompat bars =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        bars.setAppearanceLightStatusBars(true);
+        bars.setAppearanceLightNavigationBars(true);
 
-        if (getActionBar() != null) {
-            getActionBar().hide();
-        }
+        bindViews();
+        registerBackHandler();
 
-
-        initStuff();
-        // Start the timer
+        // Start the timer. It calls back into switchState()/updateView() right away.
         AppController.getInstance().startTimer();
-
+        render();
 
         // Keep the screen on
         if (AppController.blockScrensaver) {
@@ -82,231 +107,389 @@ public class TimerActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (colorAnimator != null) {
+            colorAnimator.cancel();
+        }
+        if (backCallback != null && Build.VERSION.SDK_INT >= 33) {
+            BackApi33.unregister(this, backCallback);
+            backCallback = null;
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Rotation: swap in the portrait or landscape layout and fill it again.
+        setContentView(R.layout.activity_timer);
+        bindViews();
+        lastProgressPercent = -1;
+        render();
+    }
 
 
-    private void initStuff() {
-        // UI Components
-        stateText = (TextView) findViewById(R.id.textState);
+    private void bindViews() {
+        workoutName = (TextView) findViewById(R.id.workoutName);
+        phaseLabel = (TextView) findViewById(R.id.phaseLabel);
         roundText = (TextView) findViewById(R.id.roundText);
-        remainingText = (TextView) findViewById(R.id.textTotalRemaining);
-        elapsedText = (TextView) findViewById(R.id.textTotalElapsed);
+        digits = (FitTextView) findViewById(R.id.digits);
+        nextText = (TextView) findViewById(R.id.nextText);
+        pausedPill = (TextView) findViewById(R.id.pausedPill);
+        elapsedText = (TextView) findViewById(R.id.elapsedText);
+        remainingText = (TextView) findViewById(R.id.remainingText);
+        pauseLabel = (TextView) findViewById(R.id.pauseLabel);
+        pauseIcon = (ImageView) findViewById(R.id.pauseIcon);
+        pauseButton = findViewById(R.id.pauseButton);
+        progressBar = (SegmentedProgressView) findViewById(R.id.progressBar);
+        if (plan != null) {
+            // After a rotation this is a brand new view that has not seen the plan yet.
+            progressBar.setPlan(plan);
+        }
 
-        trafficLight = findViewById(R.id.timerTrafficLight);
+        if (workoutName != null) {
+            workoutName.setTypeface(Fonts.inter(this, 600));
+        }
+        phaseLabel.setTypeface(Fonts.spaceGrotesk(this, 700));
+        roundText.setTypeface(Fonts.inter(this, 600));
+        digits.setTypeface(Fonts.spaceGrotesk(this, 700));
+        digits.setHeightFactor(0.85f);
+        nextText.setTypeface(Fonts.inter(this, 500));
+        pausedPill.setTypeface(Fonts.inter(this, 700));
+        remainingText.setTypeface(Fonts.spaceGrotesk(this, 600));
+        pauseLabel.setTypeface(Fonts.spaceGrotesk(this, 700));
+        ((TextView) findViewById(R.id.remainingLabel)).setTypeface(Fonts.inter(this, 700));
+        if (elapsedText != null) {
+            elapsedText.setTypeface(Fonts.spaceGrotesk(this, 600));
+            ((TextView) findViewById(R.id.elapsedLabel)).setTypeface(Fonts.inter(this, 700));
+        }
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-
-        pauseButton = (Button) findViewById(R.id.pauseButton);
+        // TalkBack: announce phase changes, and describe the pill as a button.
+        ViewCompat.setAccessibilityLiveRegion(phaseLabel, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE);
+        ViewCompat.setAccessibilityDelegate(pauseButton, new AccessibilityDelegateCompat() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.setClassName(Button.class.getName());
+            }
+        });
 
         pauseButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 buttonAction();
             }
         });
-
-        shape_yellow = getResources().getDrawable(R.drawable.rounded_corner);
-        shape_red = getResources().getDrawable(R.drawable.rounded_corner_red);
-        shape_green = getResources().getDrawable(R.drawable.rounded_corner_green);
-
-
-        timeText = (TextView) findViewById(R.id.timeText);
-
-        switchState();
-        updateView();
-
+        findViewById(R.id.endButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestExit();
+            }
+        });
     }
 
 
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-
-        setContentView(R.layout.activity_timer);
-
-        super.onConfigurationChanged(newConfig);
-        initStuff();
-
-    }
-
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        //        timerHandler.removeCallbacks(timerRunnable);
-        //        Button b = (Button)findViewById(R.id.button);
-        //        b.setText("start");
-    }
-
-
+    /** Called by AppController when the phase changes. */
     public void switchState() {
-
-        m_state = AppController.getInstance().getTimerState();
-        timeText.setVisibility(View.VISIBLE);
-
-        resetView();
-
-        switch (m_state) {
-            case BaseTimer.WORK: {
-                stateText.setText(R.string.state_work);
-                trafficLight.setBackground(shape_green);
-                break;
-            }
-            case BaseTimer.REST: {
-                stateText.setText(R.string.state_rest);
-                trafficLight.setBackground(shape_red);
-                break;
-            }
-            case BaseTimer.WARMUP: {
-                trafficLight.setBackground(shape_yellow);
-                stateText.setText(R.string.state_warmup);
-                break;
-            }
-            case BaseTimer.MANUAL_REST: {
-                timeText.setVisibility(View.GONE);
-                trafficLight.setBackground(shape_red);
-                stateText.setText(R.string.state_start_when_ready);
-                pauseButton.setText(R.string.start_button);
-                break;
-            }
-            case BaseTimer.OVER: {
-                trafficLight.setBackground(shape_red);
-                timeText.setVisibility(View.GONE);
-                stateText.setText(R.string.state_workout_over);
-                pauseButton.setText(R.string.button_restart);
-                break;
-            }
-        }
-
-        if(AppController.getInstance().isTimerPaused() && m_state != BaseTimer.MANUAL_REST) {
-            setPaused();
-        }
-
+        render();
     }
 
-
-    private void setPaused() {
-        pauseButton.setText(R.string.button_resume);
-        stateText.setText(R.string.state_paused);
-        trafficLight.setBackground(shape_yellow);
-    }
-
-
+    /** Called by AppController every second. */
     public void updateView() {
-        // TODO MOAR
+        render();
+    }
 
-        // int aMin, int aSec, int aRound, int aRounds, int remain, int elapsed, int total
 
-        TimerStats timest = AppController.getInstance().getTimerTime();
-
-        if (timest == null) {
+    /** Redraws the whole screen from the counter's current state. */
+    private void render() {
+        Workout workout = AppController.getWorkout();
+        if (workout == null || phaseLabel == null) {
             return;
         }
-
-        String time = Utils.integersToString(timest.min, timest.sec);
-        timeText.setText(time);
-
-        int aRound = timest.round;
-        int elapsed = timest.elapsed;
-        int remain = timest.remain;
-
-        currentRound = aRound;
-        nextRound = aRound + 1;
-
-        elapsedText.setText(Utils.secondsToString(elapsed));
-        remainingText.setText(Utils.secondsToString(remain));
-
-        currentRound = aRound;
-        nextRound = aRound + 1;
-
-        String lastPart = getString(R.string.round_of_rounds, aRound, timest.roundsAmount);
-
-        if (timest.roundsAmount == 0) {
-            lastPart = String.valueOf(aRound);
-            remainingText.setText(R.string.remaining_unlimited);
+        if (plan == null) {
+            plan = PhasePlan.build(workout.getWarmupInSec(), workout.getWorkInSec(),
+                    workout.getRestInSec(), workout.getRoundAmount(), workout.getManual());
+            progressBar.setPlan(plan);
         }
 
-        if (m_state == BaseTimer.REST || m_state == BaseTimer.MANUAL_REST) {
-            roundText.setText(getString(R.string.round_progress_next, lastPart));
+        AppController app = AppController.getInstance();
+        int state = app.getTimerState();
+        TimerStats stats = app.getTimerTime();
+        boolean paused = app.isTimerPaused();
+
+        boolean over = state == BaseTimer.OVER;
+        boolean manualWait = state == BaseTimer.MANUAL_REST;
+        boolean showPaused = paused && !manualWait && !over;
+
+        int rounds = workout.getRoundAmount();   // 0 = unlimited
+        int round = stats != null ? stats.round : 1;
+        int elapsed = stats != null ? stats.elapsed : 0;
+
+        // Phase: color + word (the word matters for people who can't tell red from green)
+        int colorRes;
+        int labelRes;
+        switch (state) {
+            case BaseTimer.WORK:
+                colorRes = R.color.phase_work;
+                labelRes = R.string.state_work;
+                break;
+            case BaseTimer.REST:
+            case BaseTimer.MANUAL_REST:
+                colorRes = R.color.phase_rest;
+                labelRes = R.string.state_rest;
+                break;
+            case BaseTimer.OVER:
+                colorRes = R.color.phase_done;
+                labelRes = R.string.state_done;
+                break;
+            default:
+                colorRes = R.color.phase_warmup;
+                labelRes = R.string.state_warmup;
+                break;
+        }
+        showColor(ContextCompat.getColor(this, colorRes), rendered);
+        rendered = true;
+        phaseLabel.setText(labelRes);
+
+        if (workoutName != null) {
+            workoutName.setText(workout.getName());
+        }
+        roundText.setText(roundLine(state, rounds, round));
+
+        // The big digits: time left in this phase.
+        if (over) {
+            digits.setText(Utils.secondsToString(stats != null ? stats.total : 0));
+        } else if (manualWait) {
+            digits.setText(R.string.ready_prompt);
+        } else if (stats != null) {
+            digits.setText(Utils.integersToString(stats.min, stats.sec));
         } else {
-            roundText.setText(getString(R.string.round_progress, lastPart));
+            digits.setText(Utils.secondsToString(0));
+        }
+        digits.setAlpha(showPaused ? PAUSED_DIGITS_ALPHA : 1f);
+        pausedPill.setVisibility(showPaused ? View.VISIBLE : View.INVISIBLE);
+
+        nextText.setText(nextLine(state, elapsed));
+
+        // Progress bar and the two totals
+        progressBar.setElapsedSeconds(over ? plan.totalSeconds() + 1 : elapsed);
+        if (!plan.isUnlimited() && plan.totalSeconds() > 0) {
+            int percent = Math.min(100, (over ? plan.totalSeconds() : elapsed) * 100 / plan.totalSeconds());
+            if (percent != lastProgressPercent) {
+                lastProgressPercent = percent;
+                progressBar.setContentDescription(
+                        getString(R.string.cd_workout_progress_percent, percent));
+            }
+        }
+        if (elapsedText != null) {
+            elapsedText.setText(Utils.secondsToString(elapsed));
+        }
+        remainingText.setText(rounds == 0
+                ? getString(R.string.remaining_unlimited)
+                : Utils.secondsToString(stats != null ? stats.remain : 0));
+
+        // The pill: what tapping it will do
+        int pauseLabelRes;
+        int pauseIconRes = R.drawable.ic_play;
+        if (over) {
+            pauseLabelRes = R.string.button_restart;
+        } else if (manualWait) {
+            pauseLabelRes = R.string.start_button;
+        } else if (paused) {
+            pauseLabelRes = R.string.button_resume;
+        } else {
+            pauseLabelRes = R.string.button_pause;
+            pauseIconRes = R.drawable.ic_pause;
+        }
+        pauseLabel.setText(pauseLabelRes);
+        pauseIcon.setImageResource(pauseIconRes);
+    }
+
+    private String roundLine(int state, int rounds, int round) {
+        boolean unlimited = rounds == 0;
+        switch (state) {
+            case BaseTimer.WORK:
+                return unlimited
+                        ? getString(R.string.round_unlimited, round)
+                        : getString(R.string.round_of, round, rounds);
+            case BaseTimer.REST:
+            case BaseTimer.MANUAL_REST:
+                // The counter has already moved on to the next round during a rest.
+                return unlimited
+                        ? getString(R.string.next_round_unlimited, round)
+                        : getString(R.string.next_round_of, round, rounds);
+            case BaseTimer.OVER:
+                return getResources().getQuantityString(R.plurals.rounds_complete, rounds, rounds);
+            default:
+                return unlimited
+                        ? getString(R.string.get_ready)
+                        : getResources().getQuantityString(R.plurals.get_ready_rounds, rounds, rounds);
+        }
+    }
+
+    private String nextLine(int state, int elapsed) {
+        if (state == BaseTimer.OVER) {
+            return getString(R.string.great_work);
+        }
+        if (state == BaseTimer.MANUAL_REST) {
+            return getString(R.string.rest_tap_to_continue);
         }
 
-        progressBar.setMax(timest.total);
-        progressBar.setProgress(elapsed);
+        int index = plan.locate(elapsed);
+        if (index >= plan.count()) {
+            return "";
+        }
+        int next = plan.next(index);
 
+        // With manual rest the rests are not in the plan: after each work phase comes a
+        // rest that waits for a tap, except after the very last one.
+        if (plan.isManualRest() && plan.kind(index) == PhasePlan.WORK) {
+            return getString(next == -1 ? R.string.last_one : R.string.next_rest_manual);
+        }
+        if (next == -1) {
+            return getString(R.string.last_one);
+        }
+
+        String time = Utils.secondsToString(plan.seconds(next));
+        if (plan.kind(next) == PhasePlan.REST) {
+            return getString(R.string.next_rest, time);
+        }
+        return getString(R.string.next_work, time);
     }
 
 
-    private void resetView() {
-        pauseButton.setText(R.string.button_pause);
+    /** Fades the whole window to the new phase color. */
+    private void showColor(int color, boolean animate) {
+        if (color == targetColor && displayedColor != 0) {
+            return;
+        }
+        targetColor = color;
+        if (colorAnimator != null) {
+            colorAnimator.cancel();
+        }
+        if (!animate || displayedColor == 0) {
+            applyColor(color);
+            return;
+        }
+        colorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), displayedColor, color);
+        colorAnimator.setDuration(COLOR_ANIMATION_MS);
+        colorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                applyColor((Integer) animation.getAnimatedValue());
+            }
+        });
+        colorAnimator.start();
     }
+
+    @SuppressWarnings("deprecation")
+    private void applyColor(int color) {
+        displayedColor = color;
+        getWindow().getDecorView().setBackgroundColor(color);
+        if (Build.VERSION.SDK_INT < 35) {
+            // From Android 15 the bars are transparent and the window shows through;
+            // before that they have to be colored by hand.
+            getWindow().setStatusBarColor(color);
+            getWindow().setNavigationBarColor(color);
+        }
+    }
+
 
     private void buttonAction() {
-
-        int state = AppController.getInstance().getTimerState();
+        AppController app = AppController.getInstance();
+        int state = app.getTimerState();
 
         if (state == BaseTimer.OVER) {
-            AppController.getInstance().startTimer();
-
+            app.startTimer();
         } else if (state == BaseTimer.MANUAL_REST) {
             AppController.resumeTimer();
-
-        } else if (AppController.getInstance().isTimerPaused()) {
+        } else if (app.isTimerPaused()) {
             AppController.resumeTimer();
-
         } else {
-            AppController.getInstance().pauseTimer();
+            app.pauseTimer();
         }
 
-        switchState();
-        updateView();
+        render();
     }
 
 
+    /**
+     * Ends the workout. A finished workout just closes; a running one is paused and the
+     * user is asked first, and Cancel puts it back the way it was.
+     */
+    private void requestExit() {
+        final AppController app = AppController.getInstance();
+        int state = app.getTimerState();
 
-
-    @Override
-    public void onBackPressed() {
-
-
-        // If workout is over exit without questions.
-        if (AppController.getInstance().getTimerState() == BaseTimer.OVER) {
-             goBack();
+        if (state == BaseTimer.OVER) {
+            goBack();
             return;
         }
 
-        AppController.getInstance().pauseTimer();
-        switchState();
-        updateView();
+        // Only resume afterwards if it was really running: not if the user had already
+        // paused it, and not while a manual rest waits (resuming would start the next round).
+        final boolean resumeOnCancel = !app.isTimerPaused() && state != BaseTimer.MANUAL_REST;
 
-        // Use the Builder class for convenient dialog construction
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.exit_workout_confirm)
+        app.pauseTimer();
+        render();
+
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.exit_workout_confirm)
                 .setCancelable(false)
-        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // go back
-                 goBack();
-            }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                        AppController.resumeTimer();
-                        switchState();
-                        updateView();
+                .setPositiveButton(R.string.yes, new android.content.DialogInterface.OnClickListener() {
+                    public void onClick(android.content.DialogInterface dialog, int id) {
+                        goBack();
                     }
-                });
-        // Create the AlertDialog
-        builder.create();
-        builder.show();
+                })
+                .setNegativeButton(R.string.cancel, new android.content.DialogInterface.OnClickListener() {
+                    public void onClick(android.content.DialogInterface dialog, int id) {
+                        if (resumeOnCancel) {
+                            AppController.resumeTimer();
+                        }
+                        render();
+                    }
+                })
+                .show();
     }
-
 
     public void goBack() {
-        super.onBackPressed();
+        finish();
     }
 
+
+    // Back button. Android 13+ ignores onBackPressed() once the app opts in to the
+    // predictive back gesture, and Android 16 opts apps targeting API 36 in by default,
+    // so a callback is registered there. Older versions still call onBackPressed().
+    @Override
+    public void onBackPressed() {
+        requestExit();
+    }
+
+    private void registerBackHandler() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            backCallback = BackApi33.register(this);
+        }
+    }
+
+    @RequiresApi(33)
+    private static final class BackApi33 {
+        static Object register(final TimerActivity activity) {
+            OnBackInvokedCallback callback = new OnBackInvokedCallback() {
+                @Override
+                public void onBackInvoked() {
+                    activity.requestExit();
+                }
+            };
+            activity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, callback);
+            return callback;
+        }
+
+        static void unregister(TimerActivity activity, Object callback) {
+            activity.getOnBackInvokedDispatcher()
+                    .unregisterOnBackInvokedCallback((OnBackInvokedCallback) callback);
+        }
+    }
 
 }

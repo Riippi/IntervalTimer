@@ -126,6 +126,11 @@ public class AppController implements ITickerInterface {
         workout = WorkoutModel.getInstance().getWorkoutCached(id);
     }
 
+    /** The workout the timer is running (set by setTimer, or a default one once started). */
+    public static Workout getWorkout() {
+        return workout;
+    }
+
 
     /**
      * @return Amount of countdown beeps, 0 if none.

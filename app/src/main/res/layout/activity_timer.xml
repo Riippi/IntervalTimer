@@ -1,181 +1,192 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Running timer, portrait. The whole window takes the phase color (set in code);
+     this layout only holds the content. Landscape is in layout-land/. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/timerRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="6dp"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".TimerActivity">
+    android:orientation="vertical"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="24dp">
 
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="72dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/workoutName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/on_phase_secondary"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:id="@+id/endButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_icon_button"
+            android:contentDescription="@string/cd_end_workout"
+            android:scaleType="center"
+            android:src="@drawable/ic_close" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <org.leeko.intervaltimer.view.FitTextView
+            android:id="@+id/phaseLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:letterSpacing="0.04"
+            android:textColor="@color/on_phase"
+            android:textSize="64sp" />
+
+        <TextView
+            android:id="@+id/roundText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
+            android:textColor="@color/on_phase"
+            android:textSize="24sp" />
+
+        <org.leeko.intervaltimer.view.FitTextView
+            android:id="@+id/digits"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fontFeatureSettings="tnum"
+            android:gravity="center"
+            android:letterSpacing="-0.05"
+            android:textColor="@color/on_phase"
+            android:textSize="260sp" />
+
+        <TextView
+            android:id="@+id/nextText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="26dp"
+            android:textColor="@color/on_phase_secondary"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/pausedPill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_paused_pill"
+            android:letterSpacing="0.1"
+            android:paddingBottom="6dp"
+            android:paddingEnd="14dp"
+            android:paddingStart="14dp"
+            android:paddingTop="6dp"
+            android:text="@string/state_paused"
+            android:textColor="@color/on_dark_pill"
+            android:textSize="14sp"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <org.leeko.intervaltimer.view.SegmentedProgressView
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="10">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <View
-                android:id="@+id/timerTrafficLight"
-                android:layout_width="match_parent"
-                android:layout_height="0px"
-                android:layout_weight="6"
-                android:background="@drawable/rounded_corner" />
+            <TextView
+                android:id="@+id/elapsedLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.08"
+                android:text="@string/label_elapsed"
+                android:textColor="@color/on_phase_secondary"
+                android:textSize="12sp" />
 
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="0dp"
-                tools:context=".TimerActivity">
-
-                <!-- TOTAL ELAPSED -->
-                <TextView
-                    android:id="@+id/textTotalElapsedTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginTop="10dp"
-                    android:text="ELAPSED"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <TextView
-                    android:id="@+id/textTotalElapsed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@+id/textTotalElapsedTitle"
-                    android:layout_marginTop="10dp"
-                    android:text="0:00"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-
-                <!-- TOTAL REMAINING -->
-                <TextView
-                    android:id="@+id/textTotalRemainingTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/textTotalElapsedTitle"
-                    android:layout_alignParentRight="true"
-                    android:text="REMAINING"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="#ffdcdcdc" />
-
-                <TextView
-                    android:id="@+id/textTotalRemaining"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/textTotalElapsed"
-                    android:layout_alignParentRight="true"
-                    android:text="0:00"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@+id/textTotalElapsed"
-                    android:layout_marginTop="10dp" />
-
-
-            </RelativeLayout>
-
-
-            <LinearLayout
-                android:id="@+id/layoutBottom"
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2"
-                android:layout_alignParentBottom="true"
-                android:layout_gravity="center_vertical"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/pauseButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
-                    android:text="PAUSE"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-
-
-
-
-
-
-
-
-
-
+            <TextView
+                android:id="@+id/elapsedText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFeatureSettings="tnum"
+                android:textColor="@color/on_phase"
+                android:textSize="26sp" />
         </LinearLayout>
-
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="10">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/roundText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="NEXT: ROUND 00 of 00"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/scale_roundof_font"
-                    android:textStyle="bold" />
+            <TextView
+                android:id="@+id/remainingLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.08"
+                android:text="@string/label_remaining"
+                android:textColor="@color/on_phase_secondary"
+                android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/textState"
-                    android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="2"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginLeft="6dp"
-                    android:layout_marginRight="6dp"
-                    android:gravity="center"
-                    android:text="WORK"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/scale_state_font"
-                    android:textStyle="bold" />
-
-
-                <TextView
-                    android:id="@+id/timeText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="none"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:text="00:00"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/scale_font"
-                    android:textStyle="bold" />
-
+            <TextView
+                android:id="@+id/remainingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFeatureSettings="tnum"
+                android:textColor="@color/on_phase"
+                android:textSize="26sp" />
         </LinearLayout>
+    </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/pauseButton"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/bg_pill_dark"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal">
 
+        <ImageView
+            android:id="@+id/pauseIcon"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_pause" />
 
-    </RelativeLayout>
-</FrameLayout>
+        <TextView
+            android:id="@+id/pauseLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:letterSpacing="0.06"
+            android:textColor="@color/on_dark_pill"
+            android:textSize="20sp" />
+    </LinearLayout>
+</LinearLayout>

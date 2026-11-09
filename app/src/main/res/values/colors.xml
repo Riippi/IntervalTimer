@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Redesign tokens (see design/redesign/DESIGN_HANDOFF.md). -->
+
+    <!-- Running timer: the whole screen takes the color of the current phase.
+         Traffic-light colors mean the same thing everywhere in the app. -->
+    <color name="phase_warmup">#FFD60A</color>
+    <color name="phase_work">#2BE04F</color>
+    <color name="phase_rest">#FF3B30</color>
+    <color name="phase_done">#EDEEEF</color>
+
+    <!-- Text, icons and buttons that sit on a phase color. -->
+    <color name="on_phase">#0A0A0A</color>
+    <color name="on_phase_secondary">#B80A0A0A</color>        <!-- 72% -->
+    <color name="on_phase_button">#1F0A0A0A</color>           <!-- 12%: round icon buttons -->
+    <color name="on_phase_track">#2E0A0A0A</color>            <!-- 18%: unfinished progress segments -->
+    <color name="on_phase_ripple">#33000000</color>
+    <color name="on_dark_pill">#F5F5F5</color>                <!-- text/icons on the black pill button -->
+
+    <!-- Window background shown before the first frame is drawn. -->
+    <color name="timer_window_background">#0E0F11</color>
+</resources>

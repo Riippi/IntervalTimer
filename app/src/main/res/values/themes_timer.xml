@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The running timer paints its own full-screen colors, so it needs no action bar
+         and transparent system bars (the window background is set from code). -->
+    <style name="ThemeTimer" parent="android:Theme.Holo.NoActionBar">
+        <item name="android:windowBackground">@color/timer_window_background</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

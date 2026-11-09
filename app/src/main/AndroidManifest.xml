@@ -31,8 +31,9 @@
             android:name="org.leeko.intervaltimer.TimerActivity"
             android:label="@string/app_name"
             android:parentActivityName="org.leeko.intervaltimer.MainActivity"
-            android:theme="@style/ThemeX"
+            android:theme="@style/ThemeTimer"
             android:exported="false"
+            android:enableOnBackInvokedCallback="true"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
