@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Workout menu (opens from the menu button on the workout card). -->
+<!-- Scrollable so the bottom actions stay reachable on a short (landscape) screen. -->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="20dp"
+    android:paddingTop="10dp">
+
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="14dp"
+        android:background="@drawable/bg_sheet_handle" />
+
+    <!-- Normal mode: header and actions -->
+    <LinearLayout
+        android:id="@+id/menuGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="14dp"
+            android:paddingEnd="24dp"
+            android:paddingStart="24dp"
+            android:paddingTop="4dp">
+
+            <TextView
+                android:id="@+id/sheetName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/space_grotesk_semibold"
+                android:maxLines="1"
+                android:textColor="@color/on_surface"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/sheetMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/inter_regular"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/sheet_divider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="8dp">
+
+            <include
+                android:id="@+id/actionRename"
+                layout="@layout/row_sheet_action" />
+
+            <include
+                android:id="@+id/actionDuplicate"
+                layout="@layout/row_sheet_action" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <include
+                    android:id="@+id/actionMoveLeft"
+                    layout="@layout/row_sheet_action"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/actionMoveRight"
+                    layout="@layout/row_sheet_action"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:background="@color/sheet_divider" />
+
+            <include
+                android:id="@+id/actionDelete"
+                layout="@layout/row_sheet_action" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Rename mode: the name field with Cancel and Save, inside the sheet -->
+    <LinearLayout
+        android:id="@+id/renameGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="8dp"
+        android:paddingEnd="24dp"
+        android:paddingStart="24dp"
+        android:paddingTop="4dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:text="@string/sheet_name_label"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/renameInput"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp"
+            android:autofillHints="name"
+            android:background="@drawable/bg_input"
+            android:fontFamily="@font/inter_medium"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="textCapSentences"
+            android:maxLength="50"
+            android:maxLines="1"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:singleLine="true"
+            android:textColor="@color/on_surface"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/renameCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_pill_text_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/inter_semibold"
+                android:gravity="center"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:text="@string/cancel"
+                android:textColor="@color/on_surface"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/renameSave"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_pill_green"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/inter_semibold"
+                android:gravity="center"
+                android:paddingEnd="24dp"
+                android:paddingStart="24dp"
+                android:text="@string/sheet_save"
+                android:textColor="@color/on_phase"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -12,28 +12,28 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
-import org.leeko.intervaltimer.dialog.ActionsDialog;
-import org.leeko.intervaltimer.dialog.RenameDialog;
 import org.leeko.intervaltimer.dialog.RoundsDialog;
 import org.leeko.intervaltimer.dialog.TimeDialog;
+import org.leeko.intervaltimer.dialog.WorkoutMenuSheet;
 
 /**
  * The workout setup screen: one chip per workout, swipeable pages with the selected
  * workout's settings, and the Start button.
  */
 public class MainActivity extends AppCompatActivity implements TimeDialog.NoticeDialogListener,
-        RoundsDialog.NoticeDialogListener, RenameDialog.NoticeDialogListener {
+        RoundsDialog.NoticeDialogListener {
 
     public static final String PREFS_NAME = "intervaltimerX";
     public static final String PREFS_TAB = "TAB";
     private static final int MAX_WORKOUTS = 10;
-    private static final int CHIP_NAME_LENGTH = 16;
+    private static final int UNDO_DURATION_MS = 6000;
+    private static final int CHIP_NAME_LENGTH = 28;   // long enough that "X" and "X copy" stay apart
 
     private static MainActivity singleton;
 
@@ -261,19 +261,45 @@ public class MainActivity extends AppCompatActivity implements TimeDialog.Notice
         dialog.show(getSupportFragmentManager(), "rounds");
     }
 
-    /** The menu button on the workout card (rename, move, delete). */
+    /** The menu button on the workout card: opens the workout menu sheet. */
     void showWorkoutMenu(int position) {
-        int count = WorkoutModel.getInstance().getWorkoutAmount();
+        WorkoutMenuSheet.newInstance(position).show(getSupportFragmentManager(), "menu");
+    }
 
-        DialogFragment dialog = new ActionsDialog();
-        Bundle args = new Bundle();
-        args.putString("name", WorkoutModel.getInstance().getWorkoutCached(position).getName());
-        args.putInt("id", position);
-        args.putBoolean("first", position == 0);
-        args.putBoolean("last", position == count - 1);
-        args.putBoolean("oneWorkout", count == 1);
-        dialog.setArguments(args);
-        dialog.show(getSupportFragmentManager(), "actions");
+    /** Duplicate: the copy goes in right after the original and is selected. */
+    public void duplicateWorkout(int position) {
+        if (WorkoutModel.getInstance().getWorkoutAmount() >= MAX_WORKOUTS) {
+            return;
+        }
+        WorkoutModel.getInstance().duplicateWorkout(position);
+    }
+
+    /** Delete without asking; a snackbar offers Undo for a few seconds. */
+    public void deleteWorkoutWithUndo(final int position) {
+        if (WorkoutModel.getInstance().getWorkoutAmount() <= 1) {
+            return;
+        }
+        final Workout removed = WorkoutModel.getInstance().getWorkoutCached(position).copy();
+        WorkoutModel.getInstance().deleteWorkout(position);
+
+        Snackbar.make(findViewById(android.R.id.content),
+                        getString(R.string.workout_deleted, removed.getName()), UNDO_DURATION_MS)
+                .setAnchorView(R.id.startButton)
+                .setAction(R.string.undo, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        WorkoutModel.getInstance().insertWorkoutAt(removed, position);
+                    }
+                })
+                .show();
+    }
+
+    /** Called by the menu sheet after the new name was typed in. */
+    public void renameWorkout(int position, String name) {
+        Workout workout = WorkoutModel.getInstance().getWorkoutCached(position);
+        workout.setName(name);
+        WorkoutModel.getInstance().saveWorkout(workout);
+        refreshPage(position);
     }
 
 
@@ -314,19 +340,6 @@ public class MainActivity extends AppCompatActivity implements TimeDialog.Notice
         WorkoutModel.getInstance().saveWorkout(rs);
         refreshPage(workoutTabId);
     }
-
-    @Override
-    public void onTextDialogOk(String text, int id) {
-        String name = text.trim();
-        if (name.isEmpty()) {
-            return;   // keep the old name rather than save a blank chip
-        }
-        Workout rs = WorkoutModel.getInstance().getWorkoutCached(id);
-        rs.setName(name);
-        WorkoutModel.getInstance().saveWorkout(rs);
-        refreshPage(id);
-    }
-
 
     /** One swipeable page per workout. */
     private class WorkoutPagerAdapter extends PagerAdapter {

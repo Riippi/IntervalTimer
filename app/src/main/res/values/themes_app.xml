@@ -23,12 +23,27 @@
         <!-- Fonts for Material components (dialogs, buttons) come from the text styles
              below. A theme-wide android:fontFamily is NOT used: it overrides the fonts that
              individual views set in their layouts. -->
+        <!-- Bottom sheet (workout menu) and the Undo snackbar -->
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.IntervalTimer.BottomSheet</item>
+        <item name="colorSurfaceInverse">@color/snackbar_background</item>
+        <item name="colorOnSurfaceInverse">@color/snackbar_text</item>
+        <item name="colorPrimaryInverse">@color/snackbar_action</item>
+
         <item name="textAppearanceHeadlineSmall">@style/TextAppearance.IntervalTimer.Heading</item>
         <item name="textAppearanceTitleLarge">@style/TextAppearance.IntervalTimer.Heading</item>
         <item name="textAppearanceTitleMedium">@style/TextAppearance.IntervalTimer.Label</item>
         <item name="textAppearanceLabelLarge">@style/TextAppearance.IntervalTimer.Label</item>
         <item name="textAppearanceBodyLarge">@style/TextAppearance.IntervalTimer.Body</item>
         <item name="textAppearanceBodyMedium">@style/TextAppearance.IntervalTimer.Body</item>
+    </style>
+
+    <style name="ThemeOverlay.IntervalTimer.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.IntervalTimer.BottomSheet</item>
+        <item name="android:backgroundDimAmount">0.62</item>
+    </style>
+
+    <style name="Widget.IntervalTimer.BottomSheet" parent="Widget.Material3.BottomSheet">
+        <item name="backgroundTint">@color/surface_high</item>
     </style>
 
     <style name="TextAppearance.IntervalTimer.Heading" parent="TextAppearance.Material3.HeadlineSmall">

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The rename field in the bottom sheet: green outline = focused. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/surface" />
+    <stroke android:width="2dp" android:color="@color/phase_work" />
+    <corners android:radius="14dp" />
+</shape>

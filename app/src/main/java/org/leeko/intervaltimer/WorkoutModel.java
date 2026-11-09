@@ -214,14 +214,58 @@ public class WorkoutModel {
         loadAllWorkouts();
 
 
-        int nextTab = tabId - 1;
+        // Show the workout that took the deleted one's place (or the last one).
+        MainActivity.getInstance().updateWholeTabView(tabId);
 
-        if (nextTab < 0) {
-            nextTab = 0;
+    }
+
+
+    /**
+     * Puts a workout at the given place, moving the workouts from there on one place to the
+     * right. Used by Duplicate and by Undo after a delete. Shows and selects it afterwards.
+     */
+    public void insertWorkoutAt(Workout workout, int tabId) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+
+        for (Map.Entry<Integer, Workout> entry : hash.entrySet()) {
+            if (entry.getKey() >= tabId) {
+                ops.add(ContentProviderOperation.newUpdate(MyContentProvider.CONTENT_URI)
+                        .withSelection(WorkoutTable.COLUMN_ID + " = ? ",
+                                new String[]{String.valueOf(entry.getValue().getId())})
+                        .withValue(WorkoutTable.COLUMN_TAB, entry.getKey() + 1)
+                        .build());
+            }
         }
 
-        MainActivity.getInstance().updateWholeTabView(nextTab);
+        workout.setId(0);
+        workout.setTabId(tabId);
+        ops.add(ContentProviderOperation.newInsert(MyContentProvider.CONTENT_URI)
+                .withValues(workout.getContentValues())
+                .build());
 
+        try {
+            MainActivity.getInstance().getContentResolver().
+                    applyBatch(MyContentProvider.AUTHORITY, ops);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (OperationApplicationException e) {
+            e.printStackTrace();
+        }
+
+        loadAllWorkouts();
+        MainActivity.getInstance().updateWholeTabView(tabId);
+    }
+
+    /**
+     * Inserts a copy of the workout right after it and selects the copy.
+     *
+     * @return tab id of the copy
+     */
+    public int duplicateWorkout(int tabId) {
+        Workout copy = getWorkoutCached(tabId).copy();
+        copy.setName(MainActivity.getInstance().getString(R.string.workout_copy_name, copy.getName()));
+        insertWorkoutAt(copy, tabId + 1);
+        return tabId + 1;
     }
 
 

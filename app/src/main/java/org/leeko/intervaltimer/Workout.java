@@ -270,6 +270,26 @@ public class Workout {
     }
 
 
+    /**
+     * A copy with the same settings but no database id yet, for duplicating a workout and
+     * for putting a deleted one back (Undo).
+     */
+    public Workout copy() {
+        Workout copy = new Workout();
+        copy.tabId = tabId;
+        copy.name = name;
+        copy.roundAmount = roundAmount;
+        copy.workMin = workMin;
+        copy.workSec = workSec;
+        copy.restMin = restMin;
+        copy.restSec = restSec;
+        copy.warmupMin = warmupMin;
+        copy.warmupSec = warmupSec;
+        copy.manual = manual;
+        return copy;
+    }
+
+
     @Override
     public String toString() {
         return "Name=" + name + " DBID=" + id + " TABID=" + tabId;

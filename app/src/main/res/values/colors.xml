@@ -31,6 +31,11 @@
     <color name="chip_selected_text">#111315</color>
     <color name="switch_outline">#5A6068</color>
     <color name="destructive">#FF8080</color>
+    <color name="sheet_divider">#2C3035</color>
+    <color name="sheet_handle">#4A4F56</color>
+    <color name="snackbar_action">#A33F00</color>
+    <color name="snackbar_background">#ECEDEE</color>
+    <color name="snackbar_text">#111315</color>
 
     <!-- Window background shown before the first frame is drawn. -->
     <color name="timer_window_background">#0E0F11</color>
