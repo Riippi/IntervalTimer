@@ -81,34 +81,60 @@ public class WorkoutTable {
 			+ "0"
 			+ ");";
 
-	private static final String INSERT_LITTLE = INSERT_FISRT_PART
+	private static final String INSERT_HIIT = INSERT_FISRT_PART
 			+ "1, "
-			+ "'Little Method', "
-			+ "3, "
+			+ "'HIIT 40/20', "
 			+ "0, "
+			+ "10, "
 			+ "8, "
-			+ "1, "
 			+ "0, "
-			+ "1, "
-			+ "15, "
+			+ "40, "
+			+ "0, "
+			+ "20, "
 			+ "0"
 			+ ");";
 
-	private static final String INSERT_B4x2 = INSERT_FISRT_PART
+	private static final String INSERT_EMOM = INSERT_FISRT_PART
 			+ "2, "
-			+ "'Boxing 4x2', "
+			+ "'EMOM 10', "
+			+ "0, "
+			+ "10, "
+			+ "10, "
+			+ "1, "
 			+ "0, "
 			+ "0, "
-			+ "4, "
-			+ "2, "
+			+ "0, "
+			+ "0"
+			+ ");";
+
+	private static final String INSERT_BOXING = INSERT_FISRT_PART
+			+ "3, "
+			+ "'Boxing 3x3', "
+			+ "0, "
+			+ "0, "
+			+ "3, "
+			+ "3, "
 			+ "0, "
 			+ "1, "
+			+ "0, "
+			+ "0"
+			+ ");";
+
+	private static final String INSERT_NORWEGIAN = INSERT_FISRT_PART
+			+ "4, "
+			+ "'Norwegian 4x4', "
+			+ "10, "
+			+ "0, "
+			+ "4, "
+			+ "4, "
+			+ "0, "
+			+ "3, "
 			+ "0, "
 			+ "0"
 			+ ");";
 
 	private static final String INSERT_MANUAL = INSERT_FISRT_PART
-			+ "3, "
+			+ "5, "
 			+ "'Manual Rest', "
 			+ "1, "
 			+ "0, "
@@ -120,46 +146,14 @@ public class WorkoutTable {
 			+ "1"
 			+ ");";
 
-	private static final String INSERT_INTERVALS = INSERT_FISRT_PART
-			+ "4, "
-			+ "'Intervals', "
-			+ "3, "
-			+ "0, "
-			+ "6, "
-			+ "1, "
-			+ "0, "
-			+ "3, "
-			+ "0, "
-			+ "0"
-			+ ");";
-	
-	private static final String INSERT_MMA = INSERT_FISRT_PART
-			+ "5, "
-			+ "'MMA 3x3', "
-			+ "0, "
-			+ "0, "
-			+ "3, "
-			+ "3, "
-			+ "0, "
-			+ "1, "
-			+ "0, "
-			+ "0"
-			+ ");";
-
-	//	  setIntValues("Little", 8, 1, 0, 1, 15, 0, 0, false);
-	//	  setIntValues("Boxing 4x2", 4, 2, 0, 1, 0, 0, 0, false);
-	//	  setIntValues("Boxing 3x3", 3, 3, 0, 1, 0, 0, 0, false);
-	// setIntValues("Manual", 10, 1, 0, 0, 30, 1, 0, true);
-
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
 		database.execSQL(INSERT_TABATA);
-		database.execSQL(INSERT_LITTLE);
-		database.execSQL(INSERT_B4x2);
+		database.execSQL(INSERT_HIIT);
+		database.execSQL(INSERT_EMOM);
+		database.execSQL(INSERT_BOXING);
+		database.execSQL(INSERT_NORWEGIAN);
 		database.execSQL(INSERT_MANUAL);
-		database.execSQL(INSERT_INTERVALS);
-		database.execSQL(INSERT_MMA);
-
 	}
 
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
