@@ -54,6 +54,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <!-- 800sp is only the upper limit; FitTextView picks the largest size that fits. -->
         <org.leeko.intervaltimer.view.FitTextView
             android:id="@+id/digits"
             android:layout_width="0dp"
@@ -63,7 +64,7 @@
             android:gravity="center"
             android:letterSpacing="-0.05"
             android:textColor="@color/on_phase"
-            android:textSize="250sp" />
+            android:textSize="800sp" />
 
         <LinearLayout
             android:layout_width="236dp"

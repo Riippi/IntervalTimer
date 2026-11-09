@@ -69,9 +69,11 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <LinearLayout
+    <org.leeko.intervaltimer.view.MaxWidthLinearLayout
         android:id="@+id/startButton"
         android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        app:maxContentWidth="@dimen/content_max_width"
         android:layout_height="52dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
@@ -99,5 +101,5 @@
             android:text="@string/start_button"
             android:textColor="@color/on_phase"
             android:textSize="20sp" />
-    </LinearLayout>
+    </org.leeko.intervaltimer.view.MaxWidthLinearLayout>
 </LinearLayout>

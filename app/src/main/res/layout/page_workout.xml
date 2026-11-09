@@ -12,10 +12,12 @@
     android:paddingTop="4dp"
     android:scrollbars="none">
 
-    <LinearLayout
+    <org.leeko.intervaltimer.view.MaxWidthLinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        app:maxContentWidth="@dimen/content_max_width">
 
         <!-- Hero card -->
         <LinearLayout
@@ -258,5 +260,5 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/manual_title" />
         </LinearLayout>
-    </LinearLayout>
+    </org.leeko.intervaltimer.view.MaxWidthLinearLayout>
 </ScrollView>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widest the content of the setup screens gets. Practically unlimited on phones; on
+         tablets (smallest width 600dp or more) the cards and buttons stop at this width and
+         are centered instead of stretching across the whole screen. -->
+    <dimen name="content_max_width">10000dp</dimen>
+</resources>
