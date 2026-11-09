@@ -7,6 +7,6 @@
     <group android:translateX="25.6" android:translateY="-25.6" android:rotation="45">
       <path android:fillColor="#FF000000" android:pathData="M -4.2,-4.2 L 4.2,-4.2 L 4.2,4.2 L -4.2,4.2 Z"/>
     </group>
-    <path android:fillColor="#FF000000" android:fillType="evenOdd" android:pathData="M -27.65,0 a 27.65,27.65 0 1 0 55.3,0 a 27.65,27.65 0 1 0 -55.3,0 Z M -19,-19 L -10.5,-19 L 0,-8.5 L 10.5,-19 L 19,-19 L 8.5,0 L 19,19 L 10.5,19 L 0,8.5 L -10.5,19 L -19,19 L -8.5,0 Z"/>
+    <path android:fillColor="#FF000000" android:fillType="evenOdd" android:pathData="M -27.65,0 a 27.65,27.65 0 1 0 55.3,0 a 27.65,27.65 0 1 0 -55.3,0 Z M -20.16,-14.5 L -8.84,-14.5 L 0,-5.66 L 8.84,-14.5 L 20.16,-14.5 L 5.66,0 L 20.16,14.5 L 8.84,14.5 L 0,5.66 L -8.84,14.5 L -20.16,14.5 L -5.66,0 Z"/>
   </group>
 </vector>
