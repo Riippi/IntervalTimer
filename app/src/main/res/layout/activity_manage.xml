@@ -36,6 +36,7 @@
             android:layout_marginStart="4dp"
             android:layout_weight="1"
             android:fontFamily="@font/space_grotesk_semibold"
+            android:id="@+id/manageTitle"
             android:text="@string/manage_title"
             android:textColor="@color/on_surface"
             android:textSize="20sp" />

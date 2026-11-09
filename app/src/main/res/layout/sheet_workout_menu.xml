@@ -83,14 +83,14 @@
                     android:id="@+id/actionMoveLeft"
                     layout="@layout/row_sheet_action"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1" />
 
                 <include
                     android:id="@+id/actionMoveRight"
                     layout="@layout/row_sheet_action"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1" />
             </LinearLayout>
 
@@ -127,6 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"
+            android:labelFor="@+id/renameInput"
             android:text="@string/sheet_name_label"
             android:textColor="@color/on_surface_variant"
             android:textSize="14sp" />

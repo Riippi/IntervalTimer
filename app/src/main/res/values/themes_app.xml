@@ -49,7 +49,6 @@
     <style name="ThemeOverlay.IntervalTimer.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="alertDialogStyle">@style/AlertDialog.IntervalTimer</item>
         <item name="colorControlActivated">@color/phase_work</item>
-        <item name="android:colorBackgroundFloating">@color/surface_high</item>
         <item name="android:windowBackground">@drawable/bg_dialog</item>
         <item name="android:windowIsFloating">true</item>
     </style>

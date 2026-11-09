@@ -31,6 +31,7 @@
             android:layout_marginStart="4dp"
             android:layout_weight="1"
             android:fontFamily="@font/space_grotesk_semibold"
+            android:id="@+id/settingsTitle"
             android:text="@string/title_activity_settings"
             android:textColor="@color/on_surface"
             android:textSize="20sp" />

@@ -2,6 +2,7 @@
 <!-- One workout on the manage screen: drag handle, name and summary, total, options. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -21,6 +22,7 @@
 
         <ImageView
             android:id="@+id/manageHandle"
+            tools:ignore="ContentDescription"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:scaleType="center"
@@ -43,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:fontFamily="@font/inter_semibold"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:textColor="@color/on_surface"
                 android:textSize="16sp" />
 
@@ -70,6 +72,7 @@
 
         <ImageButton
             android:id="@+id/manageOptions"
+            tools:ignore="ContentDescription"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"

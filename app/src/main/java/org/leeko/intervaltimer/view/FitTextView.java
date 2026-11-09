@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.TextView;
+import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * A single-line TextView that picks the largest text size that fits its own box, so the
@@ -15,7 +15,7 @@ import android.widget.TextView;
  * only changes when the text gets longer or shorter (for example 10:00 to 9:59).
  * Give it a fixed size in the layout (match_parent or a weight), not wrap_content.
  */
-public class FitTextView extends TextView {
+public class FitTextView extends AppCompatTextView {
 
     private static final float MIN_SIZE_SP = 12f;
 

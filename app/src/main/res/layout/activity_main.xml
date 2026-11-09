@@ -23,6 +23,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/space_grotesk_semibold"
             android:letterSpacing="-0.01"
+            android:id="@+id/mainTitle"
             android:text="@string/main_title"
             android:textColor="@color/on_surface"
             android:textSize="20sp" />

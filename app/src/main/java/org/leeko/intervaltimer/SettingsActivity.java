@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +22,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         EdgeToEdgeHelper.applySystemBarPadding(this);
+        ViewCompat.setAccessibilityHeading(findViewById(R.id.settingsTitle), true);
 
         findViewById(R.id.settingsBack).setOnClickListener(new View.OnClickListener() {
             @Override

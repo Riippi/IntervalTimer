@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements TimeDialog.Notice
         EdgeToEdgeHelper.applySystemBarPadding(this);
 
         pager = (ViewPager) findViewById(R.id.pager);
+        ViewCompat.setAccessibilityHeading(findViewById(R.id.mainTitle), true);
         chipsScroll = (HorizontalScrollView) findViewById(R.id.chipsScroll);
         chipsRow = (LinearLayout) findViewById(R.id.chipsRow);
 

@@ -9,21 +9,24 @@
         android:defaultValue="true"
         android:key="prevent_screensaver_checkbox"
         android:summary="@string/pref_summary_keep_screen_on"
-        android:title="@string/pref_title_keep_screen_on" />
+        android:title="@string/pref_title_keep_screen_on"
+        app:singleLineTitle="false" />
 
     <SwitchPreferenceCompat
         android:widgetLayout="@layout/preference_widget_switch"
         android:defaultValue="true"
         android:key="pause_on_incoming_call"
         android:summary="@string/pref_summary_pause_on_call"
-        android:title="@string/pref_title_pause_on_call" />
+        android:title="@string/pref_title_pause_on_call"
+        app:singleLineTitle="false" />
 
     <!-- The parent of the sound tone below: that one is only enabled while this is on. -->
     <SwitchPreferenceCompat
         android:widgetLayout="@layout/preference_widget_switch"
         android:defaultValue="true"
         android:key="sound"
-        android:title="@string/pref_title_sound_alert" />
+        android:title="@string/pref_title_sound_alert"
+        app:singleLineTitle="false" />
 
     <ListPreference
         android:defaultValue="0"
@@ -32,13 +35,15 @@
         android:entryValues="@array/pref_sound_list_values"
         android:key="sound_list"
         android:title="@string/pref_title_sound_tone"
+        app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
 
     <SwitchPreferenceCompat
         android:widgetLayout="@layout/preference_widget_switch"
         android:defaultValue="true"
         android:key="vibrate"
-        android:title="@string/pref_title_vibrate" />
+        android:title="@string/pref_title_vibrate"
+        app:singleLineTitle="false" />
 
     <ListPreference
         android:defaultValue="0"
@@ -46,6 +51,7 @@
         android:entryValues="@array/pref_countdown_list_values"
         android:key="countdown"
         android:title="@string/pref_title_countdown"
+        app:singleLineTitle="false"
         app:useSimpleSummaryProvider="true" />
 
     <!-- Hidden on large screens by SettingsActivity (Android ignores the lock there). -->
@@ -54,12 +60,14 @@
         android:defaultValue="false"
         android:key="lock_portrait"
         android:summary="@string/pref_summary_lock_portrait"
-        android:title="@string/pref_title_lock_portrait" />
+        android:title="@string/pref_title_lock_portrait"
+        app:singleLineTitle="false" />
 
     <Preference
         android:key="privacy_policy"
         android:summary="@string/pref_summary_privacy"
-        android:title="@string/pref_title_privacy">
+        android:title="@string/pref_title_privacy"
+        app:singleLineTitle="false">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://moriest.fi/IntervalTimer/" />
@@ -68,5 +76,6 @@
     <Preference
         android:key="app_version"
         android:selectable="false"
-        android:title="@string/pref_title_version" />
+        android:title="@string/pref_title_version"
+        app:singleLineTitle="false" />
 </PreferenceScreen>

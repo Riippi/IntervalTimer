@@ -39,6 +39,7 @@ final class WorkoutPageBinder {
         ((TextView) page.findViewById(R.id.heroCaption))
                 .setText(activity.getString(R.string.workout_position, position + 1, count));
         ((TextView) page.findViewById(R.id.heroName)).setText(workout.getName());
+        ViewCompat.setAccessibilityHeading(page.findViewById(R.id.heroName), true);
 
         TextView total = (TextView) page.findViewById(R.id.heroTotal);
         TextView suffix = (TextView) page.findViewById(R.id.heroTotalSuffix);

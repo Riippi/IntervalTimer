@@ -40,7 +40,9 @@ import org.leeko.intervaltimer.view.SegmentedProgressView;
 public class TimerActivity extends Activity {
 
     private static final long COLOR_ANIMATION_MS = 350;
-    private static final float PAUSED_DIGITS_ALPHA = 0.45f;
+    // The design says 0.45, which is only 2.4:1 against the red rest color; 0.6 keeps
+    // the digits clearly dimmed while staying readable (3:1 or better on every phase).
+    private static final float PAUSED_DIGITS_ALPHA = 0.6f;
 
     private TextView workoutName;
     private TextView phaseLabel;

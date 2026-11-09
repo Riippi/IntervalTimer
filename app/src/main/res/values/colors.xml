@@ -11,7 +11,7 @@
 
     <!-- Text, icons and buttons that sit on a phase color. -->
     <color name="on_phase">#0A0A0A</color>
-    <color name="on_phase_secondary">#B80A0A0A</color>        <!-- 72% -->
+    <color name="on_phase_secondary">#CC0A0A0A</color>        <!-- 80%: the design says 72%, but that is only 4.0:1 on the red rest color -->
     <color name="on_phase_button">#1F0A0A0A</color>           <!-- 12%: round icon buttons -->
     <color name="on_phase_track">#2E0A0A0A</color>            <!-- 18%: unfinished progress segments -->
     <color name="on_phase_ripple">#33000000</color>

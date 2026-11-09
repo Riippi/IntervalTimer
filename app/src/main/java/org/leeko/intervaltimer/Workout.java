@@ -229,21 +229,21 @@ public class Workout {
      */
     public void importFromCursor(Cursor cursor) {
 
-        setId(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ID)));
-        setTabId(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_TAB)));
-        setName(cursor.getString(cursor.getColumnIndex(WorkoutTable.COLUMN_NAME)));
-        setWarmupMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_MIN)));
-        setWarmupSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WARM_UP_SEC)));
+        setId(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_ID)));
+        setTabId(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_TAB)));
+        setName(cursor.getString(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_NAME)));
+        setWarmupMin(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_WARM_UP_MIN)));
+        setWarmupSec(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_WARM_UP_SEC)));
 
-        setRoundAmount(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_ROUNDS)));
+        setRoundAmount(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_ROUNDS)));
 
-        setWorkMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_MIN)));
-        setWorkSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_WORK_SEC)));
+        setWorkMin(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_WORK_MIN)));
+        setWorkSec(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_WORK_SEC)));
 
-        setRestMin(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_MIN)));
-        setRestSec(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_REST_SEC)));
+        setRestMin(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_REST_MIN)));
+        setRestSec(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_REST_SEC)));
 
-        setManualInteger(cursor.getInt(cursor.getColumnIndex(WorkoutTable.COLUMN_MANUAL)));
+        setManualInteger(cursor.getInt(cursor.getColumnIndexOrThrow(WorkoutTable.COLUMN_MANUAL)));
 
     }
 

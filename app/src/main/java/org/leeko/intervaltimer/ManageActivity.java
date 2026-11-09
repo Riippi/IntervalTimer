@@ -68,6 +68,7 @@ public class ManageActivity extends AppCompatActivity implements WorkoutMenuShee
         EdgeToEdgeHelper.applySystemBarPadding(this);
 
         selectedId = getIntent().getIntExtra(EXTRA_SELECTED_ID, -1);
+        ViewCompat.setAccessibilityHeading(findViewById(R.id.manageTitle), true);
 
         list = (RecyclerView) findViewById(R.id.manageList);
         list.setLayoutManager(new LinearLayoutManager(this));
@@ -232,6 +233,8 @@ public class ManageActivity extends AppCompatActivity implements WorkoutMenuShee
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                         touchHelper.startDrag(holder);
+                    } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                        v.performClick();
                     }
                     return false;
                 }
