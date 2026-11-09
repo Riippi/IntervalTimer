@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3, dark only (see design/redesign/DESIGN_HANDOFF.md). Used by the main
+         screen and its dialogs. The running timer has ThemeTimer, Settings still ThemeX. -->
+    <style name="Theme.IntervalTimer" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/phase_work</item>
+        <item name="colorOnPrimary">@color/on_phase</item>
+        <item name="colorSurface">@color/background</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+        <item name="colorSurfaceContainer">@color/surface</item>
+        <item name="colorSurfaceContainerLow">@color/surface</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_high</item>
+        <item name="colorSurfaceContainerHighest">@color/surface_button</item>
+        <item name="colorOutline">@color/switch_outline</item>
+        <item name="colorOutlineVariant">@color/divider</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:textColorPrimary">@color/on_surface</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+        <!-- Fonts for Material components (dialogs, buttons) come from the text styles
+             below. A theme-wide android:fontFamily is NOT used: it overrides the fonts that
+             individual views set in their layouts. -->
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.IntervalTimer.Heading</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.IntervalTimer.Heading</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.IntervalTimer.Label</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.IntervalTimer.Label</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.IntervalTimer.Body</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.IntervalTimer.Body</item>
+    </style>
+
+    <style name="TextAppearance.IntervalTimer.Heading" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/space_grotesk_semibold</item>
+        <item name="fontFamily">@font/space_grotesk_semibold</item>
+    </style>
+
+    <style name="TextAppearance.IntervalTimer.Label" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="fontFamily">@font/inter_semibold</item>
+    </style>
+
+    <style name="TextAppearance.IntervalTimer.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+</resources>

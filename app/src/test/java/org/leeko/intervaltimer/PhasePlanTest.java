@@ -100,6 +100,18 @@ public class PhasePlanTest {
     }
 
     @Test
+    public void manualRestMarkersSitBetweenWorkPhasesOnly() {
+        PhasePlan plan = PhasePlan.build(10, 20, 15, 3, true); // W K K K
+
+        assertEquals(false, plan.hasManualRestAfter(0));   // after warm-up
+        assertEquals(true, plan.hasManualRestAfter(1));
+        assertEquals(true, plan.hasManualRestAfter(2));
+        assertEquals(false, plan.hasManualRestAfter(3));   // after the last round
+        assertEquals(false, PhasePlan.build(10, 20, 15, 3, false).hasManualRestAfter(1));
+        assertEquals(true, PhasePlan.build(0, 20, 15, 0, true).hasManualRestAfter(0)); // unlimited
+    }
+
+    @Test
     public void emptyPlanDoesNotCrash() {
         PhasePlan plan = PhasePlan.build(0, 0, 0, 3, false);
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The value on a setting row. A rounded button-grey pill so it reads as tappable. -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#33FFFFFF">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/surface_button" />
+            <corners android:radius="22dp" />
+        </shape>
+    </item>
+</ripple>

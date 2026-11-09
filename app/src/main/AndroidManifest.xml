@@ -19,7 +19,7 @@
         <activity
             android:name="org.leeko.intervaltimer.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/ThemeX"
+            android:theme="@style/Theme.IntervalTimer"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

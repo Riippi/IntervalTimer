@@ -1,41 +1,49 @@
 package org.leeko.intervaltimer;
 
-
-import android.app.ActionBar;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentTransaction;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import org.leeko.intervaltimer.dialog.ActionsDialog;
 import org.leeko.intervaltimer.dialog.RenameDialog;
 import org.leeko.intervaltimer.dialog.RoundsDialog;
 import org.leeko.intervaltimer.dialog.TimeDialog;
 
-public class MainActivity extends FragmentActivity implements TimeDialog.NoticeDialogListener,
+/**
+ * The workout setup screen: one chip per workout, swipeable pages with the selected
+ * workout's settings, and the Start button.
+ */
+public class MainActivity extends AppCompatActivity implements TimeDialog.NoticeDialogListener,
         RoundsDialog.NoticeDialogListener, RenameDialog.NoticeDialogListener {
-
 
     public static final String PREFS_NAME = "intervaltimerX";
     public static final String PREFS_TAB = "TAB";
-    private static MainActivity singleton;
-    private SlidingTabsBasicFragment fragment;
-    private String fragmentTag = "frTAG";
+    private static final int MAX_WORKOUTS = 10;
+    private static final int CHIP_NAME_LENGTH = 16;
 
-    // Registered eagerly (required by the Activity Result API - must happen before
-    // the activity reaches STARTED, not lazily when the user taps something) rather
-    // than the old startActivityForResult()/onActivityResult(requestCode) pattern.
+    private static MainActivity singleton;
+
+    private ViewPager pager;
+    private HorizontalScrollView chipsScroll;
+    private LinearLayout chipsRow;
+    private WorkoutPagerAdapter adapter;
+
+    // Registered eagerly (required by the Activity Result API: before the activity reaches
+    // STARTED, not lazily when the user taps something).
     private final ActivityResultLauncher<Intent> timerActivityLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 // TimerActivity has closed so stop the timer
@@ -57,145 +65,219 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
         setContentView(R.layout.activity_main);
         EdgeToEdgeHelper.applySystemBarPadding(this);
 
-        if (savedInstanceState == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            fragment = new SlidingTabsBasicFragment();
+        pager = (ViewPager) findViewById(R.id.pager);
+        chipsScroll = (HorizontalScrollView) findViewById(R.id.chipsScroll);
+        chipsRow = (LinearLayout) findViewById(R.id.chipsRow);
 
-            transaction.replace(R.id.sample_content_fragment, fragment, fragmentTag);
-            transaction.commit();
-        }
+        adapter = new WorkoutPagerAdapter();
+        pager.setAdapter(adapter);
 
-        // Set up action bar.
-        final ActionBar actionBar = getActionBar();
+        // Back to the workout that was open last time
+        int count = WorkoutModel.getInstance().getWorkoutAmount();
+        int tab = getSharedPreferences(PREFS_NAME, 0).getInt(PREFS_TAB, 0);
+        tab = Math.max(0, Math.min(tab, count - 1));
 
+        buildChips();
+        pager.setCurrentItem(tab, false);
+        selectChip(tab, false);
 
-        if (actionBar != null) {
-            // Specify that the Home button should show an "Up" caret, indicating that touching the
-            // button will take the user one step up in the application's hierarchy.
-            actionBar.setDisplayHomeAsUpEnabled(false);
-
-            actionBar.setIcon(
-                    new ColorDrawable(ContextCompat.getColor(this, android.R.color.transparent)));
-
-        }
-
-        Button startButton = (Button) findViewById(R.id.buttonStart);
-        startButton.setOnClickListener(new OnClickListener() {
-
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
-            public void onClick(View arg0) {
-                showTimer();
+            public void onPageSelected(int position) {
+                selectChip(position, true);
             }
-
         });
 
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items
-        int itemId = item.getItemId();
-        if (itemId == R.id.action_settings) {
-            showSettings();
-            return true;
-        } else if (itemId == R.id.action_add_workout) {
-
-            if (WorkoutModel.getInstance().getWorkoutAmount() > 9) {
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle(getString(R.string.cant_add_workout_title));
-                alertDialog.setMessage(getString(R.string.max_workouts_reached));
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(android.R.string.ok),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
-
-                return true;
+        findViewById(R.id.startButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimer();
             }
-
-            WorkoutModel.getInstance().addWorkout();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
+        });
+        findViewById(R.id.addWorkoutButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addWorkout();
+            }
+        });
+        findViewById(R.id.settingsButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            }
+        });
     }
 
     @Override
     protected void onPause() {
-
-
-        if (fragment != null) {
-            int tab = fragment.getCurrentTab();
-
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putInt(PREFS_TAB, tab);
-            // Commit the edits!
-            editor.apply();
-        }
+        SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, 0).edit();
+        editor.putInt(PREFS_TAB, pager.getCurrentItem());
+        editor.apply();
         super.onPause();
-
     }
 
 
-    /**
-     * Set up the timer and switch to timer view
-     */
+    /** Set up the timer and switch to timer view. */
     private void showTimer() {
-
-
         // No workouts? Show alert instead of starting something
         if (WorkoutModel.getInstance().getWorkoutAmount() == 0) {
-
-            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            alertDialog.setTitle(getString(R.string.cant_start_timer_title));
-            alertDialog.setMessage(getString(R.string.add_workout_first));
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(android.R.string.ok),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialog.show();
-
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.cant_start_timer_title)
+                    .setMessage(R.string.add_workout_first)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
             return;
         }
 
+        AppController.setTimer(pager.getCurrentItem());
+        timerActivityLauncher.launch(new Intent(this, TimerActivity.class));
+    }
 
-
-        if (fragment == null) {
-            fragment = (SlidingTabsBasicFragment) getSupportFragmentManager().findFragmentByTag(fragmentTag);
+    private void addWorkout() {
+        if (WorkoutModel.getInstance().getWorkoutAmount() >= MAX_WORKOUTS) {
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.cant_add_workout_title)
+                    .setMessage(R.string.max_workouts_reached)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            return;
         }
+        // Adds it and calls updateWholeTabView() to show and select it
+        WorkoutModel.getInstance().addWorkout();
+    }
 
-        if (fragment != null) {
-            int currentId = fragment.getCurrentTab();
-            AppController.setTimer(currentId);
-            timerActivityLauncher.launch(new Intent(this, TimerActivity.class));
+
+    // ----- Chips -----
+
+    private void buildChips() {
+        chipsRow.removeAllViews();
+        LayoutInflater inflater = getLayoutInflater();
+        int count = WorkoutModel.getInstance().getWorkoutAmount();
+
+        for (int i = 0; i < count; i++) {
+            final int position = i;
+            TextView chip = (TextView) inflater.inflate(R.layout.chip_workout, chipsRow, false);
+            chip.setText(chipLabel(WorkoutModel.getInstance().getWorkoutCached(i).getName()));
+            chip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    pager.setCurrentItem(position);
+                }
+            });
+            chipsRow.addView(chip);
         }
+    }
 
+    private static String chipLabel(String name) {
+        if (name.length() > CHIP_NAME_LENGTH) {
+            return name.substring(0, CHIP_NAME_LENGTH - 1) + "…";
+        }
+        return name;
+    }
+
+    /** Highlights the chip of the shown workout and scrolls it into view. */
+    private void selectChip(int position, final boolean animate) {
+        for (int i = 0; i < chipsRow.getChildCount(); i++) {
+            chipsRow.getChildAt(i).setSelected(i == position);
+        }
+        final View chip = chipsRow.getChildAt(position);
+        if (chip == null) {
+            return;
+        }
+        chipsScroll.post(new Runnable() {
+            @Override
+            public void run() {
+                int target = Math.max(0, chip.getLeft() - (chipsScroll.getWidth() - chip.getWidth()) / 2);
+                if (animate) {
+                    chipsScroll.smoothScrollTo(target, 0);
+                } else {
+                    chipsScroll.scrollTo(target, 0);
+                }
+            }
+        });
     }
 
 
-    private void showSettings() {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+    // ----- Refreshing -----
+
+    /** Redraws one page after its workout was changed, and the chip names. */
+    void refreshPage(int position) {
+        View page = pager.findViewWithTag(position);
+        if (page != null) {
+            WorkoutPageBinder.bind(this, page, position);
+        }
+        buildChips();
+        selectChip(pager.getCurrentItem(), false);
+    }
+
+    /**
+     * Update the whole view after workouts were added, deleted or moved.
+     *
+     * @param tabId workout to show afterwards
+     */
+    public void updateWholeTabView(int tabId) {
+        adapter.notifyDataSetChanged();
+        buildChips();
+
+        int count = WorkoutModel.getInstance().getWorkoutAmount();
+        int tab = Math.max(0, Math.min(tabId, count - 1));
+        pager.setCurrentItem(tab, false);
+        selectChip(tab, false);
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    // ----- Dialogs, opened from the page -----
+
+    void editWarmup(int position) {
+        Workout workout = WorkoutModel.getInstance().getWorkoutCached(position);
+        showTimeDialog(new TimeDialog.WarmUpTimeDialog(), workout.getWarmupMin(), workout.getWarmupSec(), position);
+    }
+
+    void editWork(int position) {
+        Workout workout = WorkoutModel.getInstance().getWorkoutCached(position);
+        showTimeDialog(new TimeDialog.WorkTimeDialog(), workout.getWorkMin(), workout.getWorkSec(), position);
+    }
+
+    void editRest(int position) {
+        Workout workout = WorkoutModel.getInstance().getWorkoutCached(position);
+        showTimeDialog(new TimeDialog.RestTimeDialog(), workout.getRestMin(), workout.getRestSec(), position);
+    }
+
+    private void showTimeDialog(TimeDialog dialog, int min, int sec, int position) {
+        Bundle args = new Bundle();
+        args.putInt("min", min);
+        args.putInt("sec", sec);
+        args.putInt("id", position);
+        dialog.setArguments(args);
+        dialog.show(getSupportFragmentManager(), "time");
+    }
+
+    void editRounds(int position) {
+        RoundsDialog dialog = new RoundsDialog();
+        Bundle args = new Bundle();
+        args.putInt("rounds", WorkoutModel.getInstance().getWorkoutCached(position).getRoundAmount());
+        args.putInt("id", position);
+        dialog.setArguments(args);
+        dialog.show(getSupportFragmentManager(), "rounds");
+    }
+
+    /** The menu button on the workout card (rename, move, delete). */
+    void showWorkoutMenu(int position) {
+        int count = WorkoutModel.getInstance().getWorkoutAmount();
+
+        DialogFragment dialog = new ActionsDialog();
+        Bundle args = new Bundle();
+        args.putString("name", WorkoutModel.getInstance().getWorkoutCached(position).getName());
+        args.putInt("id", position);
+        args.putBoolean("first", position == 0);
+        args.putBoolean("last", position == count - 1);
+        args.putBoolean("oneWorkout", count == 1);
+        dialog.setArguments(args);
+        dialog.show(getSupportFragmentManager(), "actions");
     }
 
 
-    // The dialog fragment receives a reference to this Activity through the
-    // Fragment.onAttach() callback, which it uses to call the following methods
-    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    // ----- Dialog results -----
 
     @Override
     public void onDialogPositiveClick(int type, int minutes, int seconds, int id) {
@@ -221,71 +303,62 @@ public class MainActivity extends FragmentActivity implements TimeDialog.NoticeD
                 break;
         }
 
-//		saveState();
         WorkoutModel.getInstance().saveWorkout(rs);
-
-        updateFragmentCurrentTab();
-
+        refreshPage(id);
     }
-
 
     @Override
     public void onRoundsDialogOk(int roundsAmount, int workoutTabId) {
-
         Workout rs = WorkoutModel.getInstance().getWorkoutCached(workoutTabId);
         rs.setRoundAmount(roundsAmount);
         WorkoutModel.getInstance().saveWorkout(rs);
-
-        updateFragmentCurrentTab();
+        refreshPage(workoutTabId);
     }
 
     @Override
     public void onTextDialogOk(String text, int id) {
-
+        String name = text.trim();
+        if (name.isEmpty()) {
+            return;   // keep the old name rather than save a blank chip
+        }
         Workout rs = WorkoutModel.getInstance().getWorkoutCached(id);
-        rs.setName(text);
+        rs.setName(name);
         WorkoutModel.getInstance().saveWorkout(rs);
-
-        if (fragment == null) {
-            fragment = (SlidingTabsBasicFragment) getSupportFragmentManager().findFragmentByTag(fragmentTag);
-        }
-
-        if (fragment != null) {
-            fragment.setTabName(id, text);
-        }
-
-    }
-
-    /**
-     * Safe way to update current tab
-     */
-    private void updateFragmentCurrentTab() {
-        if (fragment == null) {
-            fragment = (SlidingTabsBasicFragment) getSupportFragmentManager().findFragmentByTag(fragmentTag);
-        }
-
-        if (fragment != null) {
-            fragment.updateCurrentTab();
-        }
+        refreshPage(id);
     }
 
 
-    /**
-     * Update the whole tab view
-     * @param tabId tab id where to focus after refresh
-     */
-    public void updateWholeTabView(int tabId) {
+    /** One swipeable page per workout. */
+    private class WorkoutPagerAdapter extends PagerAdapter {
 
-        if (fragment == null) {
-            fragment = (SlidingTabsBasicFragment) getSupportFragmentManager().findFragmentByTag(fragmentTag);
+        @Override
+        public int getCount() {
+            return WorkoutModel.getInstance().getWorkoutAmount();
         }
 
-        if (fragment != null) {
-            fragment.updateAll();
-            fragment.setCurrentTab(tabId);
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return object == view;
         }
 
+        @Override
+        public int getItemPosition(Object object) {
+            // Pages are rebuilt when workouts are added, deleted or moved.
+            return POSITION_NONE;
+        }
+
+        @Override
+        public Object instantiateItem(android.view.ViewGroup container, int position) {
+            View page = getLayoutInflater().inflate(R.layout.page_workout, container, false);
+            page.setTag(position);
+            WorkoutPageBinder.bind(MainActivity.this, page, position);
+            container.addView(page);
+            return page;
+        }
+
+        @Override
+        public void destroyItem(android.view.ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+        }
     }
-
-
 }

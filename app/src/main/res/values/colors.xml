@@ -17,6 +17,21 @@
     <color name="on_phase_ripple">#33000000</color>
     <color name="on_dark_pill">#F5F5F5</color>                <!-- text/icons on the black pill button -->
 
+    <!-- Surfaces and text on the dark app screens (main screen, dialogs, sheets). -->
+    <color name="background">#0E0F11</color>
+    <color name="surface">#17191C</color>                     <!-- cards, list rows -->
+    <color name="surface_high">#1E2125</color>                <!-- dialogs, bottom sheet -->
+    <color name="surface_button">#23262A</color>              <!-- round and value buttons -->
+    <color name="outline">#34383E</color>                     <!-- unselected chip border -->
+    <color name="divider">#24272B</color>
+    <color name="on_surface">#ECEDEE</color>
+    <color name="on_surface_variant">#A1A7AE</color>
+    <color name="on_surface_muted">#8E949C</color>
+    <color name="chip_text">#C9CDD2</color>
+    <color name="chip_selected_text">#111315</color>
+    <color name="switch_outline">#5A6068</color>
+    <color name="destructive">#FF8080</color>
+
     <!-- Window background shown before the first frame is drawn. -->
     <color name="timer_window_background">#0E0F11</color>
 </resources>

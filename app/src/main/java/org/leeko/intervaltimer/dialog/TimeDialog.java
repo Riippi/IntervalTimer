@@ -1,181 +1,141 @@
 package org.leeko.intervaltimer.dialog;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.leeko.intervaltimer.R;
 
-public class TimeDialog  extends DialogFragment {
+/**
+ * Roller dialog for a time (minutes and seconds). The subclasses only differ in the title
+ * and in which setting the host activity is told it was for.
+ */
+public class TimeDialog extends DialogFragment {
 
+    static final int DEFAULT = 0;
+    public static final int WARM_UP_TIME = 1;
+    public static final int WORK_TIME = 2;
+    public static final int REST_TIME = 3;
 
-	static final int DEFAULT = 0;
-	public static final int WARM_UP_TIME = 1;
-	public static final int WORK_TIME = 2;
-	public static final int REST_TIME = 3;
-	
-	int workoutID;
+    int workoutID;
 
-	int titleResId;
-	int min;
-	int sec;
+    int titleResId;
+    int min;
+    int sec;
 
-	NumberPicker minutes;
-	NumberPicker seconds;
+    NumberPicker minutes;
+    NumberPicker seconds;
 
-    public void setArguments(Bundle bundle) {
-        super.setArguments(bundle);
+    /* The activity that creates an instance of this dialog fragment must
+     * implement this interface in order to receive event callbacks. */
+    public interface NoticeDialogListener {
+        void onDialogPositiveClick(int type, int number1, int number2, int id);
+    }
 
-        this.min = getArguments().getInt("min");
-        this.sec = getArguments().getInt("sec");
-        this.workoutID = getArguments().getInt("id");
+    NoticeDialogListener mListener;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Read here (not in setArguments) so the values survive a rotation.
+        Bundle args = getArguments();
+        if (args != null) {
+            min = args.getInt("min");
+            sec = args.getInt("sec");
+            workoutID = args.getInt("id");
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (NoticeDialogListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement NoticeDialogListener");
+        }
+    }
+
+    protected void callBack() {
+        mListener.onDialogPositiveClick(DEFAULT, minutes.getValue(), seconds.getValue(), workoutID);
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        View view = requireActivity().getLayoutInflater().inflate(R.layout.dialog_timepick, null);
+
+        // The numbers that populate the pickers, zero padded: 00, 01, ... 99
+        final String[] nums = new String[100];
+        for (int i = 0; i < nums.length; i++) {
+            nums[i] = i < 10 ? "0" + i : Integer.toString(i);
+        }
+
+        minutes = (NumberPicker) view.findViewById(R.id.MinutesPicker);
+        minutes.setMaxValue(99);
+        minutes.setMinValue(0);
+        minutes.setValue(min);
+        minutes.setWrapSelectorWheel(false);
+        minutes.setDisplayedValues(nums);
+        minutes.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+
+        seconds = (NumberPicker) view.findViewById(R.id.SecondsPicker);
+        seconds.setMaxValue(59);
+        seconds.setMinValue(0);
+        seconds.setValue(sec);
+        seconds.setWrapSelectorWheel(false);
+        seconds.setDisplayedValues(nums);
+        seconds.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+
+        return new MaterialAlertDialogBuilder(requireContext())
+                .setView(view)
+                .setTitle(titleResId)
+                .setPositiveButton(R.string.set, (dialog, id) -> callBack())
+                .setNegativeButton(R.string.cancel, null)
+                .create();
     }
 
 
+    public static class WarmUpTimeDialog extends TimeDialog {
+        public WarmUpTimeDialog() {
+            super();
+            titleResId = R.string.warmup_time_title;
+        }
 
-	/* The activity that creates an instance of this dialog fragment must
-	 * implement this interface in order to receive event callbacks.
-	 * Each method passes the DialogFragment in case the host needs to query it. */
-	public interface NoticeDialogListener {
-		public void onDialogPositiveClick(int type, int number1, int number2, int id);
-	}
+        @Override
+        protected void callBack() {
+            mListener.onDialogPositiveClick(WARM_UP_TIME, minutes.getValue(), seconds.getValue(), workoutID);
+        }
+    }
 
-	// Use this instance of the interface to deliver action events
-	NoticeDialogListener mListener;
-
-	// Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		// Verify that the host activity implements the callback interface
-		try {
-			// Instantiate the NoticeDialogListener so we can send events to the host
-			mListener = (NoticeDialogListener) activity;
-		} catch (ClassCastException e) {
-			// The activity doesn't implement the interface, throw exception
-			throw new ClassCastException(activity.toString()
-					+ " must implement NoticeDialogListener");
-		}
-	}
-
-
-
-	protected void callBack() {
-		mListener.onDialogPositiveClick(DEFAULT, minutes.getValue(), seconds.getValue(), workoutID);
-	}
-
-
-
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		// Get the layout inflater
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-
-		View view = inflater.inflate(R.layout.dialog_timepick, null);
-
-
-		// Inflate and set the layout for the dialog
-		// Pass null as the parent view because its going in the dialog layout
-		builder.setView(view)
-
-		.setTitle(titleResId)
-
-		// Add action buttons
-		.setPositiveButton(R.string.set, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int id) {
-				// sign in the user ...
-				callBack();
-			}
-		})
-		.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				//                       LoginDialogFragment.this.getDialog().cancel();
-			}
-		});      
-
-
-		// Create the array of numbers that will populate the numberpicker
-		final String[] nums = new String[100];
-		for(int i=0; i<nums.length; i++) {
-			nums[i] = Integer.toString(i);
-
-			if (nums[i].length() == 1) {
-				nums[i] = "0"+nums[i];
-			}
-
-		}
-		//        
-		minutes = (NumberPicker) view.findViewById(R.id.MinutesPicker);        
-		minutes.setMaxValue(99);
-		minutes.setMinValue(0);
-		minutes.setValue(min);
-		minutes.setWrapSelectorWheel(false);
-		minutes.setDisplayedValues(nums);
-        minutes.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-
-		seconds = (NumberPicker) view.findViewById(R.id.SecondsPicker);        
-		seconds.setMaxValue(59);
-		seconds.setMinValue(0);
-		seconds.setValue(sec);
-		seconds.setWrapSelectorWheel(false);
-		seconds.setDisplayedValues(nums);
-        seconds.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-
-		return builder.create();
-
-
-	}
-	
-	
-	
-	
-
-	public static class WarmUpTimeDialog extends TimeDialog {
-
-		public WarmUpTimeDialog() {
-			super();
-			titleResId = R.string.warmup_time_title;
-		}
-
-		protected void callBack() {
-			mListener.onDialogPositiveClick(WARM_UP_TIME, minutes.getValue(), seconds.getValue(), workoutID);
-		}
-	}
-
-	
-	public static class RestTimeDialog extends TimeDialog {
-
-		public RestTimeDialog() {
+    public static class RestTimeDialog extends TimeDialog {
+        public RestTimeDialog() {
             super();
             titleResId = R.string.rest_time_title;
-		}
+        }
 
-		protected void callBack() {
-			mListener.onDialogPositiveClick(REST_TIME, minutes.getValue(), seconds.getValue(), workoutID);
-		}
-	}
+        @Override
+        protected void callBack() {
+            mListener.onDialogPositiveClick(REST_TIME, minutes.getValue(), seconds.getValue(), workoutID);
+        }
+    }
 
-	
-	public static class WorkTimeDialog extends TimeDialog {
-
-		public WorkTimeDialog() {
+    public static class WorkTimeDialog extends TimeDialog {
+        public WorkTimeDialog() {
             super();
             titleResId = R.string.work_time_title;
-		}
+        }
 
-		protected void callBack() {
-			mListener.onDialogPositiveClick(WORK_TIME, minutes.getValue(), seconds.getValue(), workoutID);
-		}
-	}
+        @Override
+        protected void callBack() {
+            mListener.onDialogPositiveClick(WORK_TIME, minutes.getValue(), seconds.getValue(), workoutID);
+        }
+    }
 }

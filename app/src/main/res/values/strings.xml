@@ -4,10 +4,6 @@
     <string name="app_name">Interval Timer X</string>
     <string name="new_workout">Add new workout</string>
     <string name="action_settings">Settings</string>
-    <string name="buttonTextWork">Edit work</string>
-    <string name="buttonTextRest">Edit rest</string>
-    <string name="buttonTextRounds">Edit rounds</string>
-    <string name="buttonTextWarmUp">Edit WU</string>
     <string name="manual_title">Manual rest</string>
     <string name="set">Set</string>
     <string name="cancel">Cancel</string>
@@ -22,7 +18,6 @@
     <string name="rest_time_title">Rest time</string>
     <string name="rounds_title">Rounds</string>
     <string name="rounds_unlimited">Unlimited</string>
-    <string name="total_duration">Total duration: %1$s</string>
     <string name="rename_dialog_title">Name</string>
 
     <!-- Alerts -->
@@ -68,5 +63,21 @@
     <string name="cd_end_workout">End workout</string>
     <string name="cd_workout_progress">Workout progress</string>
     <string name="cd_workout_progress_percent">Workout progress, %1$d percent</string>
+
+    <!-- Main screen -->
+    <string name="main_title">Interval Timer</string>
+    <string name="workout_position">Workout %1$d of %2$d · swipe to switch</string>
+    <string name="setting_warmup">Warm-up</string>
+    <string name="setting_rounds">Rounds</string>
+    <string name="setting_work">Work</string>
+    <string name="setting_rest">Rest</string>
+    <string name="value_manual">Manual</string>
+    <string name="total_suffix">total</string>
+    <string name="total_suffix_manual">total + manual rests</string>
+    <string name="total_suffix_unlimited">until you stop</string>
+    <string name="manual_rest_caption">Wait for a tap before each round</string>
+    <string name="cd_workout_options">Workout options</string>
+    <string name="cd_workout_timeline">Workout timeline</string>
+    <string name="cd_setting_row">%1$s, %2$s, tap to change</string>
 
 </resources>

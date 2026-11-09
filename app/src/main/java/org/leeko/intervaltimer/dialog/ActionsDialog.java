@@ -1,21 +1,23 @@
 package org.leeko.intervaltimer.dialog;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.leeko.intervaltimer.MainActivity;
 import org.leeko.intervaltimer.R;
 import org.leeko.intervaltimer.WorkoutModel;
 
 /**
- * Actions dialog. List of actions. Opens when pressing name tab of a workout.
+ * List of actions for a workout (rename, move, delete). Opens from the menu button on the
+ * workout card. To be replaced by the bottom sheet of the redesign.
  */
 public class ActionsDialog extends DialogFragment {
 
-    String name;
     int workoutTabID;
 
     boolean first;
@@ -23,70 +25,48 @@ public class ActionsDialog extends DialogFragment {
     boolean oneWorkout;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            workoutTabID = args.getInt("id");
+            first = args.getBoolean("first");
+            last = args.getBoolean("last");
+            oneWorkout = args.getBoolean("oneWorkout");
+        }
+    }
+
+    @NonNull
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-
         int itemsId = R.array.actions_array;
 
         if (oneWorkout) {
             itemsId = R.array.actions_array_last_one;
-        }
-        else if (first) {
+        } else if (first) {
             itemsId = R.array.actions_array_leftie;
-        }
-        else if (last) {
+        } else if (last) {
             itemsId = R.array.actions_array_righty;
         }
 
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.actions_dialog_title)
-                .setItems(itemsId, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
-
-                        // Rename workout is the first one in all lists
-                        if (which == 0) {
-                            renameWorkout();
-                            return;
-                        }
-
-                        if (oneWorkout) {
-                            actionOnly(which);
-                            return;
-                        }
-
-                        if (last) {
-                            actionRighty(which);
-                            return;
-                        }
-
-                        if (first) {
-                            actionLefty(which);
-                            return;
-                        }
-
+        return new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.actions_dialog_title)
+                .setItems(itemsId, (dialog, which) -> {
+                    // Rename is the first one in all lists
+                    if (which == 0) {
+                        renameWorkout();
+                    } else if (oneWorkout) {
+                        actionOnly(which);
+                    } else if (last) {
+                        actionRighty(which);
+                    } else if (first) {
+                        actionLefty(which);
+                    } else {
                         actionNormal(which);
-
                     }
-                });
-        return builder.create();
+                })
+                .create();
     }
-
-
-    public void setArguments(Bundle bundle) {
-        super.setArguments(bundle);
-        this.name = getArguments().getString("name");
-        this.workoutTabID = getArguments().getInt("id");
-
-        this.first = getArguments().getBoolean("first");
-        this.last = getArguments().getBoolean("last");
-        this.oneWorkout = getArguments().getBoolean("oneWorkout");
-
-    }
-
 
     private void actionNormal(int which) {
         switch (which) {
@@ -114,7 +94,6 @@ public class ActionsDialog extends DialogFragment {
     }
 
     private void actionRighty(int which) {
-
         switch (which) {
             case 1:
                 WorkoutModel.getInstance().moveLeft(workoutTabID);
@@ -126,28 +105,18 @@ public class ActionsDialog extends DialogFragment {
     }
 
     private void actionOnly(int which) {
-
-        switch (which) {
-            case 1:
-                WorkoutModel.getInstance().deleteWorkout(workoutTabID);
-                break;
+        if (which == 1) {
+            WorkoutModel.getInstance().deleteWorkout(workoutTabID);
         }
     }
 
-
-    /**
-     * Launch the rename workout dialog
-     */
+    /** Launch the rename workout dialog. */
     private void renameWorkout() {
-        DialogFragment newFragment = new RenameDialog();
+        RenameDialog rename = new RenameDialog();
         Bundle args = new Bundle();
         args.putString("name", WorkoutModel.getInstance().getWorkoutCached(workoutTabID).getName());
         args.putInt("id", workoutTabID);
-        newFragment.setArguments(args);
-        newFragment.show(MainActivity.getInstance().getFragmentManager(), "rename");
+        rename.setArguments(args);
+        rename.show(MainActivity.getInstance().getSupportFragmentManager(), "rename");
     }
-
 }
-
-
-

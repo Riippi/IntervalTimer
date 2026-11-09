@@ -180,6 +180,20 @@ public final class PhasePlan {
         return unlimited && cycleSeconds() > 0 ? firstCycleIndex() : -1;
     }
 
+    /**
+     * True when a manual rest (wait for a tap) sits after this work phase, before the next
+     * work phase. Manual rests have no length so they are not segments of their own.
+     */
+    public boolean hasManualRestAfter(int index) {
+        if (!manualRest || index < 0 || index >= kinds.length || kinds[index] != PhasePlan.WORK) {
+            return false;
+        }
+        if (unlimited) {
+            return true;
+        }
+        return index + 1 < kinds.length && kinds[index + 1] == PhasePlan.WORK;
+    }
+
     private static float clamp(float value) {
         return value < 0f ? 0f : (value > 1f ? 1f : value);
     }
