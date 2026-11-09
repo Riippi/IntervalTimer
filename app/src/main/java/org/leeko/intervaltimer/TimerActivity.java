@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -13,6 +14,10 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
+
+import androidx.annotation.RequiresApi;
 
 import org.leeko.intervaltimer.counter.BaseTimer;
 
@@ -64,6 +69,7 @@ public class TimerActivity extends Activity {
         EdgeToEdgeHelper.applySystemBarPadding(this);
 
         instance = this;
+        registerBackHandler();
 
 
         if (getActionBar() != null) {
@@ -305,7 +311,49 @@ public class TimerActivity extends Activity {
 
 
     public void goBack() {
-        super.onBackPressed();
+        finish();
+    }
+
+
+    // Android 13+ ignores onBackPressed() once the app opts in to the predictive back
+    // gesture, and Android 16 opts apps targeting API 36 in by default - so on those
+    // versions the back button went straight out of a running workout without asking.
+    // A callback is registered there; older versions still call onBackPressed().
+    private Object backCallback;
+
+    private void registerBackHandler() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            backCallback = BackApi33.register(this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (backCallback != null && Build.VERSION.SDK_INT >= 33) {
+            BackApi33.unregister(this, backCallback);
+            backCallback = null;
+        }
+    }
+
+    @RequiresApi(33)
+    private static final class BackApi33 {
+        static Object register(final TimerActivity activity) {
+            OnBackInvokedCallback callback = new OnBackInvokedCallback() {
+                @Override
+                public void onBackInvoked() {
+                    activity.onBackPressed();
+                }
+            };
+            activity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, callback);
+            return callback;
+        }
+
+        static void unregister(TimerActivity activity, Object callback) {
+            activity.getOnBackInvokedDispatcher()
+                    .unregisterOnBackInvokedCallback((OnBackInvokedCallback) callback);
+        }
     }
 
 
