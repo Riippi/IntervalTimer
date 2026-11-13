@@ -96,12 +96,16 @@ public class TimeDialog extends DialogFragment {
         seconds.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         PickerText.enlarge(seconds);
 
-        return new MaterialAlertDialogBuilder(requireContext())
+        Dialog picker = new MaterialAlertDialogBuilder(requireContext())
                 .setView(view)
                 .setTitle(titleResId)
                 .setPositiveButton(R.string.set, (dialog, id) -> callBack())
                 .setNegativeButton(R.string.cancel, null)
                 .create();
+        // Only Set, Cancel and Back close it. A swipe on a wheel that ends up next to the
+        // dialog used to count as a tap outside and threw the change away.
+        picker.setCanceledOnTouchOutside(false);
+        return picker;
     }
 
 
