@@ -45,6 +45,8 @@ The Android SDK is the Homebrew cask install (`/opt/homebrew/Caskroom/android-co
 - Play Console and account-level settings are done by the user in the browser. Claude cannot reach them.
 - Release notes and store listing copy: **no em dashes**, keep them short.
 
+- Version 2.6 (versionCode 9) was prepared on 2026-11-13: the timer, audio, data safety and dialog fixes plus the build upgrade. The signed bundle was built from `main` and the release APK was clicked through on the API 36 emulator.
+
 ## Conventions
 
 - Commit messages end with the `Co-Authored-By` trailer given in the session attribution instructions.
