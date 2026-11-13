@@ -209,19 +209,8 @@ public class AppController implements ITickerInterface {
         int aState = counter.getState();
 
 
-        // When you need to modify a UI element, do so on the UI thread.
-        // 'getActivity()' is required as this is being ran from a Fragment.
-        TimerActivity.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // This code will always run on the UI thread, therefore is safe to modify UI elements.
-                TimerActivity.getInstance().switchState();
-            }
-        });
-
-
-
-        //TimerActivity.getInstance().switchState();
+        // The counter ticks on the main thread, so the screen can be updated directly.
+        TimerActivity.getInstance().switchState();
 
         switch (aState) {
             case BaseTimer.WORK: {
@@ -271,13 +260,7 @@ public class AppController implements ITickerInterface {
 
         pauseIfCallStarted();
 
-        TimerActivity.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // This code will always run on the UI thread, therefore is safe to modify UI elements.
-                TimerActivity.getInstance().updateView();
-            }
-        });
+        TimerActivity.getInstance().updateView();
 
     }
 

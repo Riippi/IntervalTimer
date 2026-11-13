@@ -7,7 +7,7 @@ This repo is **public**. Never put secrets, passwords or account details in any 
 ## Build
 
 ```bash
-export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home   # AGP 8.x needs JDK 17, not the newer openjdk on this machine
+export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home   # AGP 9.x needs JDK 17, not the newer openjdk on this machine
 ./gradlew assembleDebug      # debug APK -> app/build/outputs/apk/debug/
 ./gradlew bundleRelease      # signed AAB -> app/build/outputs/bundle/release/app-release.aab
 ```
@@ -19,6 +19,8 @@ The Android SDK is the Homebrew cask install (`/opt/homebrew/Caskroom/android-co
 - AVD `IntervalTimerTest` (API 34). Boot headless: `<sdk>/emulator/emulator -avd IntervalTimerTest -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot`
 - `avdmanager` is broken on this SDK install, so AVDs are created by hand-writing `~/.android/avd/<name>.ini` and `config.ini`. Do not try to fix `avdmanager`.
 - Edge-to-edge bugs only reproduce on API 35+ (the API 34 AVD cannot show them). Use an API 36 AVD for any insets/layout work.
+- With a phone plugged in as well, always pass `-s emulator-5554` to `adb` so test commands never reach the phone.
+- The release build cannot use the sqlite trick, so for a short workout set Rounds to 1 in the rounds dialog (tap the number above the selected one to step down): Tabata is then 30 seconds and reaches DONE.
 - `uiautomator dump` fails with "could not get idle state" on the live timer screen because the UI never idles. Dump from a static screen (main screen, paused/over state) and tap using bounds from that, or use screenshots.
 - Switching between debug-signed and release-signed builds on the same device fails with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`. `adb uninstall org.leeko.intervaltimer` first.
 - The app logs almost nothing on purpose (all `Log.d` calls were removed). Verify behavior from screenshots and `logcat | grep FATAL`, not from app log lines.
@@ -36,7 +38,7 @@ The Android SDK is the Homebrew cask install (`/opt/homebrew/Caskroom/android-co
 
 ## Release rules
 
-- The release build is shrunk with R8 (`minifyEnabled` and `shrinkResources` in `app/build.gradle`): release APK about 4.3 MB, bundle about 3.9 MB, versus 7.1 / 6.2 MB unshrunk. `proguard-rules.txt` has no custom rules and none were needed. **Before uploading, run the release build (`assembleRelease`, install `app-release.apk`) through every screen**, because R8 problems only show up there. The release app is not debuggable, so `run-as` (the sqlite trick above) only works on the debug build. `app/build/outputs/mapping/release/mapping.txt` decodes crash traces; Play Console gets it automatically from the bundle.
+- The release build is shrunk with R8 (`minifyEnabled` and `shrinkResources` in `app/build.gradle`): release APK about 4.0 MB, bundle about 4.4 MB (measured on Gradle 9.6.1 with Android Gradle plugin 9.5.1, which requires `proguard-android-optimize.txt` as the default rules file). `proguard-rules.txt` has no custom rules and none were needed. **Before uploading, run the release build (`assembleRelease`, install `app-release.apk`) through every screen**, because R8 problems only show up there. The release app is not debuggable, so `run-as` (the sqlite trick above) only works on the debug build. `app/build/outputs/mapping/release/mapping.txt` decodes crash traces; Play Console gets it automatically from the bundle.
 
 - Every upload to Play Console needs a **new `versionCode`** in `app/build.gradle`. Play rejects a re-upload of a versionCode that was already used, even on a different track. Bump `versionName` alongside it.
 - Signing config reads `keystore.properties` (gitignored, along with `*.jks` / `*.keystore`). If the file is absent the project still builds, unsigned. **Never read, print, echo or commit its contents or the keystore.** Passwords and passphrases are the user's: they run `keytool` / `ssh-keygen` themselves in their own terminal.
@@ -79,7 +81,7 @@ Source of truth: `design/redesign/DESIGN_HANDOFF.md` (mockups next to it are not
 - Contrast was calculated, not eyeballed. Text on the phase colors is `on_phase` (#0A0A0A); the secondary text is 80% of it (the design said 72%, which is only 4.0:1 on the red rest color, 80% gives 4.6:1) and the paused digits are 60% (the design's 45% is 2.4:1 on red, 60% is 3:1 or better). Everything on the dark surfaces is 5.8:1 or better. Recompute with the luminance formula if a color changes.
 - Icon-only buttons have content descriptions (set in code where the text contains the workout name). Screen titles and the workout name are marked as headings. The workout rows on the manage screen offer Move left / Move right actions because dragging does not work with a screen reader; the settings rows read as buttons ("Work, 0:20, tap to change").
 - System text size up to 200% was tested on every setup screen: rows grow (`minHeight`, not fixed `height`), labels may wrap (`maxLines` 2, `singleLineTitle="false"` in Settings), the main page and Settings scroll. The timer digits are not scaled by the system font size, they fit the screen instead.
-- Lint is at 0 errors (it was 16 before the redesign). The 52 warnings left are old ones plus ones that do not apply (for example hard-coded `layout_marginLeft` in layouts that were deleted).
+- Lint is at 0 errors (it was 16 before the redesign). The 54 warnings left are old ones plus ones that do not apply (for example hard-coded `layout_marginLeft` in layouts that were deleted). Two findings of the newer lint are suppressed in code with a comment each: `GestureBackNavigation` on `TimerActivity.onBackPressed()` (the API 33+ callback already covers it) and `SoonBlockedPrivateApi` on the `PickerText` reflection (it only runs on Android 5-9 and falls back in its catch).
 
 ## Decisions already made (do not redo unprompted)
 
@@ -102,6 +104,6 @@ Source of truth: `design/redesign/DESIGN_HANDOFF.md` (mockups next to it are not
 - `android.R.string.yes` resolves to **"OK"**, not "Yes". Use `R.string.yes`. (`android.R.string.ok` is fine.)
 - `SoundPool.load()` is asynchronous. Keep loading kicked off early (at `startTimer()`), well before the first alert plays.
 - `DialogFragment` subclasses have no `Context` at construction time. Store string resource IDs and resolve them in `onCreateDialog()`.
-- `build.gradle` forces `kotlin-stdlib` versions in `resolutionStrategy` to avoid a duplicate-class build error. Leave that block alone.
+- The forced `kotlin-stdlib` 1.8.22 block in `app/build.gradle` was removed (with the user's OK) when the build moved to Gradle 9.6.1 and Android Gradle plugin 9.5.1: it also downgraded the plugin's lint and broke the release build, and the duplicate-class error it was added for no longer occurs. Do not add it back. Libraries are at the newest versions that still support `minSdk 21`; the latest `core`, `appcompat`, `fragment` and Material need `minSdk 23`, which is the user's decision.
 - Play Store privacy policy lives at https://moriest.fi/IntervalTimer/ (served from `docs/` via GitHub Pages, which is why the repo must stay public). It is also linked from the in-app Settings screen, and Play policy requires both.
 - Icon sources are SVGs in `design/icon/`. The Play Store 512x512 listing icon is a separate file the user keeps outside the repo.

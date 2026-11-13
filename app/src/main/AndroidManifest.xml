@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Declaring this as required tells Google Play to hide the app from devices
          without a touchscreen (e.g. some Android TV boxes) - the UI only works by
@@ -35,9 +34,6 @@
             android:exported="false"
             android:enableOnBackInvokedCallback="true"
             android:configChanges="keyboardHidden|orientation|screenSize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.leeko.intervaltimer.MainActivity" />
         </activity>
 
         <activity
@@ -59,9 +55,6 @@
             android:parentActivityName="org.leeko.intervaltimer.MainActivity"
             android:theme="@style/Theme.IntervalTimer"
             android:exported="false">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.leeko.intervaltimer.MainActivity" />
         </activity>
     </application>
 

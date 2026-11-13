@@ -2,6 +2,7 @@ package org.leeko.intervaltimer;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -478,6 +479,9 @@ public class TimerActivity extends Activity {
     // Back button. Android 13+ ignores onBackPressed() once the app opts in to the
     // predictive back gesture, and Android 16 opts apps targeting API 36 in by default,
     // so a callback is registered there. Older versions still call onBackPressed().
+    // Lint asks for AndroidX's OnBackPressedDispatcher instead, but this is a plain
+    // Activity, and the two paths below already cover every Android version.
+    @SuppressLint("GestureBackNavigation")
     @Override
     public void onBackPressed() {
         requestExit();

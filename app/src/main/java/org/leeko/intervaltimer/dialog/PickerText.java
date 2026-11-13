@@ -1,5 +1,6 @@
 package org.leeko.intervaltimer.dialog;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.util.TypedValue;
 import android.view.View;
@@ -20,6 +21,10 @@ final class PickerText {
     private PickerText() {
     }
 
+    // The reflection below only runs on Android 5-9. Android 9 blocks this private field
+    // for apps targeting a recent API level; that lands in the catch and the wheel keeps
+    // its normal size, which is the fallback this method promises.
+    @SuppressLint("SoonBlockedPrivateApi")
     static void enlarge(NumberPicker picker) {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE_SP,
                 picker.getResources().getDisplayMetrics());
