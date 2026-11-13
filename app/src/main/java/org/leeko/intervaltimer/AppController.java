@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import androidx.preference.PreferenceManager;
-import android.util.Log;
 import android.util.SparseIntArray;
 
 import org.leeko.intervaltimer.counter.BaseTimer;
@@ -49,27 +48,16 @@ public class AppController implements ITickerInterface {
     private final SparseIntArray soundIds = new SparseIntArray();
     private int activeStreamId = 0;
 
-    // needed for logging
-    private static final String TAG = "AppController";
-
-    // Pausing on incoming calls used to be done with a PhoneStateListener, which needs
-    // the restricted READ_PHONE_STATE permission (Play Store rejects apps requesting it
-    // without an approved use case). Audio focus achieves the same practical result: the
-    // ringtone for an incoming call takes audio focus away from us, which we treat the
-    // same way as an interruption, with no special permission needed.
-    @SuppressWarnings("deprecation")
-    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange -> {
-        if (focusChange == AudioManager.AUDIOFOCUS_LOSS
-                || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-            Log.i(TAG, "Audio focus lost, pausing timer");
-            stopSound();
-            pauseTimer();
-            TimerActivity.getInstance().switchState();
-            TimerActivity.getInstance().updateView();
-        }
-    };
-
-    private boolean holdingAudioFocus = false;
+    // Pausing on incoming calls. A PhoneStateListener would need the restricted
+    // READ_PHONE_STATE permission (Play Store rejects apps requesting it without an approved
+    // use case). Holding audio focus for the whole workout also caught the ringtone, but it
+    // made the app act like a music player: starting a workout stopped the user's music, and
+    // starting music paused the workout. So the app takes no audio focus at all (the beeps
+    // just play on top of whatever is playing) and watches the audio mode instead, which
+    // needs no permission: it leaves MODE_NORMAL when the phone rings (on a silent phone,
+    // when the call is answered) and during VoIP calls. Checked once per tick.
+    private AudioManager audioManager;
+    private int lastAudioMode = AudioManager.MODE_NORMAL;
 
 
     static boolean blockScrensaver = false;
@@ -93,32 +81,25 @@ public class AppController implements ITickerInterface {
 
     }
 
-    @SuppressWarnings("deprecation")
-    private void requestAudioFocus() {
-        if (holdingAudioFocus) {
-            return;
-        }
-        AudioManager audioManager = (AudioManager) TimerActivity.getInstance()
-                .getSystemService(Activity.AUDIO_SERVICE);
-        if (audioManager == null) {
-            return;
-        }
-        int result = audioManager.requestAudioFocus(audioFocusChangeListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        holdingAudioFocus = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+    private int currentAudioMode() {
+        return audioManager != null ? audioManager.getMode() : AudioManager.MODE_NORMAL;
     }
 
-    @SuppressWarnings("deprecation")
-    private void abandonAudioFocus() {
-        if (!holdingAudioFocus) {
+    /**
+     * Pauses the workout when a call starts. Only the change from "no call" counts, so a
+     * workout that is started or resumed during a call keeps running.
+     */
+    private void pauseIfCallStarted() {
+        if (!incomingCalls) {
             return;
         }
-        AudioManager audioManager = (AudioManager) TimerActivity.getInstance()
-                .getSystemService(Activity.AUDIO_SERVICE);
-        if (audioManager != null) {
-            audioManager.abandonAudioFocus(audioFocusChangeListener);
+        int mode = currentAudioMode();
+        boolean callStarted = lastAudioMode == AudioManager.MODE_NORMAL
+                && mode != AudioManager.MODE_NORMAL;
+        lastAudioMode = mode;
+        if (callStarted) {
+            pauseTimer();
         }
-        holdingAudioFocus = false;
     }
 
 
@@ -140,6 +121,10 @@ public class AppController implements ITickerInterface {
     }
 
     public void notifyCountDownBeep() {
+        // The tick that noticed a call has just paused the workout: no beep after that.
+        if (counter != null && counter.isPaused()) {
+            return;
+        }
         alert(R.raw.countdown, 0);
     }
 
@@ -156,11 +141,9 @@ public class AppController implements ITickerInterface {
         blockScrensaver = pm.getBoolean("prevent_screensaver_checkbox", true);
 
         incomingCalls = pm.getBoolean("pause_on_incoming_call", true);
-        if (incomingCalls) {
-            requestAudioFocus();
-        } else {
-            abandonAudioFocus();
-        }
+        audioManager = (AudioManager) TimerActivity.getInstance().getApplicationContext()
+                .getSystemService(Context.AUDIO_SERVICE);
+        lastAudioMode = currentAudioMode();
 
         String temp = pm.getString("sound_list", "0");
         try {
@@ -202,7 +185,6 @@ public class AppController implements ITickerInterface {
             counter.stopTimer();
         }
 
-        abandonAudioFocus();
         stopSound();
         killVibra();
     }
@@ -214,6 +196,9 @@ public class AppController implements ITickerInterface {
     }
 
     public static void resumeTimer() {
+        // A call that is already going on when the user resumes must not pause it again.
+        AppController app = getInstance();
+        app.lastAudioMode = app.currentAudioMode();
         counter.resumeTimer();
     }
 
@@ -283,6 +268,8 @@ public class AppController implements ITickerInterface {
 
     @Override
     public void notifyTick() {
+
+        pauseIfCallStarted();
 
         TimerActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
