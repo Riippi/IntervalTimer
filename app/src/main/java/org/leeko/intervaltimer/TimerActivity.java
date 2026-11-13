@@ -78,6 +78,16 @@ public class TimerActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Android is rebuilding this screen (savedInstanceState is only null when START
+        // opened it). If the workout is gone too, the whole app was killed in the
+        // background: the workout only lived in memory, so go back to the main screen
+        // rather than run some other workout.
+        boolean rebuilt = savedInstanceState != null;
+        if (rebuilt && !AppController.getInstance().hasTimer()) {
+            finish();
+            return;
+        }
+
         // Optional setting: keep the timer upright even if the phone is rotated.
         // Requested before inflating so the portrait layout is the one that loads.
         if (!Utils.isLargeScreen(this)
@@ -101,7 +111,11 @@ public class TimerActivity extends Activity {
         registerBackHandler();
 
         // Start the timer. It calls back into switchState()/updateView() right away.
-        AppController.getInstance().startTimer();
+        // Not when the screen is only rebuilt (font size, dark mode, split screen...):
+        // the workout is still running then, and starting it again would restart it from zero.
+        if (!rebuilt) {
+            AppController.getInstance().startTimer();
+        }
         render();
 
         // Keep the screen on

@@ -191,6 +191,11 @@ public class AppController implements ITickerInterface {
     }
 
 
+    /** True once a workout has been started in this process (running, paused or finished). */
+    public boolean hasTimer() {
+        return counter != null;
+    }
+
     public void stopTimer() {
 
         if (counter != null) {
@@ -348,6 +353,11 @@ public class AppController implements ITickerInterface {
 
 
     private void alert(int resId, int type) {
+        // No beeps or vibration for ticks that are replayed after the app was frozen.
+        if (counter != null && counter.isCatchingUp()) {
+            return;
+        }
+
         // Check sound setting
         if (sound) {
             playSound(resId);

@@ -29,6 +29,8 @@ The Android SDK is the Homebrew cask install (`/opt/homebrew/Caskroom/android-co
 - zsh: never name a shell variable `path` (or `PATH`-like names); in zsh `path` is tied to `$PATH` and the rest of the script then fails with "command not found".
 - The Undo snackbar lasts 6 seconds. When testing Undo over adb, tap it in the same command as the delete; looking at a screenshot in between is too slow.
 - Fast test workouts: the debug build allows `adb shell "run-as org.leeko.intervaltimer sqlite3 databases/workouts.db \"update workout set warm_up_sec=5,rounds=2,work_sec=6,rest_sec=4 where _id=1;\""` (table `workout`, columns in `database/WorkoutTable.java`; `force-stop` the app first). A 20 second workout reaches every timer state quickly. The app reopens on the last viewed tab, so rewriting that tab's row between runs is more reliable than tapping tabs.
+- Alert sounds can be checked without app logs: `adb shell dumpsys audio | grep "event:started"` lists every SoundPool play with a timestamp (find the app's `piid` on its `new player ... package:org.leeko.intervaltimer` line). The same dump shows the audio focus stack.
+- Background behavior: after Home, open two other apps and wait about 10 seconds; `dumpsys activity processes org.leeko.intervaltimer | grep isFrozen` shows when Android froze the app. `adb shell am kill org.leeko.intervaltimer` (app in the background) simulates the system killing it. Activity rebuilds mid-workout: `settings put system font_scale 1.15`, `cmd uimode night yes`, `wm size 900x2400`.
 - Unit tests (pure Java, no emulator): `./gradlew testDebugUnitTest`. Only `PhasePlan` has tests so far.
 
 ## Release rules
@@ -87,6 +89,9 @@ Source of truth: `design/redesign/DESIGN_HANDOFF.md` (mockups next to it are not
 - The Data Safety form, content rating and ads declaration already exist in Play Console (the app has been published since ~2015). Do not treat them as pending work.
 
 ## Gotchas
+
+- **`TimerActivity.onCreate` must only start the timer when `savedInstanceState == null`** (opened by START). Android rebuilds the activity on font size, dark mode and window size changes, and starting the timer there restarted the workout from zero. When it is rebuilt and `AppController.hasTimer()` is false, the process was killed in the background: the activity finishes and the user lands on the main screen, because the running workout only lives in memory.
+- **Late ticks are silent.** After the app was frozen in the background, `BaseTimer` replays the missed ticks at once to get the time right. Ticks more than 2 seconds late report `isCatchingUp()` and `AppController.alert()` skips their sound and vibration. Without that every missed beep fires within a second.
 
 - **Do not set `android:fontFamily` / `fontFamily` as a theme item.** It overrides the fonts that individual views set in their layouts (everything rendered in Inter Regular). Per-view `android:fontFamily="@font/..."` works; Material components get their fonts from the `textAppearance*` overrides in `themes_app.xml`.
 

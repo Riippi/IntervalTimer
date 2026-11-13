@@ -43,6 +43,13 @@ public abstract class BaseTimer implements ICounter {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private long nextTickAt;
 
+    // When Android freezes the app in the background (or the phone sleeps), the missed
+    // ticks all run at once afterwards so the time is right again. A tick that runs this
+    // late is one of those: it still counts, but its alerts are skipped (isCatchingUp()),
+    // otherwise every missed beep and vibration would fire within a second.
+    private static final long CATCH_UP_THRESHOLD_MS = 2000;
+    private boolean catchingUp;
+
     private final Runnable tickRunnable = new Runnable() {
         @Override
         public void run() {
@@ -51,7 +58,9 @@ public abstract class BaseTimer implements ICounter {
             }
 
             if (!paused) {
+                catchingUp = SystemClock.elapsedRealtime() - nextTickAt >= CATCH_UP_THRESHOLD_MS;
                 tick();
+                catchingUp = false;
                 nextTickAt += 1000;
             } else {
                 // Keep the anchor at "now" while paused, so resuming doesn't
@@ -194,6 +203,11 @@ public abstract class BaseTimer implements ICounter {
     @Override
     public boolean isPaused() {
         return paused;
+    }
+
+    @Override
+    public boolean isCatchingUp() {
+        return catchingUp;
     }
 
 }

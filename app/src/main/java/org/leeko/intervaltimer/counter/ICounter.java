@@ -21,6 +21,9 @@ public interface ICounter {
 
     boolean isPaused();
 
+    /** True while a tick is being replayed late (after the app was frozen); alerts are skipped then. */
+    boolean isCatchingUp();
+
 }
 	
 
