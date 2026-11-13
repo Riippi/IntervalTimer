@@ -1,7 +1,6 @@
 package org.leeko.intervaltimer.database;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 public class WorkoutTable {
 
@@ -156,12 +155,19 @@ public class WorkoutTable {
 		database.execSQL(INSERT_MANUAL);
 	}
 
+	/**
+	 * Called when DATABASE_VERSION in DatabaseHelper is raised. It must keep the users'
+	 * workouts: change the table step by step with ALTER TABLE, one block per version, e.g.
+	 *
+	 *     if (oldVersion < 2) {
+	 *         database.execSQL("ALTER TABLE workout ADD COLUMN cooldown_sec integer not null default 0");
+	 *     }
+	 *
+	 * Never drop and recreate the table here (the old code did, which would have deleted
+	 * every user's workouts on the first schema change).
+	 */
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
-		Log.w(WorkoutTable.class.getName(), "Upgrading database from version "
-				+ oldVersion + " to " + newVersion
-				+ ", which will destroy all old data");
-		database.execSQL("DROP TABLE IF EXISTS " + TABLE_WORKOUT);
-		onCreate(database);
+		// Version 1 is the only version so far, so there is nothing to migrate yet.
 	}
 } 

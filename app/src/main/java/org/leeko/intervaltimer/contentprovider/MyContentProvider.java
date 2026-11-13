@@ -1,7 +1,10 @@
 package org.leeko.intervaltimer.contentprovider;
 
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,6 +15,7 @@ import android.text.TextUtils;
 import org.leeko.intervaltimer.database.DatabaseHelper;
 import org.leeko.intervaltimer.database.WorkoutTable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -47,7 +51,27 @@ public class MyContentProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         database = new DatabaseHelper(getContext());
-        return false;
+        return true;
+    }
+
+    /**
+     * Runs a batch in one transaction. Delete, reorder, duplicate and undo all renumber
+     * several workouts at once; without the transaction (the default runs the operations
+     * one by one) the app dying halfway would leave two workouts on the same position or a
+     * position with no workout.
+     */
+    @Override
+    public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
+            throws OperationApplicationException {
+        SQLiteDatabase db = database.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            ContentProviderResult[] results = super.applyBatch(operations);
+            db.setTransactionSuccessful();
+            return results;
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override

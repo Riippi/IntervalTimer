@@ -56,11 +56,15 @@ public class WorkoutModel {
 
     public Workout getWorkoutCached(int tabId) {
 
-        // Actually no idea if this hash-caching has any use
         if (hash.get(tabId) == null) {
 
+            // Only a workout that really is in the database goes into the cache. A miss
+            // gives back an empty Workout on tab 0, and caching that would replace the
+            // first workout with a blank one that is later saved as a new row.
             Workout w = getWorkoutByTabId(tabId);
-            hash.put(w.getTabId(), w);
+            if (w.getId() > 0) {
+                hash.put(w.getTabId(), w);
+            }
         }
 
         return hash.get(tabId);
@@ -117,15 +121,44 @@ public class WorkoutModel {
             hash = new HashMap<Integer, Workout>();  // Tab id  and workout
         }
 
-        try (Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, null)) {
+        // The tab ids are the workouts' positions and must be exactly 0, 1, 2... The screens
+        // crash on a missing position, and of two workouts on the same position one would
+        // never be shown. So the rows are read in position order and numbered again here;
+        // any row whose saved position was off (a database damaged by an older version or
+        // an interrupted write) is corrected in the database as well.
+        String positionOrder = WorkoutTable.COLUMN_TAB + ", " + WorkoutTable.COLUMN_ID;
+        ArrayList<ContentProviderOperation> repairs = new ArrayList<ContentProviderOperation>();
+
+        try (Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, positionOrder)) {
 
             if (cursor != null) {
+                int position = 0;
                 for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 
                     Workout workout = new Workout();
                     workout.importFromCursor(cursor);
-                    hash.put(workout.getTabId(), workout);
+                    if (workout.getTabId() != position) {
+                        workout.setTabId(position);
+                        repairs.add(ContentProviderOperation.newUpdate(MyContentProvider.CONTENT_URI)
+                                .withSelection(WorkoutTable.COLUMN_ID + " = ? ",
+                                        new String[]{String.valueOf(workout.getId())})
+                                .withValue(WorkoutTable.COLUMN_TAB, position)
+                                .build());
+                    }
+                    hash.put(position, workout);
+                    position++;
                 }
+            }
+        }
+
+        if (!repairs.isEmpty()) {
+            try {
+                MainActivity.getInstance().getContentResolver().
+                        applyBatch(MyContentProvider.AUTHORITY, repairs);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (OperationApplicationException e) {
+                e.printStackTrace();
             }
         }
     }
