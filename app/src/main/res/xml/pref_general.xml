@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <SwitchPreferenceCompat
-        android:widgetLayout="@layout/preference_widget_switch"
+        android:widgetLayout="@layout/pref_switch_widget"
         android:defaultValue="true"
         android:key="prevent_screensaver_checkbox"
         android:summary="@string/pref_summary_keep_screen_on"
@@ -13,7 +13,7 @@
         app:singleLineTitle="false" />
 
     <SwitchPreferenceCompat
-        android:widgetLayout="@layout/preference_widget_switch"
+        android:widgetLayout="@layout/pref_switch_widget"
         android:defaultValue="true"
         android:key="pause_on_incoming_call"
         android:summary="@string/pref_summary_pause_on_call"
@@ -22,7 +22,7 @@
 
     <!-- The parent of the sound tone below: that one is only enabled while this is on. -->
     <SwitchPreferenceCompat
-        android:widgetLayout="@layout/preference_widget_switch"
+        android:widgetLayout="@layout/pref_switch_widget"
         android:defaultValue="true"
         android:key="sound"
         android:title="@string/pref_title_sound_alert"
@@ -39,7 +39,7 @@
         app:useSimpleSummaryProvider="true" />
 
     <SwitchPreferenceCompat
-        android:widgetLayout="@layout/preference_widget_switch"
+        android:widgetLayout="@layout/pref_switch_widget"
         android:defaultValue="true"
         android:key="vibrate"
         android:title="@string/pref_title_vibrate"
@@ -56,7 +56,7 @@
 
     <!-- Hidden on large screens by SettingsActivity (Android ignores the lock there). -->
     <SwitchPreferenceCompat
-        android:widgetLayout="@layout/preference_widget_switch"
+        android:widgetLayout="@layout/pref_switch_widget"
         android:defaultValue="false"
         android:key="lock_portrait"
         android:summary="@string/pref_summary_lock_portrait"

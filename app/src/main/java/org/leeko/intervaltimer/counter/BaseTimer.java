@@ -88,7 +88,8 @@ public abstract class BaseTimer implements ICounter {
     }
 
 
-    private void tick() {
+    // Package-private so the unit tests can drive the counter one second at a time.
+    void tick() {
 
         // The Heart
         if (seconds <= 0 && minutes <= 0) {

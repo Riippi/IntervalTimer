@@ -44,6 +44,12 @@ android {
         }
     }
 
+    testOptions {
+        // The counter tests run on the plain JVM: Handler, Looper and SystemClock from
+        // android.jar then do nothing instead of throwing "not mocked".
+        unitTests.returnDefaultValues = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
