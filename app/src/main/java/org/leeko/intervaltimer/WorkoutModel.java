@@ -1,7 +1,9 @@
 package org.leeko.intervaltimer;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
@@ -24,6 +26,28 @@ public class WorkoutModel {
     // Counts every change to the saved workouts, so a screen that was covered by another
     // one (Main behind Manage) can tell when it has to redraw.
     private int revision = 0;
+
+    // The application context, handed over by MyContentProvider when the process starts
+    // (a provider is created before any activity). The model used to reach the database
+    // through MainActivity, which does not exist when Android restores the app straight
+    // into another screen.
+    private static Context appContext;
+
+    public static void attach(Context context) {
+        appContext = context.getApplicationContext();
+    }
+
+    private static ContentResolver resolver() {
+        return appContext.getContentResolver();
+    }
+
+    /** Redraws the main screen on the given workout, if the main screen exists. */
+    private static void showOnMainScreen(int tabId) {
+        MainActivity main = MainActivity.getInstance();
+        if (main != null) {
+            main.updateWholeTabView(tabId);
+        }
+    }
 
     private WorkoutModel() {
 
@@ -97,12 +121,12 @@ public class WorkoutModel {
         }
 
         if (uri == null) {
-            MainActivity.getInstance().getContentResolver().insert(MyContentProvider.CONTENT_URI, values);
+            resolver().insert(MyContentProvider.CONTENT_URI, values);
 
             // reload all workouts. we get proper database id for this new workout
             loadAllWorkouts();
         } else {
-            MainActivity.getInstance().getContentResolver().update(uri, values, null, null);
+            resolver().update(uri, values, null, null);
         }
     }
 
@@ -129,7 +153,7 @@ public class WorkoutModel {
         String positionOrder = WorkoutTable.COLUMN_TAB + ", " + WorkoutTable.COLUMN_ID;
         ArrayList<ContentProviderOperation> repairs = new ArrayList<ContentProviderOperation>();
 
-        try (Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, positionOrder)) {
+        try (Cursor cursor = resolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, null, null, positionOrder)) {
 
             if (cursor != null) {
                 int position = 0;
@@ -153,7 +177,7 @@ public class WorkoutModel {
 
         if (!repairs.isEmpty()) {
             try {
-                MainActivity.getInstance().getContentResolver().
+                resolver().
                         applyBatch(MyContentProvider.AUTHORITY, repairs);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -191,7 +215,7 @@ public class WorkoutModel {
 
         Workout workout = new Workout();
 
-        try (Cursor cursor = MainActivity.getInstance().getContentResolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, mSelectionClause, mSelectionArgs, null)) {
+        try (Cursor cursor = resolver().query(MyContentProvider.CONTENT_URI, WorkoutTable.projection, mSelectionClause, mSelectionArgs, null)) {
 
             if (cursor != null && cursor.moveToFirst()) {
                 workout.importFromCursor(cursor);
@@ -216,7 +240,7 @@ public class WorkoutModel {
         // Arguments
         String[] mSelectionArgs = {String.valueOf(tabId)};
 
-       // final int delete = MainActivity.getInstance().getContentResolver().delete(MyContentProvider.CONTENT_URI, mSelectionClause, mSelectionArgs);
+       // final int delete = resolver().delete(MyContentProvider.CONTENT_URI, mSelectionClause, mSelectionArgs);
 
 
         // After deleting a workout we must change tab id:s of all workouts to the right so there won't be empty slot
@@ -255,7 +279,7 @@ public class WorkoutModel {
         hash.clear();
 
         try {
-            MainActivity.getInstance().getContentResolver().
+            resolver().
                     applyBatch(MyContentProvider.AUTHORITY, ops);
         } catch (RemoteException e) {
             // do s.th.
@@ -270,7 +294,7 @@ public class WorkoutModel {
 
 
         // Show the workout that took the deleted one's place (or the last one).
-        MainActivity.getInstance().updateWholeTabView(tabId);
+        showOnMainScreen(tabId);
 
     }
 
@@ -305,7 +329,7 @@ public class WorkoutModel {
         }
 
         try {
-            MainActivity.getInstance().getContentResolver().
+            resolver().
                     applyBatch(MyContentProvider.AUTHORITY, ops);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -340,7 +364,7 @@ public class WorkoutModel {
                 .build());
 
         try {
-            MainActivity.getInstance().getContentResolver().
+            resolver().
                     applyBatch(MyContentProvider.AUTHORITY, ops);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -349,7 +373,7 @@ public class WorkoutModel {
         }
 
         loadAllWorkouts();
-        MainActivity.getInstance().updateWholeTabView(tabId);
+        showOnMainScreen(tabId);
     }
 
     /**
@@ -359,7 +383,7 @@ public class WorkoutModel {
      */
     public int duplicateWorkout(int tabId) {
         Workout copy = getWorkoutCached(tabId).copy();
-        copy.setName(MainActivity.getInstance().getString(R.string.workout_copy_name, copy.getName()));
+        copy.setName(appContext.getString(R.string.workout_copy_name, copy.getName()));
         insertWorkoutAt(copy, tabId + 1);
         return tabId + 1;
     }
@@ -372,7 +396,7 @@ public class WorkoutModel {
      */
     public void moveRight(int tabId) {
         switchPlaces(tabId + 1, tabId);
-        MainActivity.getInstance().updateWholeTabView(tabId + 1);
+        showOnMainScreen(tabId + 1);
 
     }
 
@@ -381,7 +405,7 @@ public class WorkoutModel {
      */
     public void moveLeft(int tabId) {
         switchPlaces(tabId, tabId - 1);
-        MainActivity.getInstance().updateWholeTabView(tabId - 1);
+        showOnMainScreen(tabId - 1);
 
     }
 
@@ -423,7 +447,7 @@ public class WorkoutModel {
 
 
         try {
-            MainActivity.getInstance().getContentResolver().
+            resolver().
                     applyBatch(MyContentProvider.AUTHORITY, ops);
         } catch (RemoteException e) {
             // do s.th.
@@ -449,10 +473,10 @@ public class WorkoutModel {
         saveWorkout(workout);
 
        // ContentValues values = workout.getContentValues();
-      //  MainActivity.getInstance().getContentResolver().insert(MyContentProvider.CONTENT_URI, values);
+      //  resolver().insert(MyContentProvider.CONTENT_URI, values);
 
        // loadAllWorkouts();
-        MainActivity.getInstance().updateWholeTabView(newTabId);
+        showOnMainScreen(newTabId);
 
     }
 

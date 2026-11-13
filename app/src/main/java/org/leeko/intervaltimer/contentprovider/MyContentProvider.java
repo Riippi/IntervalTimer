@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import org.leeko.intervaltimer.WorkoutModel;
 import org.leeko.intervaltimer.database.DatabaseHelper;
 import org.leeko.intervaltimer.database.WorkoutTable;
 
@@ -51,6 +52,7 @@ public class MyContentProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         database = new DatabaseHelper(getContext());
+        WorkoutModel.attach(getContext());
         return true;
     }
 
